@@ -1,1394 +1,707 @@
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Zentry</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <style>
-        body {
-            background-color: #1c1c1e;
-            color: #f2f2f7;
-            font-family: monospace;
-            padding-bottom: 120px; /* Adjust based on input-row height */
-        }
-        .terminal {
-            background-color: #2c2c2e;
-            max-height: 400px;
-            overflow-y: auto;
-            border: 1px solid #3a3a3c;
-            margin-bottom: 1rem;
-        }
-        .table-biz { /* General class for all tables */
-            width: 100%;
-            font-size: 0.9rem;
-            color: #f2f2f7;
-        }
-        .table-biz th,
-        .table-biz td {
-            padding: 4px 8px;
-            border-bottom: 1px solid #3a3a3c;
-        }
-        .table-biz thead th {
-            position: sticky;
-            top: 0;
-            background-color: #2c2c2e;
-            z-index: 1;
-        }
-        .linha-selecionada {
-            background-color: #5c5c61 !important;
-        }
-        .input-row {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100%;
-            background-color: #1c1c1e;
-            padding: 0.5rem;
-            border-top: 1px solid #3a3a3c;
-            z-index: 1000;
-        }
-        .input-row input, .input-row select {
-            font-family: monospace;
-            font-size: 1rem;
-            margin-bottom: 0.3rem;
-            padding: 0.5rem 0.75rem;
-        }
-        .btn-ios {
-            border-radius: 1rem;
-            font-weight: 600;
-            padding: 0.5rem 0.75rem;
-            font-size: 1rem;
-        }
-        .btn-ios i {
-            margin-right: 0.25rem;
-        }
-        .checkbox-col {
-            width: 30px;
-            text-align: center;
-        }
-        .tab-content > .tab-pane {
-            display: none;
-        }
-        .tab-content > .active {
-            display: block;
-        }
-
-        /* Adjustments for input fields to be similar to Colaborador tab */
-        /* For Descarga Biz, Cargas Biz, Prestadores de Serviços, and Colaborador */
-        #inputRowColaborador .col,
-        #inputRowDescarga .col,
-        #inputRowCargas .col,
-        #inputRowPrestadores .col {
-            flex: 1 1 120px; /* Allows columns to grow and shrink, with a base width of 120px for smaller fields */
-            min-width: 120px; /* Ensures a minimum width for inputs, matching 'Colaborador' feel */
-        }
-
-        /* Specific adjustment for observation fields, giving them more room to grow */
-        #inputRowColaborador .col-2,
-        #inputRowFrotas .col-3, /* Frotas has a longer observation field */
-        #inputRowDescarga .col-2,
-        #inputRowCargas .col-2,
-        #inputRowPrestadores .col-3 {
-            flex: 2 1 200px; /* Allows these specific columns to take up more space, min-width of 200px */
-            min-width: 200px; /* Ensures a good minimum width for observation/longer text fields */
-        }
-
-        /* Make button columns smaller and prevent them from growing */
-        .input-row .col-auto {
-            flex: 0 0 auto; /* Do not grow or shrink, base on content */
-            width: auto; /* Adjust width based on content */
-            padding-right: 0.1rem; /* Small gap between buttons */
-            padding-left: 0.1rem; /* Small gap between buttons */
-        }
-
-        /* Ensure input rows wrap content if space is limited */
-        .input-row .row {
-            flex-wrap: wrap; /* Allows items to wrap to the next line */
-            align-items: flex-end; /* Align items to the bottom if they wrap */
-        }
-
-        /* Adjust padding for the input fields and buttons within the input-row */
-        .input-row .form-control,
-        .input-row .btn {
-            margin-bottom: 0.5rem; /* Consistent spacing below each input and button */
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Registro de Funcionários</title>
+  <style>
+    :root {
+      --bg: #f9f9fa;
+      --card: #ffffff;
+      --text: #2c2c2e;
+      --accent: #007aff;
+      --border: #d2d2d6;
+      --header-bg: #f2f2f7;
+    }
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen;
+      margin: 0;
+      padding: 0;
+      background-color: var(--bg);
+      color: var(--text);
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+    #tab-header {
+      display: flex;
+      justify-content: space-around;
+      padding: 10px;
+      background-color: var(--card);
+      border-bottom: 1px solid var(--border);
+      overflow-x: auto;
+      white-space: nowrap;
+    }
+    .tab-button {
+      padding: 10px 20px;
+      border: none;
+      background-color: transparent;
+      font-size: 16px;
+      cursor: pointer;
+      color: var(--text);
+      transition: color 0.2s ease;
+    }
+    .tab-button.active {
+      font-weight: bold;
+      color: var(--accent);
+      border-bottom: 2px solid var(--accent);
+    }
+    .tab-content {
+      display: none;
+      flex: 1;
+      height: calc(100% - 150px); /* Ajuste a altura para acomodar o rodapé */
+      overflow-y: auto;
+    }
+    .tab-content.active {
+      display: block;
+    }
+    #tabela-container {
+      padding: 16px;
+    }
+    table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0;
+      background-color: var(--card);
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      table-layout: fixed;
+    }
+    thead th, tbody td {
+      text-align: left;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      padding: 12px;
+    }
+    thead th {
+      position: sticky;
+      top: 0;
+      background-color: var(--header-bg);
+      z-index: 1;
+      font-weight: 600;
+      border-bottom: 1px solid var(--border);
+    }
+    tbody td {
+      border-bottom: 1px solid var(--border);
+    }
+    /* Estilos para o novo rodapé fixo */
+    #main-footer {
+      position: sticky;
+      bottom: 0;
+      width: 100%;
+      background-color: var(--card);
+      border-top: 1px solid var(--border);
+      box-shadow: 0 -1px 4px rgba(0,0,0,0.05);
+      padding: 12px;
+    }
+    .footer-form {
+      display: none;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .footer-form.active {
+      display: flex;
+    }
+    .formulario-campos {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      flex: 1;
+    }
+    .formulario-campos input, .formulario-campos select {
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      flex: 1;
+      font-family: inherit;
+      min-width: 100px;
+    }
+    .formulario-botoes {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+    .formulario-botoes button {
+      padding: 10px 16px;
+      font-size: 15px;
+      border: none;
+      border-radius: 10px;
+      color: white;
+      cursor: pointer;
+      transition: background-color 0.2s ease;
+      font-family: inherit;
+    }
+    .formulario-botoes button.salvar { background-color: #00a877; }
+    .formulario-botoes button.editar { background-color: #ff9500; }
+    .formulario-botoes button.txt { background-color: #5856d6; }
+    .formulario-botoes button.excel { background-color: #34c759; }
+    .formulario-botoes button.salvar:hover { background-color: #00875e; }
+    .formulario-botoes button.editar:hover { background-color: #e58700; }
+    .formulario-botoes button.txt:hover { background-color: #4846c4; }
+    .formulario-botoes button.excel:hover { background-color: #2da44b; }
+  </style>
 </head>
 <body>
-    <div class="container-fluid">
-        <h4 class="text-center mt-2">Zentry - Portaria Biz</h4>
 
-        <ul class="nav nav-tabs justify-content-center" id="bizTabs" role="tablist">
-           <li class="nav-item" role="presentation">
-  <button class="nav-link" id="colaborador-tab" data-bs-toggle="tab"
-    data-bs-target="#colaborador" type="button" role="tab"
-    aria-controls="colaborador" aria-selected="false"
-    onclick="loadTabContent('colaborador.html', 'colaborador')">
-    Colaborador
-  </button>
-</li>
-
-<!-- Área do conteúdo da aba -->
-<div class="tab-content">
-  <div class="tab-pane fade" id="colaborador" role="tabpanel" aria-labelledby="colaborador-tab">
-    <!-- Conteúdo de colaborador.html será inserido aqui -->
+  <div id="tab-header">
+    <button class="tab-button active" onclick="openTab('registros')">Registros</button>
+    <button class="tab-button" onclick="openTab('frota-biz')">Frota Biz</button>
+    <button class="tab-button" onclick="openTab('descarga-biz')">Descarga Biz</button>
+    <button class="tab-button" onclick="openTab('carga-biz')">Carga Biz</button>
+    <button class="tab-button" onclick="openTab('prest-servicos-biz')">Prest. Serviços e Visitantes Biz</button>
   </div>
-</div>
 
- <li class="nav-item" role="presentation">
-                <button class="nav-link" id="frotas-tab" data-bs-toggle="tab" data-bs-target="#frotas" type="button" role="tab" aria-controls="frotas" aria-selected="false" onclick="changeTab('frotas')">Frotas Biz</button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="descarga-tab" data-bs-toggle="tab" data-bs-target="#descarga" type="button" role="tab" aria-controls="descarga" aria-selected="false" onclick="changeTab('descarga')">Descarga Biz</button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="cargas-tab" data-bs-toggle="tab" data-bs-target="#cargas" type="button" role="tab" aria-controls="cargas" aria-selected="false" onclick="changeTab('cargas')">Cargas Biz</button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="prestadores-tab" data-bs-toggle="tab" data-bs-target="#prestadores" type="button" role="tab" aria-controls="prestadores" aria-selected="false" onclick="changeTab('prestadores')">Prestadores de Serviços</button>
-            </li>
-        </ul>
+  <div id="registros" class="tab-content active">
+    <div id="tabela-container">
+      <table id="tabela-registros">
+        <thead>
+          <tr>
+            <th>Nome</th>
+            <th>Placa</th>
+            <th>Hora Entrada</th>
+            <th>Hora Saída</th>
+            <th>Obs.</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
 
-        <div class="tab-content" id="bizTabsContent">
-            <div class="tab-pane fade show active" id="colaborador" role="tabpanel" aria-labelledby="colaborador-tab">
-                <input type="text" id="pesquisaColaborador" class="form-control mb-2 mt-2" placeholder="🔎 Pesquisar por Placa ou Nome" oninput="atualizarTerminal('colaborador')" />
+  <div id="frota-biz" class="tab-content">
+    <div id="tabela-container">
+      <table id="tabela-frota-biz">
+        <thead>
+          <tr>
+            <th>Data</th>
+            <th>Nome</th>
+            <th>Frota</th>
+            <th>Hora Entrada</th>
+            <th>Hora Saída</th>
+            <th>Obs.</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
 
-                <div class="terminal">
-                    <table id="tabela-registros-colaborador" class="table table-dark table-sm table-hover table-biz">
-                        <thead>
-                            <tr>
-                                <th class="checkbox-col">
-                                    <input type="checkbox" id="selecionarTodosColaborador" onclick="toggleSelecionarTodos(this, 'colaborador')" />
-                                </th>
-                                <th>#</th>
-                                <th>Data</th>
-                                <th>H. Entrada</th>
-                                <th>H. Saída</th>
-                                <th>Placa</th>
-                                <th>Nomes</th>
-                                <th>Crachá</th>
-                                <th>Observações</th>
-                            </tr>
-                        </thead>
-                        <tbody id="corpo-registros-colaborador"></tbody>
-                    </table>
-                </div>
+  <div id="descarga-biz" class="tab-content">
+    <div id="tabela-container">
+      <table id="tabela-descarga-biz">
+        <thead>
+          <tr>
+            <th>Data</th>
+            <th>Horário</th>
+            <th>Nome</th>
+            <th>Documento</th>
+            <th>Contato</th>
+            <th>Placa CV</th>
+            <th>Placa RB</th>
+            <th>Transp.</th>
+            <th>Fornec.</th>
+            <th>SH/NF</th>
+            <th>Quant.</th>
+            <th>Observação</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
 
-                <div class="input-row row gx-2" id="inputRowColaborador">
-                    <div class="col"><input type="date" id="dataInputColaborador" class="form-control" placeholder="Data"></div>
-                    <div class="col"><input type="time" id="horaEntradaInputColaborador" class="form-control" placeholder="H. Entrada"></div>
-                    <div class="col"><input type="time" id="horaSaidaInputColaborador" class="form-control" placeholder="H. Saída"></div>
-                    <div class="col"><input type="text" id="placaInputColaborador" class="form-control" placeholder="Placa" oninput="autocompletarCamposColaborador(this.value)"></div>
-                    <div class="col"><input type="text" id="nomesInputColaborador" class="form-control" placeholder="Nomes"></div>
-                    <div class="col">
-                        <select id="crachaInputColaborador" class="form-control">
-                            <option value="">Crachá?</option>
-                            <option value="Sim">Sim</option>
-                            <option value="Não">Não</option>
-                        </select>
-                    </div>
-                    <div class="col-2"><input type="text" id="observacoesInputColaborador" class="form-control" placeholder="Observações"></div>
-                    <div class="col-auto">
-                        <button class="btn btn-success btn-ios" onclick="salvarRegistro('colaborador')"><i class="fas fa-save"></i></button>
-                    </div>
-                    <div class="col-auto">
-                        <button class="btn btn-danger btn-ios" onclick="excluirSelecionados('colaborador')"><i class="fas fa-trash-alt"></i></button>
-                    </div>
-                    <div class="col-auto">
-                        <button class="btn btn-secondary btn-ios" onclick="emitirTXT('colaborador')"><i class="fas fa-file-alt"></i></button>
-                    </div>
-                    <div class="col-auto">
-                        <button class="btn btn-secondary btn-ios" onclick="emitirExcel('colaborador')"><i class="fas fa-file-excel"></i></button>
-                    </div>
-                    <div class="col-auto">
-                        <button class="btn btn-light btn-ios" onclick="limparCampos('colaborador')"><i class="fas fa-eraser"></i></button>
-                    </div>
-                </div>
-            </div>
+  <div id="carga-biz" class="tab-content">
+    <div id="tabela-container">
+      <table id="tabela-carga-biz">
+        <thead>
+          <tr>
+            <th>Data</th>
+            <th>Nome</th>
+            <th>Placa</th>
+            <th>CPF</th>
+            <th>Tel</th>
+            <th>Cliente</th>
+            <th>Hora</th>
+            <th>Produto</th>
+            <th>Nº Ordem</th>
+            <th>Obs.</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
 
-            <div class="tab-pane fade" id="frotas" role="tabpanel" aria-labelledby="frotas-tab">
-                <input type="text" id="pesquisaFrotas" class="form-control mb-2 mt-2" placeholder="🔎 Pesquisar por Frota ou Nome" oninput="atualizarTerminal('frotas')" />
+  <div id="prest-servicos-biz" class="tab-content">
+    <div id="tabela-container">
+      <table id="tabela-prest-servicos-biz">
+        <thead>
+          <tr>
+            <th>Data</th>
+            <th>Hora</th>
+            <th>Nome</th>
+            <th>Placa</th>
+            <th>CPF</th>
+            <th>Tel</th>
+            <th>Autorizado por</th>
+            <th>Obs.</th>
+            <th>Ações</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </div>
 
-                <div class="terminal">
-                    <table id="tabela-registros-frotas" class="table table-dark table-sm table-hover table-biz">
-                        <thead>
-                            <tr>
-                                <th class="checkbox-col">
-                                    <input type="checkbox" id="selecionarTodosFrotas" onclick="toggleSelecionarTodos(this, 'frotas')" />
-                                </th>
-                                <th>#</th>
-                                <th>Data</th>
-                                <th>H. Entrada</th>
-                                <th>H. Saída</th>
-                                <th>Frotas</th>
-                                <th>Nomes</th>
-                                <th>Observações</th>
-                            </tr>
-                        </thead>
-                        <tbody id="corpo-registros-frotas"></tbody>
-                    </table>
-                </div>
-
-                <div class="input-row row gx-2" id="inputRowFrotas">
-                    <div class="col"><input type="date" id="dataInputFrotas" class="form-control" placeholder="Data"></div>
-                    <div class="col"><input type="time" id="horaEntradaInputFrotas" class="form-control" placeholder="H. Entrada"></div>
-                    <div class="col"><input type="time" id="horaSaidaInputFrotas" class="form-control" placeholder="H. Saída"></div>
-                    <div class="col"><input type="text" id="frotasInputFrotas" class="form-control" placeholder="Frota" oninput="autocompletarCamposFrotas(this.value)"></div>
-                    <div class="col"><input type="text" id="nomesInputFrotas" class="form-control" placeholder="Nomes"></div>
-                    <div class="col-3"><input type="text" id="observacoesInputFrotas" class="form-control" placeholder="Observações"></div>
-                    <div class="col-auto">
-                        <button class="btn btn-success btn-ios" onclick="salvarRegistro('frotas')"><i class="fas fa-save"></i></button>
-                    </div>
-                    <div class="col-auto">
-                        <button class="btn btn-danger btn-ios" onclick="excluirSelecionados('frotas')"><i class="fas fa-trash-alt"></i></button>
-                    </div>
-                    <div class="col-auto">
-                        <button class="btn btn-secondary btn-ios" onclick="emitirTXT('frotas')"><i class="fas fa-file-alt"></i></button>
-                    </div>
-                    <div class="col-auto">
-                        <button class="btn btn-secondary btn-ios" onclick="emitirExcel('frotas')"><i class="fas fa-file-excel"></i></button>
-                    </div>
-                    <div class="col-auto">
-                        <button class="btn btn-light btn-ios" onclick="limparCampos('frotas')"><i class="fas fa-eraser"></i></button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="tab-pane fade" id="descarga" role="tabpanel" aria-labelledby="descarga-tab">
-                <input type="text" id="pesquisaDescarga" class="form-control mb-2 mt-2" placeholder="🔎 Pesquisar por Nome ou Fornecedor" oninput="atualizarTerminal('descarga')" />
-
-                <div class="terminal">
-                    <table id="tabela-registros-descarga" class="table table-dark table-sm table-hover table-biz">
-                        <thead>
-                            <tr>
-                                <th class="checkbox-col">
-                                    <input type="checkbox" id="selecionarTodosDescarga" onclick="toggleSelecionarTodos(this, 'descarga')" />
-                                </th>
-                                <th>#</th>
-                                <th>Data</th>
-                                <th>Horário</th>
-                                <th>Nome</th>
-                                <th>CPF</th>
-                                <th>Telefone</th>
-                                <th>Placa CV</th>
-                                <th>Placa RB</th>
-                                <th>Transportadora</th>
-                                <th>Fornecedor</th>
-                                <th>Nota/Shipment</th>
-                                <th>Quantidades</th>
-                                <th>Observação</th>
-                            </tr>
-                        </thead>
-                        <tbody id="corpo-registros-descarga"></tbody>
-                    </table>
-                </div>
-
-                <div class="input-row row gx-2" id="inputRowDescarga">
-                    <div class="col"><input type="date" id="dataInputDescarga" class="form-control" placeholder="Data"></div>
-                    <div class="col"><input type="time" id="horarioInputDescarga" class="form-control" placeholder="Horário"></div>
-                    <div class="col"><input type="text" id="nomeInputDescarga" class="form-control" placeholder="Nome"></div>
-                    <div class="col"><input type="text" id="cpfInputDescarga" class="form-control" placeholder="CPF" oninput="autocompletarCamposDescarga(this.value)"></div>
-                    <div class="col"><input type="text" id="telefoneInputDescarga" class="form-control" placeholder="Telefone"></div>
-                    <div class="col"><input type="text" id="placaCvInputDescarga" class="form-control" placeholder="Placa CV"></div>
-                    <div class="col"><input type="text" id="placaRbInputDescarga" class="form-control" placeholder="Placa RB"></div>
-                    <div class="col"><input type="text" id="transportadoraInputDescarga" class="form-control" placeholder="Transportadora"></div>
-                    <div class="col"><input type="text" id="fornecedorInputDescarga" class="form-control" placeholder="Fornecedor"></div>
-                    <div class="col"><input type="text" id="notaShipmentInputDescarga" class="form-control" placeholder="Nota/Shipment"></div>
-                    <div class="col"><input type="text" id="quantidadesInputDescarga" class="form-control" placeholder="Quantidades"></div>
-                    <div class="col-2"><input type="text" id="observacaoInputDescarga" class="form-control" placeholder="Observação"></div>
-                    <div class="col-auto">
-                        <button class="btn btn-success btn-ios" onclick="salvarRegistro('descarga')"><i class="fas fa-save"></i></button>
-                    </div>
-                    <div class="col-auto">
-                        <button class="btn btn-danger btn-ios" onclick="excluirSelecionados('descarga')"><i class="fas fa-trash-alt"></i></button>
-                    </div>
-                    <div class="col-auto">
-                        <button class="btn btn-secondary btn-ios" onclick="emitirTXT('descarga')"><i class="fas fa-file-alt"></i></button>
-                    </div>
-                    <div class="col-auto">
-                        <button class="btn btn-secondary btn-ios" onclick="emitirExcel('descarga')"><i class="fas fa-file-excel"></i></button>
-                    </div>
-                    <div class="col-auto">
-                        <button class="btn btn-light btn-ios" onclick="limparCampos('descarga')"><i class="fas fa-eraser"></i></button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="tab-pane fade" id="cargas" role="tabpanel" aria-labelledby="cargas-tab">
-                <input type="text" id="pesquisaCargas" class="form-control mb-2 mt-2" placeholder="🔎 Pesquisar por Motorista ou Cliente" oninput="atualizarTerminal('cargas')" />
-
-                <div class="terminal">
-                    <table id="tabela-registros-cargas" class="table table-dark table-sm table-hover table-biz">
-                        <thead>
-                            <tr>
-                                <th class="checkbox-col">
-                                    <input type="checkbox" id="selecionarTodosCargas" onclick="toggleSelecionarTodos(this, 'cargas')" />
-                                </th>
-                                <th>#</th>
-                                <th>Data</th>
-                                <th>H. Entrada</th>
-                                <th>Motorista</th>
-                                <th>CPF</th>
-                                <th>Telefone</th>
-                                <th>Cliente</th>
-                                <th>Placas</th>
-                                <th>Autorização</th>
-                                <th>Observações</th>
-                            </tr>
-                        </thead>
-                        <tbody id="corpo-registros-cargas"></tbody>
-                    </table>
-                </div>
-
-                <div class="input-row row gx-2" id="inputRowCargas">
-                    <div class="col"><input type="date" id="dataInputCargas" class="form-control" placeholder="Data"></div>
-                    <div class="col"><input type="time" id="hEntradaInputCargas" class="form-control" placeholder="H. Entrada"></div>
-                    <div class="col"><input type="text" id="motoristaInputCargas" class="form-control" placeholder="Motorista"></div>
-                    <div class="col"><input type="text" id="cpfInputCargas" class="form-control" placeholder="CPF" oninput="autocompletarCamposCargas(this.value)"></div>
-                    <div class="col"><input type="text" id="telefoneInputCargas" class="form-control" placeholder="Telefone"></div>
-                    <div class="col"><input type="text" id="clienteInputCargas" class="form-control" placeholder="Cliente"></div>
-                    <div class="col"><input type="text" id="placasInputCargas" class="form-control" placeholder="Placas"></div>
-                    <div class="col"><input type="text" id="autorizacaoInputCargas" class="form-control" placeholder="Autorização"></div>
-                    <div class="col-2"><input type="text" id="observacoesInputCargas" class="form-control" placeholder="Observações"></div>
-                    <div class="col-auto">
-                        <button class="btn btn-success btn-ios" onclick="salvarRegistro('cargas')"><i class="fas fa-save"></i></button>
-                    </div>
-                    <div class="col-auto">
-                        <button class="btn btn-danger btn-ios" onclick="excluirSelecionados('cargas')"><i class="fas fa-trash-alt"></i></button>
-                    </div>
-                    <div class="col-auto">
-                        <button class="btn btn-secondary btn-ios" onclick="emitirTXT('cargas')"><i class="fas fa-file-alt"></i></button>
-                    </div>
-                    <div class="col-auto">
-                        <button class="btn btn-secondary btn-ios" onclick="emitirExcel('cargas')"><i class="fas fa-file-excel"></i></button>
-                    </div>
-                    <div class="col-auto">
-                        <button class="btn btn-light btn-ios" onclick="limparCampos('cargas')"><i class="fas fa-eraser"></i></button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="tab-pane fade" id="prestadores" role="tabpanel" aria-labelledby="prestadores-tab">
-                <input type="text" id="pesquisaPrestadores" class="form-control mb-2 mt-2" placeholder="🔎 Pesquisar por Nome ou Empresa" oninput="atualizarTerminal('prestadores')" />
-
-                <div class="terminal">
-                    <table id="tabela-registros-prestadores" class="table table-dark table-sm table-hover table-biz">
-                        <thead>
-                            <tr>
-                                <th class="checkbox-col">
-                                    <input type="checkbox" id="selecionarTodosPrestadores" onclick="toggleSelecionarTodos(this, 'prestadores')" />
-                                </th>
-                                <th>#</th>
-                                <th>Data</th>
-                                <th>Hora</th>
-                                <th>Nome</th>
-                                <th>CPF/Placa</th>
-                                <th>Empresa</th>
-                                <th>Autorização</th>
-                                <th>Observações</th>
-                            </tr>
-                        </thead>
-                        <tbody id="corpo-registros-prestadores"></tbody>
-                    </table>
-                </div>
-
-                <div class="input-row row gx-2" id="inputRowPrestadores">
-                    <div class="col"><input type="date" id="dataInputPrestadores" class="form-control" placeholder="Data"></div>
-                    <div class="col"><input type="time" id="horaInputPrestadores" class="form-control" placeholder="Hora"></div>
-                    <div class="col"><input type="text" id="nomeInputPrestadores" class="form-control" placeholder="Nome"></div>
-                    <div class="col"><input type="text" id="cpfPlacaInputPrestadores" class="form-control" placeholder="CPF/Placa" oninput="autocompletarCamposPrestadores(this.value)"></div>
-                    <div class="col"><input type="text" id="empresaInputPrestadores" class="form-control" placeholder="Empresa"></div>
-                    <div class="col"><input type="text" id="autorizacaoInputPrestadores" class="form-control" placeholder="Autorização"></div>
-                    <div class="col-3"><input type="text" id="observacoesInputPrestadores" class="form-control" placeholder="Observações"></div>
-                    <div class="col-auto">
-                        <button class="btn btn-success btn-ios" onclick="salvarRegistro('prestadores')"><i class="fas fa-save"></i></button>
-                    </div>
-                    <div class="col-auto">
-                        <button class="btn btn-danger btn-ios" onclick="excluirSelecionados('prestadores')"><i class="fas fa-trash-alt"></i></button>
-                    </div>
-                    <div class="col-auto">
-                        <button class="btn btn-secondary btn-ios" onclick="emitirTXT('prestadores')"><i class="fas fa-file-alt"></i></button>
-                    </div>
-                    <div class="col-auto">
-                        <button class="btn btn-secondary btn-ios" onclick="emitirExcel('prestadores')"><i class="fas fa-file-excel"></i></button>
-                    </div>
-                    <div class="col-auto">
-                        <button class="btn btn-light btn-ios" onclick="limparCampos('prestadores')"><i class="fas fa-eraser"></i></button>
-                    </div>
-                </div>
-            </div>
-        </div>
+  <div id="main-footer">
+    
+    <div id="form-registros" class="footer-form active">
+      <div class="formulario-campos">
+        <select id="nome_registros">
+          <option disabled selected>Selecione o nome</option>
+          <option>Oscar - Supervisor</option>
+          <option>João Paulo - Menor Aprendiz</option>
+          <option>Thalles</option>
+          <option>André</option>
+          <option>Ezequias</option>
+          <option>Luiz Carlos</option>
+          <option>João Vitor</option>
+          <option>Luiz Henrique</option>
+          <option>Gean Carlos</option>
+          <option>Raimundo</option>
+          <option>Michel F. - Menor Aprendiz</option>
+          <option>Vitória Isabele</option>
+          <option>Cristiano</option>
+          <option>Marsergio - Gerente</option>
+          <option>André - ADM</option>
+          <option>Enildo - Supervisor</option>
+          <option>Thiago Benjamin</option>
+          <option>Edirlei - CPD</option>
+          <option>Yuri - Menor Aprendiz</option>
+          <option>Pedro H - Menor Aprendiz</option>
+          <option>Felipe - Menor Aprendiz</option>
+          <option>Jayme - Encarregado</option>
+          <option>Raimundo - Van</option>
+          <option>Marcos - Van</option>
+          <option>Fábio - Van</option>
+          <option>Eriton - Van</option>
+          <option>Elionai - Van</option>
+          <option>Edmar - Van</option>
+          <option>Jefferson - Van</option>
+          <option>Gabriel - Menor Aprendiz</option>
+          <option>Dangel – Menor aprendiz</option>
+          <option>Cauan – Menor aprendiz</option>
+          <option>Nicolas G – Menor aprendiz</option>
+          <option>Elias – Menor aprendiz</option>
+          <option>Abraão - Menor Aprendiz</option>
+          <option>Wanderson</option>
+          <option>Keverson</option>
+          <option>Leandro F.</option>
+          <option>Murilo - Menor Aprendiz</option>
+          <option>Matias - Menor Aprendiz</option>
+          <option>Leandro P.</option>
+        </select>
+        <input type="text" id="placa_registros" placeholder="Placa" />
+        <input type="time" id="entrada_registros" />
+        <input type="time" id="saida_registros" />
+        <input type="text" id="obs_registros" placeholder="Observação" />
+      </div>
+      <div class="formulario-botoes">
+        <button class="salvar" onclick="salvarRegistro('registros')">Salvar</button>
+        <button class="editar" onclick="editarRegistro('registros')">Editar</button>
+        <button class="txt" onclick="exportarTXT('registros')">Emitir TXT</button>
+        <button class="excel" onclick="exportarExcel('registros')">Emitir Excel</button>
+      </div>
+    </div>
+    
+    <div id="form-frota-biz" class="footer-form">
+      <div class="formulario-campos">
+        <input type="date" id="data_frota" />
+        <input type="text" id="nome_frota" placeholder="Nome" />
+        <input type="text" id="frota_frota" placeholder="Frota" />
+        <input type="time" id="entrada_frota" />
+        <input type="time" id="saida_frota" />
+        <input type="text" id="obs_frota" placeholder="Observação" />
+      </div>
+      <div class="formulario-botoes">
+        <button class="salvar" onclick="salvarRegistro('frota-biz')">Salvar</button>
+        <button class="editar" onclick="editarRegistro('frota-biz')">Editar</button>
+        <button class="txt" onclick="exportarTXT('frota-biz')">Emitir TXT</button>
+        <button class="excel" onclick="exportarExcel('frota-biz')">Emitir Excel</button>
+      </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        // --- LOCAL STORAGE KEYS ---
-        const STORAGE_KEY_COLABORADOR = 'biz_colaborador_data';
-        const STORAGE_KEY_FROTAS = 'biz_frotas_data';
-        const STORAGE_KEY_DESCARGA = 'biz_descarga_data';
-        const STORAGE_KEY_CARGAS = 'biz_cargas_data';
-        const STORAGE_KEY_PRESTADORES = 'biz_prestadores_data';
+    <div id="form-descarga-biz" class="footer-form">
+      <div class="formulario-campos">
+        <input type="date" id="data_descarga" />
+        <input type="time" id="horario_descarga" />
+        <input type="text" id="nome_descarga" placeholder="Nome" />
+        <input type="text" id="doc_descarga" placeholder="Documento" />
+        <input type="text" id="contato_descarga" placeholder="Contato" />
+        <input type="text" id="placa_cv_descarga" placeholder="Placa CV" />
+        <input type="text" id="placa_rb_descarga" placeholder="Placa RB" />
+        <input type="text" id="transportadora_descarga" placeholder="Transp." />
+        <input type="text" id="fornecedor_descarga" placeholder="Fornec." />
+        <input type="text" id="sh_nf_descarga" placeholder="SH/NF" />
+        <input type="text" id="quantidades_descarga" placeholder="Quant." />
+        <input type="text" id="obs_descarga" placeholder="Observação" />
+      </div>
+      <div class="formulario-botoes">
+        <button class="salvar" onclick="salvarRegistro('descarga-biz')">Salvar</button>
+        <button class="editar" onclick="editarRegistro('descarga-biz')">Editar</button>
+        <button class="txt" onclick="exportarTXT('descarga-biz')">Emitir TXT</button>
+        <button class="excel" onclick="exportarExcel('descarga-biz')">Emitir Excel</button>
+      </div>
+    </div>
 
-        // --- DATA ARRAYS ---
-        let registrosColaborador = JSON.parse(localStorage.getItem(STORAGE_KEY_COLABORADOR)) || [];
-        let registrosFrotas = JSON.parse(localStorage.getItem(STORAGE_KEY_FROTAS)) || [];
-        let registrosDescarga = JSON.parse(localStorage.getItem(STORAGE_KEY_DESCARGA)) || [];
-        let registrosCargas = JSON.parse(localStorage.getItem(STORAGE_KEY_CARGAS)) || [];
-        let registrosPrestadores = JSON.parse(localStorage.getItem(STORAGE_KEY_PRESTADORES)) || [];
+    <div id="form-carga-biz" class="footer-form">
+      <div class="formulario-campos">
+        <input type="date" id="data_carga" />
+        <input type="text" id="nome_carga" placeholder="Nome" />
+        <input type="text" id="placa_carga" placeholder="Placa" />
+        <input type="text" id="cpf_carga" placeholder="CPF" />
+        <input type="text" id="tel_carga" placeholder="Tel" />
+        <input type="text" id="cliente_carga" placeholder="Cliente" />
+        <input type="time" id="hora_carga" />
+        <input type="text" id="produto_carga" placeholder="Produto" />
+        <input type="text" id="n_ordem_carga" placeholder="Nº Ordem" />
+        <input type="text" id="obs_carga" placeholder="Obs." />
+      </div>
+      <div class="formulario-botoes">
+        <button class="salvar" onclick="salvarRegistro('carga-biz')">Salvar</button>
+        <button class="editar" onclick="editarRegistro('carga-biz')">Editar</button>
+        <button class="txt" onclick="exportarTXT('carga-biz')">Emitir TXT</button>
+        <button class="excel" onclick="exportarExcel('carga-biz')">Emitir Excel</button>
+      </div>
+    </div>
 
-        // --- SELECTED INDEX FOR EACH TAB ---
-        let registroSelecionadoIndex = {
-            colaborador: null,
-            frotas: null,
-            descarga: null,
-            cargas: null,
-            prestadores: null
+    <div id="form-prest-servicos-biz" class="footer-form">
+      <div class="formulario-campos">
+        <input type="date" id="data_prest" />
+        <input type="time" id="hora_prest" />
+        <input type="text" id="nome_prest" placeholder="Nome" />
+        <input type="text" id="placa_prest" placeholder="Placa" />
+        <input type="text" id="cpf_prest" placeholder="CPF" />
+        <input type="text" id="tel_prest" placeholder="Tel" />
+        <input type="text" id="autorizado_prest" placeholder="Autorizado por" />
+        <input type="text" id="obs_prest" placeholder="Obs." />
+      </div>
+      <div class="formulario-botoes">
+        <button class="salvar" onclick="salvarRegistro('prest-servicos-biz')">Salvar</button>
+        <button class="editar" onclick="editarRegistro('prest-servicos-biz')">Editar</button>
+        <button class="txt" onclick="exportarTXT('prest-servicos-biz')">Emitir TXT</button>
+        <button class="excel" onclick="exportarExcel('prest-servicos-biz')">Emitir Excel</button>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    const STORAGE_KEYS = {
+      'registros': 'registro_funcionarios_skairipa',
+      'frota-biz': 'frota_biz',
+      'descarga-biz': 'descarga_biz',
+      'carga-biz': 'carga_biz',
+      'prest-servicos-biz': 'prest_servicos_biz'
+    };
+
+    let editIndexes = {};
+
+    function openTab(tabName) {
+      const tabContents = document.querySelectorAll('.tab-content');
+      tabContents.forEach(tab => tab.style.display = 'none');
+      document.getElementById(tabName).style.display = 'block';
+
+      const footerForms = document.querySelectorAll('.footer-form');
+      footerForms.forEach(form => form.classList.remove('active'));
+      document.getElementById(`form-${tabName}`).classList.add('active');
+
+      const tabButtons = document.querySelectorAll('.tab-button');
+      tabButtons.forEach(button => button.classList.remove('active'));
+      event.currentTarget.classList.add('active');
+
+      carregarRegistros(tabName);
+    }
+
+    function salvarRegistro(tabName) {
+      const storageKey = STORAGE_KEYS[tabName];
+      let registro = {};
+
+      if (tabName === 'registros') {
+        registro = {
+          nome: document.getElementById('nome_registros').value,
+          placa: document.getElementById('placa_registros').value,
+          entrada: document.getElementById('entrada_registros').value,
+          saida: document.getElementById('saida_registros').value,
+          obs: document.getElementById('obs_registros').value,
         };
-
-        let activeTab = 'colaborador'; // Keep track of the active tab
-
-        // Helper functions (remain mostly the same)
-        function formatarDataParaExibicao(timestamp) {
-            if (!timestamp) return '';
-            const date = new Date(timestamp);
-            const dia = String(date.getDate()).padStart(2, '0');
-            const mes = String(date.getMonth() + 1).padStart(2, '0');
-            const ano = date.getFullYear();
-            return `${dia}/${mes}/${ano}`;
-        }
-
-        function formatarDataParaInput(dateObject) {
-            if (!dateObject) return '';
-            const ano = dateObject.getFullYear();
-            const mes = String(dateObject.getMonth() + 1).padStart(2, '0');
-            const dia = String(dateObject.getDate()).padStart(2, '0');
-            return `${ano}-${mes}-${dia}`;
-        }
-
-        function criarOrdemTimestamp(dataString, horaString) {
-            if (!dataString) return null; // Data é essencial, hora não
-            const [ano, mes, dia] = dataString.split('-').map(Number);
-            let horas = 0;
-            let minutos = 0;
-            if (horaString) {
-                [horas, minutos] = horaString.split(':').map(Number);
-            }
-            const date = new Date(Date.UTC(ano, mes - 1, dia, horas, minutos, 0, 0));
-            return date.getTime();
-        }
-
-        // --- Tab Management ---
-        function changeTab(tabName) {
-            activeTab = tabName;
-            // Hide all input rows initially
-            document.getElementById('inputRowColaborador').style.display = 'none';
-            document.getElementById('inputRowFrotas').style.display = 'none';
-            document.getElementById('inputRowDescarga').style.display = 'none';
-            document.getElementById('inputRowCargas').style.display = 'none';
-            document.getElementById('inputRowPrestadores').style.display = 'none';
-
-
-            // Show the appropriate input row for the active tab
-            document.getElementById(`inputRow${tabName.charAt(0).toUpperCase() + tabName.slice(1)}`).style.display = 'flex';
-
-            // Clear selected index for all tabs when switching
-            for (const key in registroSelecionadoIndex) {
-                registroSelecionadoIndex[key] = null;
-            }
-
-            // Set today's date for the data input of the newly active tab
-            const today = new Date();
-            if (document.getElementById(`dataInput${tabName.charAt(0).toUpperCase() + tabName.slice(1)}`)) {
-                   document.getElementById(`dataInput${tabName.charAt(0).toUpperCase() + tabName.slice(1)}`).value = formatarDataParaInput(today);
-            }
-
-
-            atualizarTerminal(activeTab); // Update the display for the new active tab
-            limparCampos(activeTab, false); // Clear input fields for the new active tab
-        }
-
-        // --- Auto-completion Functions (adapted for each tab) ---
-        function autocompletarCamposColaborador(placaDigitada) {
-            const nomesInput = document.getElementById('nomesInputColaborador');
-            if (placaDigitada.length < 3) { if (placaDigitada === '') { nomesInput.value = ''; } return; }
-            const match = registrosColaborador.find(r => r.placa.toLowerCase().includes(placaDigitada.toLowerCase()));
-            if (match) { nomesInput.value = match.nomes; }
-            else { nomesInput.value = ''; }
-        }
-
-        function autocompletarCamposFrotas(frotasDigitada) {
-            const nomesInput = document.getElementById('nomesInputFrotas');
-            if (frotasDigitada.length < 3) { if (frotasDigitada === '') { nomesInput.value = ''; } return; }
-            const match = registrosFrotas.find(r => r.frotas.toLowerCase().includes(frotasDigitada.toLowerCase()));
-            if (match) { nomesInput.value = match.nomes; }
-            else { nomesInput.value = ''; }
-        }
-
-        function autocompletarCamposDescarga(cpfDigitado) {
-            const nomeInput = document.getElementById('nomeInputDescarga');
-            const telefoneInput = document.getElementById('telefoneInputDescarga');
-            const transportadoraInput = document.getElementById('transportadoraInputDescarga');
-            const fornecedorInput = document.getElementById('fornecedorInputDescarga');
-
-            if (cpfDigitado.length < 3) {
-                if (cpfDigitado === '') {
-                    nomeInput.value = '';
-                    telefoneInput.value = '';
-                    transportadoraInput.value = '';
-                    fornecedorInput.value = '';
-                }
-                return;
-            }
-
-            const match = registrosDescarga.find(r => r.cpf.includes(cpfDigitado));
-            if (match) {
-                nomeInput.value = match.nome;
-                telefoneInput.value = match.telefone;
-                transportadoraInput.value = match.transportadora;
-                fornecedorInput.value = match.fornecedor;
-            } else {
-                nomeInput.value = '';
-                telefoneInput.value = '';
-                transportadoraInput.value = '';
-                fornecedorInput.value = '';
-            }
-        }
-
-        function autocompletarCamposCargas(cpfDigitado) {
-            const motoristaInput = document.getElementById('motoristaInputCargas');
-            const telefoneInput = document.getElementById('telefoneInputCargas');
-            const clienteInput = document.getElementById('clienteInputCargas');
-            const placasInput = document.getElementById('placasInputCargas');
-            const autorizacaoInput = document.getElementById('autorizacaoInputCargas');
-
-            if (cpfDigitado.length < 3) {
-                if (cpfDigitado === '') {
-                    motoristaInput.value = '';
-                    telefoneInput.value = '';
-                    clienteInput.value = '';
-                    placasInput.value = '';
-                    autorizacaoInput.value = '';
-                }
-                return;
-            }
-
-            const match = registrosCargas.find(r => r.cpf.includes(cpfDigitado));
-            if (match) {
-                motoristaInput.value = match.motorista;
-                telefoneInput.value = match.telefone;
-                clienteInput.value = match.cliente;
-                placasInput.value = match.placas;
-                autorizacaoInput.value = match.autorizacao;
-            } else {
-                motoristaInput.value = '';
-                telefoneInput.value = '';
-                clienteInput.value = '';
-                placasInput.value = '';
-                autorizacaoInput.value = '';
-            }
-        }
-
-        function autocompletarCamposPrestadores(cpfPlacaDigitado) {
-            const nomeInput = document.getElementById('nomeInputPrestadores');
-            const empresaInput = document.getElementById('empresaInputPrestadores');
-            const autorizacaoInput = document.getElementById('autorizacaoInputPrestadores');
-
-            if (cpfPlacaDigitado.length < 3) {
-                if (cpfPlacaDigitado === '') {
-                    nomeInput.value = '';
-                    empresaInput.value = '';
-                    autorizacaoInput.value = '';
-                }
-                return;
-            }
-
-            const match = registrosPrestadores.find(r => r.cpfPlaca.toLowerCase().includes(cpfPlacaDigitado.toLowerCase()));
-            if (match) {
-                nomeInput.value = match.nome;
-                empresaInput.value = match.empresa;
-                autorizacaoInput.value = match.autorizacao;
-            } else {
-                nomeInput.value = '';
-                empresaInput.value = '';
-                autorizacaoInput.value = '';
-            }
-        }
-
-        // --- Salvar Registro Function (updated to handle non-mandatory time fields) ---
-        function salvarRegistro(tab) {
-            const today = new Date();
-            let dataCompleta;
-            let registro;
-
-            switch (tab) {
-                case 'colaborador':
-                    const dataColaborador = document.getElementById('dataInputColaborador').value;
-                    const horaEntradaColaborador = document.getElementById('horaEntradaInputColaborador').value;
-                    const horaSaidaColaborador = document.getElementById('horaSaidaInputColaborador').value;
-                    const placaColaborador = document.getElementById('placaInputColaborador').value.toUpperCase();
-                    const nomesColaborador = document.getElementById('nomesInputColaborador').value;
-                    const crachaColaborador = document.getElementById('crachaInputColaborador').value;
-                    const observacoesColaborador = document.getElementById('observacoesInputColaborador').value;
-
-                    if (!dataColaborador || !placaColaborador || !nomesColaborador) {
-                        alert('Por favor, preencha Data, Placa e Nomes para Colaborador.');
-                        return;
-                    }
-                    dataCompleta = criarOrdemTimestamp(dataColaborador, horaEntradaColaborador || horaSaidaColaborador || '00:00'); // Use any available time or default
-                    registro = {
-                        data: dataCompleta,
-                        horaEntrada: horaEntradaColaborador,
-                        horaSaida: horaSaidaColaborador,
-                        placa: placaColaborador,
-                        nomes: nomesColaborador,
-                        cracha: crachaColaborador,
-                        observacoes: observacoesColaborador,
-                    };
-                    break;
-
-                case 'frotas':
-                    const dataFrotas = document.getElementById('dataInputFrotas').value;
-                    const horaEntradaFrotas = document.getElementById('horaEntradaInputFrotas').value;
-                    const horaSaidaFrotas = document.getElementById('horaSaidaInputFrotas').value;
-                    const frotasFrotas = document.getElementById('frotasInputFrotas').value.toUpperCase();
-                    const nomesFrotas = document.getElementById('nomesInputFrotas').value;
-                    const observacoesFrotas = document.getElementById('observacoesInputFrotas').value;
-
-                    if (!dataFrotas || !frotasFrotas || !nomesFrotas) {
-                        alert('Por favor, preencha Data, Frota e Nomes para Frotas Biz.');
-                        return;
-                    }
-                    dataCompleta = criarOrdemTimestamp(dataFrotas, horaEntradaFrotas || horaSaidaFrotas || '00:00');
-                    registro = {
-                        data: dataCompleta,
-                        horaEntrada: horaEntradaFrotas,
-                        horaSaida: horaSaidaFrotas,
-                        frotas: frotasFrotas,
-                        nomes: nomesFrotas,
-                        observacoes: observacoesFrotas,
-                    };
-                    break;
-
-                case 'descarga':
-                    const dataDescarga = document.getElementById('dataInputDescarga').value;
-                    const horarioDescarga = document.getElementById('horarioInputDescarga').value;
-                    const nomeDescarga = document.getElementById('nomeInputDescarga').value;
-                    const cpfDescarga = document.getElementById('cpfInputDescarga').value;
-                    const telefoneDescarga = document.getElementById('telefoneInputDescarga').value;
-                    const placaCvDescarga = document.getElementById('placaCvInputDescarga').value.toUpperCase();
-                    const placaRbDescarga = document.getElementById('placaRbInputDescarga').value.toUpperCase();
-                    const transportadoraDescarga = document.getElementById('transportadoraInputDescarga').value;
-                    const fornecedorDescarga = document.getElementById('fornecedorInputDescarga').value;
-                    const notaShipmentDescarga = document.getElementById('notaShipmentInputDescarga').value;
-                    const quantidadesDescarga = document.getElementById('quantidadesInputDescarga').value;
-                    const observacaoDescarga = document.getElementById('observacaoInputDescarga').value;
-
-                    if (!dataDescarga || !horarioDescarga || !nomeDescarga || (!cpfDescarga && !placaCvDescarga && !placaRbDescarga)) {
-                        alert('Por favor, preencha Data, Horário, Nome e ao menos um campo de identificação (CPF, Placa CV ou Placa RB) para Descarga Biz.');
-                        return;
-                    }
-                    dataCompleta = criarOrdemTimestamp(dataDescarga, horarioDescarga);
-                    registro = {
-                        data: dataCompleta,
-                        horario: horarioDescarga,
-                        nome: nomeDescarga,
-                        cpf: cpfDescarga,
-                        telefone: telefoneDescarga,
-                        placaCv: placaCvDescarga,
-                        placaRb: placaRbDescarga,
-                        transportadora: transportadoraDescarga,
-                        fornecedor: fornecedorDescarga,
-                        notaShipment: notaShipmentDescarga,
-                        quantidades: quantidadesDescarga,
-                        observacao: observacaoDescarga,
-                    };
-                    break;
-
-                case 'cargas':
-                    const dataCargas = document.getElementById('dataInputCargas').value;
-                    const hEntradaCargas = document.getElementById('hEntradaInputCargas').value;
-                    const motoristaCargas = document.getElementById('motoristaInputCargas').value;
-                    const cpfCargas = document.getElementById('cpfInputCargas').value;
-                    const telefoneCargas = document.getElementById('telefoneInputCargas').value;
-                    const clienteCargas = document.getElementById('clienteInputCargas').value;
-                    const placasCargas = document.getElementById('placasInputCargas').value.toUpperCase();
-                    const autorizacaoCargas = document.getElementById('autorizacaoInputCargas').value;
-                    const observacoesCargas = document.getElementById('observacoesInputCargas').value;
-
-                    if (!dataCargas || !hEntradaCargas || !motoristaCargas || !cpfCargas) {
-                        alert('Por favor, preencha Data, H. Entrada, Motorista e CPF para Cargas Biz.');
-                        return;
-                    }
-                    dataCompleta = criarOrdemTimestamp(dataCargas, hEntradaCargas);
-                    registro = {
-                        data: dataCompleta,
-                        hEntrada: hEntradaCargas,
-                        motorista: motoristaCargas,
-                        cpf: cpfCargas,
-                        telefone: telefoneCargas,
-                        cliente: clienteCargas,
-                        placas: placasCargas,
-                        autorizacao: autorizacaoCargas,
-                        observacoes: observacoesCargas,
-                    };
-                    break;
-
-                case 'prestadores':
-                    const dataPrestadores = document.getElementById('dataInputPrestadores').value;
-                    const horaPrestadores = document.getElementById('horaInputPrestadores').value;
-                    const nomePrestadores = document.getElementById('nomeInputPrestadores').value;
-                    const cpfPlacaPrestadores = document.getElementById('cpfPlacaInputPrestadores').value.toUpperCase();
-                    const empresaPrestadores = document.getElementById('empresaInputPrestadores').value;
-                    const autorizacaoPrestadores = document.getElementById('autorizacaoInputPrestadores').value;
-                    const observacoesPrestadores = document.getElementById('observacoesInputPrestadores').value;
-
-                    if (!dataPrestadores || !horaPrestadores || !nomePrestadores || !cpfPlacaPrestadores) {
-                        alert('Por favor, preencha Data, Hora, Nome e CPF/Placa para Prestadores de Serviços.');
-                        return;
-                    }
-                    dataCompleta = criarOrdemTimestamp(dataPrestadores, horaPrestadores);
-                    registro = {
-                        data: dataCompleta,
-                        hora: horaPrestadores,
-                        nome: nomePrestadores,
-                        cpfPlaca: cpfPlacaPrestadores,
-                        empresa: empresaPrestadores,
-                        autorizacao: autorizacaoPrestadores,
-                        observacoes: observacoesPrestadores,
-                    };
-                    break;
-
-                default:
-                    console.error('Tipo de tab desconhecido:', tab);
-                    return;
-            }
-
-            let registrosArray;
-            let storageKey;
-
-            switch (tab) {
-                case 'colaborador':
-                    registrosArray = registrosColaborador;
-                    storageKey = STORAGE_KEY_COLABORADOR;
-                    break;
-                case 'frotas':
-                    registrosArray = registrosFrotas;
-                    storageKey = STORAGE_KEY_FROTAS;
-                    break;
-                case 'descarga':
-                    registrosArray = registrosDescarga;
-                    storageKey = STORAGE_KEY_DESCARGA;
-                    break;
-                case 'cargas':
-                    registrosArray = registrosCargas;
-                    storageKey = STORAGE_KEY_CARGAS;
-                    break;
-                case 'prestadores':
-                    registrosArray = registrosPrestadores;
-                    storageKey = STORAGE_KEY_PRESTADORES;
-                    break;
-            }
-
-            if (registroSelecionadoIndex[tab] !== null) {
-                registrosArray[registroSelecionadoIndex[tab]] = registro; // Update existing
-                registroSelecionadoIndex[tab] = null; // Clear selection
-            } else {
-                registrosArray.push(registro); // Add new
-            }
-
-            localStorage.setItem(storageKey, JSON.stringify(registrosArray));
-            atualizarTerminal(tab);
-            limparCampos(tab);
-        }
-
-        // --- Editar Registro Function ---
-        function editarRegistro(tab, index) {
-            let registrosArray;
-            switch (tab) {
-                case 'colaborador':
-                    registrosArray = registrosColaborador;
-                    break;
-                case 'frotas':
-                    registrosArray = registrosFrotas;
-                    break;
-                case 'descarga':
-                    registrosArray = registrosDescarga;
-                    break;
-                case 'cargas':
-                    registrosArray = registrosCargas;
-                    break;
-                case 'prestadores':
-                    registrosArray = registrosPrestadores;
-                    break;
-            }
-
-            const registro = registrosArray[index];
-            if (!registro) return;
-
-            registroSelecionadoIndex[tab] = index; // Set selected index
-
-            // Highlight the row
-            const tableBody = document.getElementById(`corpo-registros-${tab}`);
-            Array.from(tableBody.children).forEach((row, i) => {
-                if (i === index) {
-                    row.classList.add('linha-selecionada');
-                } else {
-                    row.classList.remove('linha-selecionada');
-                }
-            });
-
-            // Populate input fields
-            const dataInput = document.getElementById(`dataInput${tab.charAt(0).toUpperCase() + tab.slice(1)}`);
-            if (dataInput) dataInput.value = formatarDataParaInput(new Date(registro.data));
-
-            switch (tab) {
-                case 'colaborador':
-                    document.getElementById('horaEntradaInputColaborador').value = registro.horaEntrada;
-                    document.getElementById('horaSaidaInputColaborador').value = registro.horaSaida;
-                    document.getElementById('placaInputColaborador').value = registro.placa;
-                    document.getElementById('nomesInputColaborador').value = registro.nomes;
-                    document.getElementById('crachaInputColaborador').value = registro.cracha;
-                    document.getElementById('observacoesInputColaborador').value = registro.observacoes;
-                    break;
-                case 'frotas':
-                    document.getElementById('horaEntradaInputFrotas').value = registro.horaEntrada;
-                    document.getElementById('horaSaidaInputFrotas').value = registro.horaSaida;
-                    document.getElementById('frotasInputFrotas').value = registro.frotas;
-                    document.getElementById('nomesInputFrotas').value = registro.nomes;
-                    document.getElementById('observacoesInputFrotas').value = registro.observacoes;
-                    break;
-                case 'descarga':
-                    document.getElementById('horarioInputDescarga').value = registro.horario;
-                    document.getElementById('nomeInputDescarga').value = registro.nome;
-                    document.getElementById('cpfInputDescarga').value = registro.cpf;
-                    document.getElementById('telefoneInputDescarga').value = registro.telefone;
-                    document.getElementById('placaCvInputDescarga').value = registro.placaCv;
-                    document.getElementById('placaRbInputDescarga').value = registro.placaRb;
-                    document.getElementById('transportadoraInputDescarga').value = registro.transportadora;
-                    document.getElementById('fornecedorInputDescarga').value = registro.fornecedor;
-                    document.getElementById('notaShipmentInputDescarga').value = registro.notaShipment;
-                    document.getElementById('quantidadesInputDescarga').value = registro.quantidades;
-                    document.getElementById('observacaoInputDescarga').value = registro.observacao;
-                    break;
-                case 'cargas':
-                    document.getElementById('hEntradaInputCargas').value = registro.hEntrada;
-                    document.getElementById('motoristaInputCargas').value = registro.motorista;
-                    document.getElementById('cpfInputCargas').value = registro.cpf;
-                    document.getElementById('telefoneInputCargas').value = registro.telefone;
-                    document.getElementById('clienteInputCargas').value = registro.cliente;
-                    document.getElementById('placasInputCargas').value = registro.placas;
-                    document.getElementById('autorizacaoInputCargas').value = registro.autorizacao;
-                    document.getElementById('observacoesInputCargas').value = registro.observacoes;
-                    break;
-                case 'prestadores':
-                    document.getElementById('horaInputPrestadores').value = registro.hora;
-                    document.getElementById('nomeInputPrestadores').value = registro.nome;
-                    document.getElementById('cpfPlacaInputPrestadores').value = registro.cpfPlaca;
-                    document.getElementById('empresaInputPrestadores').value = registro.empresa;
-                    document.getElementById('autorizacaoInputPrestadores').value = registro.autorizacao;
-                    document.getElementById('observacoesInputPrestadores').value = registro.observacoes;
-                    break;
-            }
-        }
-
-        // --- Limpar Campos Function ---
-        function limparCampos(tab, shouldClearSelection = true) {
-            // Unhighlight any selected row
-            const tableBody = document.getElementById(`corpo-registros-${tab}`);
-            if (tableBody) {
-                Array.from(tableBody.children).forEach(row => {
-                    row.classList.remove('linha-selecionada');
-                });
-            }
-
-            if (shouldClearSelection) {
-                registroSelecionadoIndex[tab] = null;
-            }
-
-            const today = new Date();
-            const formattedToday = formatarDataParaInput(today);
-
-            switch (tab) {
-                case 'colaborador':
-                    document.getElementById('dataInputColaborador').value = formattedToday;
-                    document.getElementById('horaEntradaInputColaborador').value = '';
-                    document.getElementById('horaSaidaInputColaborador').value = '';
-                    document.getElementById('placaInputColaborador').value = '';
-                    document.getElementById('nomesInputColaborador').value = '';
-                    document.getElementById('crachaInputColaborador').value = '';
-                    document.getElementById('observacoesInputColaborador').value = '';
-                    break;
-                case 'frotas':
-                    document.getElementById('dataInputFrotas').value = formattedToday;
-                    document.getElementById('horaEntradaInputFrotas').value = '';
-                    document.getElementById('horaSaidaInputFrotas').value = '';
-                    document.getElementById('frotasInputFrotas').value = '';
-                    document.getElementById('nomesInputFrotas').value = '';
-                    document.getElementById('observacoesInputFrotas').value = '';
-                    break;
-                case 'descarga':
-                    document.getElementById('dataInputDescarga').value = formattedToday;
-                    document.getElementById('horarioInputDescarga').value = '';
-                    document.getElementById('nomeInputDescarga').value = '';
-                    document.getElementById('cpfInputDescarga').value = '';
-                    document.getElementById('telefoneInputDescarga').value = '';
-                    document.getElementById('placaCvInputDescarga').value = '';
-                    document.getElementById('placaRbInputDescarga').value = '';
-                    document.getElementById('transportadoraInputDescarga').value = '';
-                    document.getElementById('fornecedorInputDescarga').value = '';
-                    document.getElementById('notaShipmentInputDescarga').value = '';
-                    document.getElementById('quantidadesInputDescarga').value = '';
-                    document.getElementById('observacaoInputDescarga').value = '';
-                    break;
-                case 'cargas':
-                    document.getElementById('dataInputCargas').value = formattedToday;
-                    document.getElementById('hEntradaInputCargas').value = '';
-                    document.getElementById('motoristaInputCargas').value = '';
-                    document.getElementById('cpfInputCargas').value = '';
-                    document.getElementById('telefoneInputCargas').value = '';
-                    document.getElementById('clienteInputCargas').value = '';
-                    document.getElementById('placasInputCargas').value = '';
-                    document.getElementById('autorizacaoInputCargas').value = '';
-                    document.getElementById('observacoesInputCargas').value = '';
-                    break;
-                case 'prestadores':
-                    document.getElementById('dataInputPrestadores').value = formattedToday;
-                    document.getElementById('horaInputPrestadores').value = '';
-                    document.getElementById('nomeInputPrestadores').value = '';
-                    document.getElementById('cpfPlacaInputPrestadores').value = '';
-                    document.getElementById('empresaInputPrestadores').value = '';
-                    document.getElementById('autorizacaoInputPrestadores').value = '';
-                    document.getElementById('observacoesInputPrestadores').value = '';
-                    break;
-            }
-        }
-
-        // --- Excluir Selecionados Function ---
-        function excluirSelecionados(tab) {
-            let registrosArray;
-            let storageKey;
-            let tableBodyId;
-            let selecionarTodosCheckboxId;
-
-            switch (tab) {
-                case 'colaborador':
-                    registrosArray = registrosColaborador;
-                    storageKey = STORAGE_KEY_COLABORADOR;
-                    tableBodyId = 'corpo-registros-colaborador';
-                    selecionarTodosCheckboxId = 'selecionarTodosColaborador';
-                    break;
-                case 'frotas':
-                    registrosArray = registrosFrotas;
-                    storageKey = STORAGE_KEY_FROTAS;
-                    tableBodyId = 'corpo-registros-frotas';
-                    selecionarTodosCheckboxId = 'selecionarTodosFrotas';
-                    break;
-                case 'descarga':
-                    registrosArray = registrosDescarga;
-                    storageKey = STORAGE_KEY_DESCARGA;
-                    tableBodyId = 'corpo-registros-descarga';
-                    selecionarTodosCheckboxId = 'selecionarTodosDescarga';
-                    break;
-                case 'cargas':
-                    registrosArray = registrosCargas;
-                    storageKey = STORAGE_KEY_CARGAS;
-                    tableBodyId = 'corpo-registros-cargas';
-                    selecionarTodosCheckboxId = 'selecionarTodosCargas';
-                    break;
-                case 'prestadores':
-                    registrosArray = registrosPrestadores;
-                    storageKey = STORAGE_KEY_PRESTADORES;
-                    tableBodyId = 'corpo-registros-prestadores';
-                    selecionarTodosCheckboxId = 'selecionarTodosPrestadores';
-                    break;
-                default:
-                    console.error('Tipo de tab desconhecido:', tab);
-                    return;
-            }
-
-            const checkboxes = document.querySelectorAll(`#${tableBodyId} input[type="checkbox"]:checked`);
-            if (checkboxes.length === 0) {
-                alert('Nenhum registro selecionado para exclusão.');
-                return;
-            }
-
-            if (!confirm(`Tem certeza que deseja excluir ${checkboxes.length} registro(s) selecionado(s)?`)) {
-                return;
-            }
-
-            const indicesParaExcluir = Array.from(checkboxes).map(cb => parseInt(cb.dataset.index)).sort((a, b) => b - a);
-
-            indicesParaExcluir.forEach(index => {
-                registrosArray.splice(index, 1);
-            });
-
-            localStorage.setItem(storageKey, JSON.stringify(registrosArray));
-            atualizarTerminal(tab);
-            limparCampos(tab);
-            document.getElementById(selecionarTodosCheckboxId).checked = false; // Uncheck "select all"
-        }
-
-        // --- Toggle Selecionar Todos Checkbox ---
-        function toggleSelecionarTodos(source, tab) {
-            const checkboxes = document.querySelectorAll(`#corpo-registros-${tab} input[type="checkbox"]`);
-            checkboxes.forEach(checkbox => {
-                checkbox.checked = source.checked;
-            });
-        }
-
-        // --- Atualizar Terminal (Display Table) Functions ---
-        function atualizarTerminal(tab) {
-            let registrosArray;
-            let corpoRegistros;
-            let pesquisaInput;
-            let headers;
-
-            switch (tab) {
-                case 'colaborador':
-                    registrosArray = registrosColaborador;
-                    corpoRegistros = document.getElementById('corpo-registros-colaborador');
-                    pesquisaInput = document.getElementById('pesquisaColaborador');
-                    headers = ["#", "Data", "H. Entrada", "H. Saída", "Placa", "Nomes", "Crachá", "Observações"];
-                    break;
-                case 'frotas':
-                    registrosArray = registrosFrotas;
-                    corpoRegistros = document.getElementById('corpo-registros-frotas');
-                    pesquisaInput = document.getElementById('pesquisaFrotas');
-                    headers = ["#", "Data", "H. Entrada", "H. Saída", "Frotas", "Nomes", "Observações"];
-                    break;
-                case 'descarga':
-                    registrosArray = registrosDescarga;
-                    corpoRegistros = document.getElementById('corpo-registros-descarga');
-                    pesquisaInput = document.getElementById('pesquisaDescarga');
-                    headers = ["#", "Data", "Horário", "Nome", "CPF", "Telefone", "Placa CV", "Placa RB", "Transportadora", "Fornecedor", "Nota/Shipment", "Quantidades", "Observação"];
-                    break;
-                case 'cargas':
-                    registrosArray = registrosCargas;
-                    corpoRegistros = document.getElementById('corpo-registros-cargas');
-                    pesquisaInput = document.getElementById('pesquisaCargas');
-                    headers = ["#", "Data", "H. Entrada", "Motorista", "CPF", "Telefone", "Cliente", "Placas", "Autorização", "Observações"];
-                    break;
-                case 'prestadores':
-                    registrosArray = registrosPrestadores;
-                    corpoRegistros = document.getElementById('corpo-registros-prestadores');
-                    pesquisaInput = document.getElementById('pesquisaPrestadores');
-                    headers = ["#", "Data", "Hora", "Nome", "CPF/Placa", "Empresa", "Autorização", "Observações"];
-                    break;
-                default:
-                    console.error('Tipo de tab desconhecido:', tab);
-                    return;
-            }
-
-            corpoRegistros.innerHTML = ''; // Clear previous entries
-
-            const termoPesquisa = pesquisaInput.value.toLowerCase();
-            const registrosFiltrados = registrosArray.filter(registro => {
-                const searchString = Object.values(registro).join(' ').toLowerCase();
-                return searchString.includes(termoPesquisa);
-            });
-
-            // Sort by timestamp in descending order (most recent first)
-            registrosFiltrados.sort((a, b) => b.data - a.data);
-
-            registrosFiltrados.forEach((registro, originalIndex) => {
-                const row = corpoRegistros.insertRow();
-                row.onclick = () => editarRegistro(tab, registrosArray.indexOf(registro)); // Use original index for editing
-
-                const checkboxCell = row.insertCell();
-                const checkbox = document.createElement('input');
-                checkbox.type = 'checkbox';
-                checkbox.dataset.index = registrosArray.indexOf(registro); // Store the original index
-                checkboxCell.appendChild(checkbox);
-
-                row.insertCell().textContent = registrosArray.indexOf(registro) + 1; // Display 1-based index
-                row.insertCell().textContent = formatarDataParaExibicao(registro.data);
-
-                switch (tab) {
-                    case 'colaborador':
-                        row.insertCell().textContent = registro.horaEntrada;
-                        row.insertCell().textContent = registro.horaSaida;
-                        row.insertCell().textContent = registro.placa;
-                        row.insertCell().textContent = registro.nomes;
-                        row.insertCell().textContent = registro.cracha;
-                        row.insertCell().textContent = registro.observacoes;
-                        break;
-                    case 'frotas':
-                        row.insertCell().textContent = registro.horaEntrada;
-                        row.insertCell().textContent = registro.horaSaida;
-                        row.insertCell().textContent = registro.frotas;
-                        row.insertCell().textContent = registro.nomes;
-                        row.insertCell().textContent = registro.observacoes;
-                        break;
-                    case 'descarga':
-                        row.insertCell().textContent = registro.horario;
-                        row.insertCell().textContent = registro.nome;
-                        row.insertCell().textContent = registro.cpf;
-                        row.insertCell().textContent = registro.telefone;
-                        row.insertCell().textContent = registro.placaCv;
-                        row.insertCell().textContent = registro.placaRb;
-                        row.insertCell().textContent = registro.transportadora;
-                        row.insertCell().textContent = registro.fornecedor;
-                        row.insertCell().textContent = registro.notaShipment;
-                        row.insertCell().textContent = registro.quantidades;
-                        row.insertCell().textContent = registro.observacao;
-                        break;
-                    case 'cargas':
-                        row.insertCell().textContent = registro.hEntrada;
-                        row.insertCell().textContent = registro.motorista;
-                        row.insertCell().textContent = registro.cpf;
-                        row.insertCell().textContent = registro.telefone;
-                        row.insertCell().textContent = registro.cliente;
-                        row.insertCell().textContent = registro.placas;
-                        row.insertCell().textContent = registro.autorizacao;
-                        row.insertCell().textContent = registro.observacoes;
-                        break;
-                    case 'prestadores':
-                        row.insertCell().textContent = registro.hora;
-                        row.insertCell().textContent = registro.nome;
-                        row.insertCell().textContent = registro.cpfPlaca;
-                        row.insertCell().textContent = registro.empresa;
-                        row.insertCell().textContent = registro.autorizacao;
-                        row.insertCell().textContent = registro.observacoes;
-                        break;
-                }
-            });
-        }
-
-        // --- Emitir TXT Function ---
-        function emitirTXT(tab) {
-            let registrosArray;
-            let filename;
-            let headers;
-            let mapFunction;
-
-            switch (tab) {
-                case 'colaborador':
-                    registrosArray = registrosColaborador;
-                    filename = 'registros_colaborador.txt';
-                    headers = ["Data", "H. Entrada", "H. Saída", "Placa", "Nomes", "Crachá", "Observações"];
-                    mapFunction = r => [
-                        formatarDataParaExibicao(r.data),
-                        r.horaEntrada,
-                        r.horaSaida,
-                        r.placa,
-                        r.nomes,
-                        r.cracha,
-                        r.observacoes
-                    ];
-                    break;
-                case 'frotas':
-                    registrosArray = registrosFrotas;
-                    filename = 'registros_frotas.txt';
-                    headers = ["Data", "H. Entrada", "H. Saída", "Frotas", "Nomes", "Observações"];
-                    mapFunction = r => [
-                        formatarDataParaExibicao(r.data),
-                        r.horaEntrada,
-                        r.horaSaida,
-                        r.frotas,
-                        r.nomes,
-                        r.observacoes
-                    ];
-                    break;
-                case 'descarga':
-                    registrosArray = registrosDescarga;
-                    filename = 'registros_descarga.txt';
-                    headers = ["Data", "Horário", "Nome", "CPF", "Telefone", "Placa CV", "Placa RB", "Transportadora", "Fornecedor", "Nota/Shipment", "Quantidades", "Observação"];
-                    mapFunction = r => [
-                        formatarDataParaExibicao(r.data),
-                        r.horario,
-                        r.nome,
-                        r.cpf,
-                        r.telefone,
-                        r.placaCv,
-                        r.placaRb,
-                        r.transportadora,
-                        r.fornecedor,
-                        r.notaShipment,
-                        r.quantidades,
-                        r.observacao
-                    ];
-                    break;
-                case 'cargas':
-                    registrosArray = registrosCargas;
-                    filename = 'registros_cargas.txt';
-                    headers = ["Data", "H. Entrada", "Motorista", "CPF", "Telefone", "Cliente", "Placas", "Autorização", "Observações"];
-                    mapFunction = r => [
-                        formatarDataParaExibicao(r.data),
-                        r.hEntrada,
-                        r.motorista,
-                        r.cpf,
-                        r.telefone,
-                        r.cliente,
-                        r.placas,
-                        r.autorizacao,
-                        r.observacoes
-                    ];
-                    break;
-                case 'prestadores':
-                    registrosArray = registrosPrestadores;
-                    filename = 'registros_prestadores.txt';
-                    headers = ["Data", "Hora", "Nome", "CPF/Placa", "Empresa", "Autorização", "Observações"];
-                    mapFunction = r => [
-                        formatarDataParaExibicao(r.data),
-                        r.hora,
-                        r.nome,
-                        r.cpfPlaca,
-                        r.empresa,
-                        r.autorizacao,
-                        r.observacoes
-                    ];
-                    break;
-                default:
-                    console.error('Tipo de tab desconhecido:', tab);
-                    return;
-            }
-
-            const dataToSave = [headers.join('\t')]; // Header row
-            registrosArray.forEach(record => {
-                dataToSave.push(mapFunction(record).join('\t'));
-            });
-
-            const blob = new Blob([dataToSave.join('\n')], { type: 'text/plain;charset=utf-8' });
-            const link = document.createElement('a');
-            link.href = URL.createObjectURL(blob);
-            link.download = filename;
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
-        }
-
-        // --- Emitir Excel Function ---
-        function emitirExcel(tab) {
-            let registrosArray;
-            let filename;
-            let headers;
-            let mapFunction;
-
-            switch (tab) {
-                case 'colaborador':
-                    registrosArray = registrosColaborador;
-                    filename = 'registros_colaborador.xlsx';
-                    headers = ["Data", "H. Entrada", "H. Saída", "Placa", "Nomes", "Crachá", "Observações"];
-                    mapFunction = r => [
-                        formatarDataParaExibicao(r.data),
-                        r.horaEntrada,
-                        r.horaSaida,
-                        r.placa,
-                        r.nomes,
-                        r.cracha,
-                        r.observacoes
-                    ];
-                    break;
-                case 'frotas':
-                    registrosArray = registrosFrotas;
-                    filename = 'registros_frotas.xlsx';
-                    headers = ["Data", "H. Entrada", "H. Saída", "Frotas", "Nomes", "Observações"];
-                    mapFunction = r => [
-                        formatarDataParaExibicao(r.data),
-                        r.horaEntrada,
-                        r.horaSaida,
-                        r.frotas,
-                        r.nomes,
-                        r.observacoes
-                    ];
-                    break;
-                case 'descarga':
-                    registrosArray = registrosDescarga;
-                    filename = 'registros_descarga.xlsx';
-                    headers = ["Data", "Horário", "Nome", "CPF", "Telefone", "Placa CV", "Placa RB", "Transportadora", "Fornecedor", "Nota/Shipment", "Quantidades", "Observação"];
-                    mapFunction = r => [
-                        formatarDataParaExibicao(r.data),
-                        r.horario,
-                        r.nome,
-                        r.cpf,
-                        r.telefone,
-                        r.placaCv,
-                        r.placaRb,
-                        r.transportadora,
-                        r.fornecedor,
-                        r.notaShipment,
-                        r.quantidades,
-                        r.observacao
-                    ];
-                    break;
-                case 'cargas':
-                    registrosArray = registrosCargas;
-                    filename = 'registros_cargas.xlsx';
-                    headers = ["Data", "H. Entrada", "Motorista", "CPF", "Telefone", "Cliente", "Placas", "Autorização", "Observações"];
-                    mapFunction = r => [
-                        formatarDataParaExibicao(r.data),
-                        r.hEntrada,
-                        r.motorista,
-                        r.cpf,
-                        r.telefone,
-                        r.cliente,
-                        r.placas,
-                        r.autorizacao,
-                        r.observacoes
-                    ];
-                    break;
-                case 'prestadores':
-                    registrosArray = registrosPrestadores;
-                    filename = 'registros_prestadores.xlsx';
-                    headers = ["Data", "Hora", "Nome", "CPF/Placa", "Empresa", "Autorização", "Observações"];
-                    mapFunction = r => [
-                        formatarDataParaExibicao(r.data),
-                        r.hora,
-                        r.nome,
-                        r.cpfPlaca,
-                        r.empresa,
-                        r.autorizacao,
-                        r.observacoes
-                    ];
-                    break;
-                default:
-                    console.error('Tipo de tab desconhecido:', tab);
-                    return;
-            }
-
-            const data = [headers]; // Header row
-            registrosArray.forEach(record => {
-                data.push(mapFunction(record));
-            });
-
-            const ws = XLSX.utils.aoa_to_sheet(data);
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "Registros");
-            XLSX.writeFile(wb, filename);
-        }
-
-        // --- Initial Load ---
-        document.addEventListener('DOMContentLoaded', () => {
-            // Set today's date on initial load for the active tab (Colaborador)
-            const today = new Date();
-            document.getElementById('dataInputColaborador').value = formatarDataParaInput(today);
-            atualizarTerminal('colaborador');
-            // Ensure only the active tab's input row is shown initially
-            document.getElementById('inputRowColaborador').style.display = 'flex';
-            document.getElementById('inputRowFrotas').style.display = 'none';
-            document.getElementById('inputRowDescarga').style.display = 'none';
-            document.getElementById('inputRowCargas').style.display = 'none';
-            document.getElementById('inputRowPrestadores').style.display = 'none';
+      } else if (tabName === 'frota-biz') {
+        registro = {
+          data: document.getElementById('data_frota').value,
+          nome: document.getElementById('nome_frota').value,
+          frota: document.getElementById('frota_frota').value,
+          entrada: document.getElementById('entrada_frota').value,
+          saida: document.getElementById('saida_frota').value,
+          obs: document.getElementById('obs_frota').value,
+        };
+      } else if (tabName === 'descarga-biz') {
+        registro = {
+          data: document.getElementById('data_descarga').value,
+          horario: document.getElementById('horario_descarga').value,
+          nome: document.getElementById('nome_descarga').value,
+          documento: document.getElementById('doc_descarga').value,
+          contato: document.getElementById('contato_descarga').value,
+          placa_cv: document.getElementById('placa_cv_descarga').value,
+          placa_rb: document.getElementById('placa_rb_descarga').value,
+          transportadora: document.getElementById('transportadora_descarga').value,
+          fornecedor: document.getElementById('fornecedor_descarga').value,
+          sh_nf: document.getElementById('sh_nf_descarga').value,
+          quantidades: document.getElementById('quantidades_descarga').value,
+          obs: document.getElementById('obs_descarga').value,
+        };
+      } else if (tabName === 'carga-biz') {
+        registro = {
+          data: document.getElementById('data_carga').value,
+          nome: document.getElementById('nome_carga').value,
+          placa: document.getElementById('placa_carga').value,
+          cpf: document.getElementById('cpf_carga').value,
+          tel: document.getElementById('tel_carga').value,
+          cliente: document.getElementById('cliente_carga').value,
+          hora: document.getElementById('hora_carga').value,
+          produto: document.getElementById('produto_carga').value,
+          n_ordem: document.getElementById('n_ordem_carga').value,
+          obs: document.getElementById('obs_carga').value,
+        };
+      } else if (tabName === 'prest-servicos-biz') {
+        registro = {
+          data: document.getElementById('data_prest').value,
+          hora: document.getElementById('hora_prest').value,
+          nome: document.getElementById('nome_prest').value,
+          placa: document.getElementById('placa_prest').value,
+          cpf: document.getElementById('cpf_prest').value,
+          tel: document.getElementById('tel_prest').value,
+          autorizado: document.getElementById('autorizado_prest').value,
+          obs: document.getElementById('obs_prest').value,
+        };
+      }
+
+      const registros = JSON.parse(localStorage.getItem(storageKey) || '[]');
+      const editIndex = editIndexes[tabName];
+
+      if (editIndex !== undefined && editIndex !== null) {
+        registros[editIndex] = registro;
+        editIndexes[tabName] = null;
+      } else {
+        registros.push(registro);
+      }
+
+      localStorage.setItem(storageKey, JSON.stringify(registros));
+      limparFormulario(tabName);
+      carregarRegistros(tabName);
+    }
+
+    function editarRegistro(tabName) {
+      if (editIndexes[tabName] === null || editIndexes[tabName] === undefined) {
+        alert('Selecione uma linha com duplo clique.');
+        return;
+      }
+      salvarRegistro(tabName);
+    }
+
+    function excluirRegistro(tabName, index) {
+      if (!confirm('Deseja realmente excluir este registro?')) return;
+      const storageKey = STORAGE_KEYS[tabName];
+      const registros = JSON.parse(localStorage.getItem(storageKey) || '[]');
+      registros.splice(index, 1);
+      localStorage.setItem(storageKey, JSON.stringify(registros));
+      carregarRegistros(tabName);
+    }
+
+    function exportarTXT(tabName) {
+      const storageKey = STORAGE_KEYS[tabName];
+      const registros = JSON.parse(localStorage.getItem(storageKey) || '[]');
+      
+      let header = Object.keys(registros[0] || {}).join('\t');
+      let texto = registros.map(r => Object.values(r).join('\t')).join('\n');
+      
+      if (header) {
+        texto = header + '\n' + texto;
+      }
+
+      const blob = new Blob([texto], { type: 'text/plain' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${tabName}.txt`;
+      a.click();
+    }
+
+    function exportarExcel(tabName) {
+      const storageKey = STORAGE_KEYS[tabName];
+      const registros = JSON.parse(localStorage.getItem(storageKey) || '[]');
+      
+      let header = Object.keys(registros[0] || {}).map(h => `"${h}"`).join(',');
+      let csv = registros.map(r => Object.values(r).map(v => `"${v}"`).join(',')).join('\n');
+
+      if (header) {
+        csv = header + '\n' + csv;
+      }
+
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${tabName}.csv`;
+      a.click();
+    }
+
+    function carregarRegistros(tabName) {
+      const tabela = document.getElementById(`tabela-${tabName}`);
+      if (!tabela) return;
+
+      const tbody = tabela.querySelector('tbody');
+      tbody.innerHTML = '';
+      
+      const storageKey = STORAGE_KEYS[tabName];
+      const registros = JSON.parse(localStorage.getItem(storageKey) || '[]');
+      
+      registros.forEach((r, index) => {
+        const row = tbody.insertRow();
+        Object.values(r).forEach(value => {
+          const cell = row.insertCell();
+          cell.textContent = value;
         });
-<script>
-  function loadTabContent(url, targetId) {
-    fetch(url)
-      .then(response => {
-        if (!response.ok) throw new Error('Erro ao carregar conteúdo');
-        return response.text();
-      })
-      .then(data => {
-        document.getElementById(targetId).innerHTML = data;
-      })
-      .catch(error => {
-        document.getElementById(targetId).innerHTML = "<p>Erro ao carregar a aba.</p>";
-        console.error(error);
+
+        const actionsCell = row.insertCell();
+        const delButton = document.createElement('button');
+        delButton.textContent = 'Del';
+        delButton.onclick = (event) => {
+            event.stopPropagation();
+            excluirRegistro(tabName, index);
+        };
+        actionsCell.appendChild(delButton);
+
+        row.ondblclick = () => {
+          preencherFormulario(tabName, r, index);
+        };
       });
-  }
-</script>
-    </script>
+    }
+
+    function preencherFormulario(tabName, data, index) {
+      editIndexes[tabName] = index;
+      if (tabName === 'registros') {
+        document.getElementById('nome_registros').value = data.nome;
+        document.getElementById('placa_registros').value = data.placa;
+        document.getElementById('entrada_registros').value = data.entrada;
+        document.getElementById('saida_registros').value = data.saida;
+        document.getElementById('obs_registros').value = data.obs;
+      } else if (tabName === 'frota-biz') {
+        document.getElementById('data_frota').value = data.data;
+        document.getElementById('nome_frota').value = data.nome;
+        document.getElementById('frota_frota').value = data.frota;
+        document.getElementById('entrada_frota').value = data.entrada;
+        document.getElementById('saida_frota').value = data.saida;
+        document.getElementById('obs_frota').value = data.obs;
+      } else if (tabName === 'descarga-biz') {
+        document.getElementById('data_descarga').value = data.data;
+        document.getElementById('horario_descarga').value = data.horario;
+        document.getElementById('nome_descarga').value = data.nome;
+        document.getElementById('doc_descarga').value = data.documento;
+        document.getElementById('contato_descarga').value = data.contato;
+        document.getElementById('placa_cv_descarga').value = data.placa_cv;
+        document.getElementById('placa_rb_descarga').value = data.placa_rb;
+        document.getElementById('transportadora_descarga').value = data.transportadora;
+        document.getElementById('fornecedor_descarga').value = data.fornecedor;
+        document.getElementById('sh_nf_descarga').value = data.sh_nf;
+        document.getElementById('quantidades_descarga').value = data.quantidades;
+        document.getElementById('obs_descarga').value = data.obs;
+      } else if (tabName === 'carga-biz') {
+        document.getElementById('data_carga').value = data.data;
+        document.getElementById('nome_carga').value = data.nome;
+        document.getElementById('placa_carga').value = data.placa;
+        document.getElementById('cpf_carga').value = data.cpf;
+        document.getElementById('tel_carga').value = data.tel;
+        document.getElementById('cliente_carga').value = data.cliente;
+        document.getElementById('hora_carga').value = data.hora;
+        document.getElementById('produto_carga').value = data.produto;
+        document.getElementById('n_ordem_carga').value = data.n_ordem;
+        document.getElementById('obs_carga').value = data.obs;
+      } else if (tabName === 'prest-servicos-biz') {
+        document.getElementById('data_prest').value = data.data;
+        document.getElementById('hora_prest').value = data.hora;
+        document.getElementById('nome_prest').value = data.nome;
+        document.getElementById('placa_prest').value = data.placa;
+        document.getElementById('cpf_prest').value = data.cpf;
+        document.getElementById('tel_prest').value = data.tel;
+        document.getElementById('autorizado_prest').value = data.autorizado;
+        document.getElementById('obs_prest').value = data.obs;
+      }
+    }
+
+    function limparFormulario(tabName) {
+      editIndexes[tabName] = null;
+      if (tabName === 'registros') {
+        document.getElementById('nome_registros').value = '';
+        document.getElementById('placa_registros').value = '';
+        document.getElementById('entrada_registros').value = '';
+        document.getElementById('saida_registros').value = '';
+        document.getElementById('obs_registros').value = '';
+      } else if (tabName === 'frota-biz') {
+        document.getElementById('data_frota').value = '';
+        document.getElementById('nome_frota').value = '';
+        document.getElementById('frota_frota').value = '';
+        document.getElementById('entrada_frota').value = '';
+        document.getElementById('saida_frota').value = '';
+        document.getElementById('obs_frota').value = '';
+      } else if (tabName === 'descarga-biz') {
+        document.getElementById('data_descarga').value = '';
+        document.getElementById('horario_descarga').value = '';
+        document.getElementById('nome_descarga').value = '';
+        document.getElementById('doc_descarga').value = '';
+        document.getElementById('contato_descarga').value = '';
+        document.getElementById('placa_cv_descarga').value = '';
+        document.getElementById('placa_rb_descarga').value = '';
+        document.getElementById('transportadora_descarga').value = '';
+        document.getElementById('fornecedor_descarga').value = '';
+        document.getElementById('sh_nf_descarga').value = '';
+        document.getElementById('quantidades_descarga').value = '';
+        document.getElementById('obs_descarga').value = '';
+      } else if (tabName === 'carga-biz') {
+        document.getElementById('data_carga').value = '';
+        document.getElementById('nome_carga').value = '';
+        document.getElementById('placa_carga').value = '';
+        document.getElementById('cpf_carga').value = '';
+        document.getElementById('tel_carga').value = '';
+        document.getElementById('cliente_carga').value = '';
+        document.getElementById('hora_carga').value = '';
+        document.getElementById('produto_carga').value = '';
+        document.getElementById('n_ordem_carga').value = '';
+        document.getElementById('obs_carga').value = '';
+      } else if (tabName === 'prest-servicos-biz') {
+        document.getElementById('data_prest').value = '';
+        document.getElementById('hora_prest').value = '';
+        document.getElementById('nome_prest').value = '';
+        document.getElementById('placa_prest').value = '';
+        document.getElementById('cpf_prest').value = '';
+        document.getElementById('tel_prest').value = '';
+        document.getElementById('autorizado_prest').value = '';
+        document.getElementById('obs_prest').value = '';
+      }
+    }
+
+    window.onload = () => {
+      openTab('registros');
+    };
+  </script>
 </body>
 </html>
