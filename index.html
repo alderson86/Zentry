@@ -285,13 +285,13 @@
         <select id="nome_registros">
           <option disabled selected>Selecione o nome</option>
           <option>Oscar - Supervisor</option>
-          <option>João Paulo - Menor Aprendiz</option>
           <option>Leandro S.</option>
+          <<option>Leandro S.</option>
           <option>Gil-Ser Prime</option>
           <option>Eder R</option>
           <option>Leandro R</option>
           <option>Paulo R</option>
-          <option>Felipe G</option
+          <option>Felipe G</option>
           <option>Thalles</option>
           <option>André</option>
           <option>Ezequias</option>
@@ -329,6 +329,7 @@
           <option>Keverson</option>
           <option>Leandro F.</option>
           <option>Murilo - Menor Aprendiz</option>
+          <option>João Paulo - Menor Aprendiz</option>
           <option>Matias - Menor Aprendiz</option>
           <option>Leandro P.</option>
         </select>
@@ -662,11 +663,14 @@
       
       if (tabName === 'registros') {
           registros.sort((a, b) => {
-              // Converte a data e a hora para um formato comparável
-              const [diaA, mesA, anoA] = a.data.split('/').map(Number);
-              const [diaB, mesB, anoB] = b.data.split('/').map(Number);
-              const dataA = new Date(anoA, mesA - 1, diaA, ...a.entrada.split(':').map(Number));
-              const dataB = new Date(anoB, mesB - 1, diaB, ...b.entrada.split(':').map(Number));
+              // Verifica se a data e a entrada existem antes de tentar dividir
+              const [diaA, mesA, anoA] = a.data ? a.data.split('/').map(Number) : [0,0,0];
+              const [diaB, mesB, anoB] = b.data ? b.data.split('/').map(Number) : [0,0,0];
+              const [horaA, minutoA] = a.entrada ? a.entrada.split(':').map(Number) : [0,0];
+              const [horaB, minutoB] = b.entrada ? b.entrada.split(':').map(Number) : [0,0];
+              
+              const dataA = new Date(anoA, mesA - 1, diaA, horaA, minutoA);
+              const dataB = new Date(anoB, mesB - 1, diaB, horaB, minutoB);
               
               return dataA - dataB;
           });
@@ -674,7 +678,9 @@
 
       registros.forEach((r, index) => {
         const row = tbody.insertRow();
-        Object.values(r).forEach(value => {
+        const orderedValues = tabName === 'registros' ? [r.data, r.nome, r.cracha, r.placa, r.entrada, r.saida, r.obs] : Object.values(r);
+
+        orderedValues.forEach(value => {
           const cell = row.insertCell();
           cell.textContent = value;
         });
@@ -799,9 +805,9 @@
       }
     }
 
-    window.onload = () => {
-      openTab('registros');
-    };
+    document.addEventListener('DOMContentLoaded', () => {
+        openTab('registros');
+    });
   </script>
 </body>
 </html>
