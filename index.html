@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Registro de Funcionários</title>
+  <title>Zentry 2.0</title>
   <style>
     :root {
       --bg: #f9f9fa;
@@ -52,7 +52,7 @@
     .tab-content {
       display: none;
       flex: 1;
-      height: calc(100% - 130px); /* Ajuste a altura para acomodar o rodapé */
+      height: calc(100% - 130px);
       overflow-y: auto;
     }
     .tab-content.active {
@@ -76,7 +76,7 @@
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      padding: 8px 12px; /* Espaçamento menor */
+      padding: 8px 12px;
       font-size: 14px;
     }
     thead th {
@@ -95,13 +95,12 @@
       cursor: pointer;
     }
     tbody tr.selected {
-        background-color: #e0e0e5; /* Cor de fundo para a linha selecionada */
+        background-color: #e0e0e5;
     }
     /* Esconde a coluna de ações da tabela, já que a exclusão foi para o rodapé */
     th:last-child, td:last-child {
         display: none;
     }
-    /* Estilos para o novo rodapé fixo */
     #main-footer {
       position: sticky;
       bottom: 0;
@@ -176,7 +175,9 @@
       <table id="tabela-registros">
         <thead>
           <tr>
+            <th>Data</th>
             <th>Nome</th>
+            <th>Crachá</th>
             <th>Placa</th>
             <th>Hora Entrada</th>
             <th>Hora Saída</th>
@@ -284,13 +285,13 @@
         <select id="nome_registros">
           <option disabled selected>Selecione o nome</option>
           <option>Oscar - Supervisor</option>
+          <option>João Paulo - Menor Aprendiz</option>
           <option>Leandro S.</option>
           <option>Gil-Ser Prime</option>
           <option>Eder R</option>
           <option>Leandro R</option>
           <option>Paulo R</option>
-          <option>Felipe G</option>
-          <option>João Paulo - Menor Aprendiz</option>
+          <option>Felipe G</option
           <option>Thalles</option>
           <option>André</option>
           <option>Ezequias</option>
@@ -330,6 +331,12 @@
           <option>Murilo - Menor Aprendiz</option>
           <option>Matias - Menor Aprendiz</option>
           <option>Leandro P.</option>
+        </select>
+        <select id="cracha_registros">
+          <option disabled selected>Crachá</option>
+          <option>Sim</option>
+          <option>Não tem</option>
+          <option>Esqueceu</option>
         </select>
         <input type="text" id="placa_registros" placeholder="Placa" />
         <input type="time" id="entrada_registros" />
@@ -455,35 +462,52 @@
       tabButtons.forEach(button => button.classList.remove('active'));
       event.currentTarget.classList.add('active');
       
-      editIndexes[tabName] = null; // Limpa o índice de edição ao mudar de aba
+      editIndexes[tabName] = null;
       carregarRegistros(tabName);
     }
 
     function salvarRegistro(tabName) {
       const storageKey = STORAGE_KEYS[tabName];
       let registro = {};
+      const registros = JSON.parse(localStorage.getItem(storageKey) || '[]');
+      const editIndex = editIndexes[tabName];
+      
+      let dataFormatada = '';
+      let horaEntrada = '';
 
       if (tabName === 'registros') {
+        const now = new Date();
+        dataFormatada = now.toLocaleDateString('pt-BR');
+        horaEntrada = document.getElementById('entrada_registros').value;
+
         registro = {
+          data: dataFormatada,
           nome: document.getElementById('nome_registros').value,
+          cracha: document.getElementById('cracha_registros').value,
           placa: document.getElementById('placa_registros').value,
-          entrada: document.getElementById('entrada_registros').value,
+          entrada: horaEntrada,
           saida: document.getElementById('saida_registros').value,
           obs: document.getElementById('obs_registros').value,
         };
       } else if (tabName === 'frota-biz') {
+        dataFormatada = document.getElementById('data_frota').value;
+        horaEntrada = document.getElementById('entrada_frota').value;
+
         registro = {
-          data: document.getElementById('data_frota').value,
+          data: dataFormatada,
           nome: document.getElementById('nome_frota').value,
           frota: document.getElementById('frota_frota').value,
-          entrada: document.getElementById('entrada_frota').value,
+          entrada: horaEntrada,
           saida: document.getElementById('saida_frota').value,
           obs: document.getElementById('obs_frota').value,
         };
       } else if (tabName === 'descarga-biz') {
+        dataFormatada = document.getElementById('data_descarga').value;
+        horaEntrada = document.getElementById('horario_descarga').value;
+
         registro = {
-          data: document.getElementById('data_descarga').value,
-          horario: document.getElementById('horario_descarga').value,
+          data: dataFormatada,
+          horario: horaEntrada,
           nome: document.getElementById('nome_descarga').value,
           documento: document.getElementById('doc_descarga').value,
           contato: document.getElementById('contato_descarga').value,
@@ -496,22 +520,28 @@
           obs: document.getElementById('obs_descarga').value,
         };
       } else if (tabName === 'carga-biz') {
+        dataFormatada = document.getElementById('data_carga').value;
+        horaEntrada = document.getElementById('hora_carga').value;
+
         registro = {
-          data: document.getElementById('data_carga').value,
+          data: dataFormatada,
           nome: document.getElementById('nome_carga').value,
           placa: document.getElementById('placa_carga').value,
           cpf: document.getElementById('cpf_carga').value,
           tel: document.getElementById('tel_carga').value,
           cliente: document.getElementById('cliente_carga').value,
-          hora: document.getElementById('hora_carga').value,
+          hora: horaEntrada,
           produto: document.getElementById('produto_carga').value,
           n_ordem: document.getElementById('n_ordem_carga').value,
           obs: document.getElementById('obs_carga').value,
         };
       } else if (tabName === 'prest-servicos-biz') {
+        dataFormatada = document.getElementById('data_prest').value;
+        horaEntrada = document.getElementById('hora_prest').value;
+
         registro = {
-          data: document.getElementById('data_prest').value,
-          hora: document.getElementById('hora_prest').value,
+          data: dataFormatada,
+          hora: horaEntrada,
           nome: document.getElementById('nome_prest').value,
           placa: document.getElementById('placa_prest').value,
           cpf: document.getElementById('cpf_prest').value,
@@ -520,9 +550,6 @@
           obs: document.getElementById('obs_prest').value,
         };
       }
-
-      const registros = JSON.parse(localStorage.getItem(storageKey) || '[]');
-      const editIndex = editIndexes[tabName];
 
       if (editIndex !== undefined && editIndex !== null) {
         registros[editIndex] = registro;
@@ -565,8 +592,19 @@
 
     function exportarTXT(tabName) {
       const storageKey = STORAGE_KEYS[tabName];
-      const registros = JSON.parse(localStorage.getItem(storageKey) || '[]');
+      let registros = JSON.parse(localStorage.getItem(storageKey) || '[]');
       
+      // Ordena os registros antes de exportar
+      if (tabName === 'registros') {
+          registros.sort((a, b) => {
+              const [diaA, mesA, anoA] = a.data.split('/').map(Number);
+              const [diaB, mesB, anoB] = b.data.split('/').map(Number);
+              const dataA = new Date(anoA, mesA - 1, diaA, ...a.entrada.split(':').map(Number));
+              const dataB = new Date(anoB, mesB - 1, diaB, ...b.entrada.split(':').map(Number));
+              return dataA - dataB;
+          });
+      }
+
       let header = Object.keys(registros[0] || {}).join('\t');
       let texto = registros.map(r => Object.values(r).join('\t')).join('\n');
       
@@ -584,8 +622,19 @@
 
     function exportarExcel(tabName) {
       const storageKey = STORAGE_KEYS[tabName];
-      const registros = JSON.parse(localStorage.getItem(storageKey) || '[]');
+      let registros = JSON.parse(localStorage.getItem(storageKey) || '[]');
       
+      // Ordena os registros antes de exportar
+      if (tabName === 'registros') {
+          registros.sort((a, b) => {
+              const [diaA, mesA, anoA] = a.data.split('/').map(Number);
+              const [diaB, mesB, anoB] = b.data.split('/').map(Number);
+              const dataA = new Date(anoA, mesA - 1, diaA, ...a.entrada.split(':').map(Number));
+              const dataB = new Date(anoB, mesB - 1, diaB, ...b.entrada.split(':').map(Number));
+              return dataA - dataB;
+          });
+      }
+
       let header = Object.keys(registros[0] || {}).map(h => `"${h}"`).join(',');
       let csv = registros.map(r => Object.values(r).map(v => `"${v}"`).join(',')).join('\n');
 
@@ -593,7 +642,7 @@
         csv = header + '\n' + csv;
       }
 
-      const blob = new Blob([csv], { type: 'text/csv' });
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
@@ -609,8 +658,20 @@
       tbody.innerHTML = '';
       
       const storageKey = STORAGE_KEYS[tabName];
-      const registros = JSON.parse(localStorage.getItem(storageKey) || '[]');
+      let registros = JSON.parse(localStorage.getItem(storageKey) || '[]');
       
+      if (tabName === 'registros') {
+          registros.sort((a, b) => {
+              // Converte a data e a hora para um formato comparável
+              const [diaA, mesA, anoA] = a.data.split('/').map(Number);
+              const [diaB, mesB, anoB] = b.data.split('/').map(Number);
+              const dataA = new Date(anoA, mesA - 1, diaA, ...a.entrada.split(':').map(Number));
+              const dataB = new Date(anoB, mesB - 1, diaB, ...b.entrada.split(':').map(Number));
+              
+              return dataA - dataB;
+          });
+      }
+
       registros.forEach((r, index) => {
         const row = tbody.insertRow();
         Object.values(r).forEach(value => {
@@ -618,11 +679,9 @@
           cell.textContent = value;
         });
 
-        // Adiciona a célula de ações, mas o CSS a esconde
         row.insertCell().innerHTML = '';
 
         row.ondblclick = () => {
-          // Remove a classe 'selected' de todas as linhas e adiciona à linha atual
           tbody.querySelectorAll('tr').forEach(tr => tr.classList.remove('selected'));
           row.classList.add('selected');
           
@@ -635,6 +694,7 @@
       editIndexes[tabName] = index;
       if (tabName === 'registros') {
         document.getElementById('nome_registros').value = data.nome;
+        document.getElementById('cracha_registros').value = data.cracha;
         document.getElementById('placa_registros').value = data.placa;
         document.getElementById('entrada_registros').value = data.entrada;
         document.getElementById('saida_registros').value = data.saida;
@@ -685,10 +745,13 @@
     function limparFormulario(tabName) {
       editIndexes[tabName] = null;
       const tbody = document.getElementById(`tabela-${tabName}`).querySelector('tbody');
-      tbody.querySelectorAll('tr').forEach(tr => tr.classList.remove('selected'));
+      if (tbody) {
+        tbody.querySelectorAll('tr').forEach(tr => tr.classList.remove('selected'));
+      }
       
       if (tabName === 'registros') {
         document.getElementById('nome_registros').value = '';
+        document.getElementById('cracha_registros').value = 'Crachá';
         document.getElementById('placa_registros').value = '';
         document.getElementById('entrada_registros').value = '';
         document.getElementById('saida_registros').value = '';
