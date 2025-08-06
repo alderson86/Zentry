@@ -29,17 +29,17 @@
     #tab-header {
       display: flex;
       justify-content: space-around;
-      padding: 10px;
+      padding: 8px;
       background-color: var(--card);
       border-bottom: 1px solid var(--border);
       overflow-x: auto;
       white-space: nowrap;
     }
     .tab-button {
-      padding: 10px 20px;
+      padding: 8px 16px;
       border: none;
       background-color: transparent;
-      font-size: 16px;
+      font-size: 15px;
       cursor: pointer;
       color: var(--text);
       transition: color 0.2s ease;
@@ -52,23 +52,23 @@
     .tab-content {
       display: none;
       flex: 1;
-      height: calc(100% - 150px); /* Ajuste a altura para acomodar o rodapé */
+      height: calc(100% - 130px); /* Ajuste a altura para acomodar o rodapé */
       overflow-y: auto;
     }
     .tab-content.active {
       display: block;
     }
     #tabela-container {
-      padding: 16px;
+      padding: 12px;
     }
     table {
       width: 100%;
       border-collapse: separate;
       border-spacing: 0;
       background-color: var(--card);
-      border-radius: 12px;
+      border-radius: 8px;
       overflow: hidden;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+      box-shadow: 0 1px 4px rgba(0,0,0,0.05);
       table-layout: fixed;
     }
     thead th, tbody td {
@@ -76,7 +76,8 @@
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      padding: 12px;
+      padding: 8px 12px; /* Espaçamento menor */
+      font-size: 14px;
     }
     thead th {
       position: sticky;
@@ -89,6 +90,17 @@
     tbody td {
       border-bottom: 1px solid var(--border);
     }
+    tbody tr:hover {
+      background-color: #f2f2f7;
+      cursor: pointer;
+    }
+    tbody tr.selected {
+        background-color: #e0e0e5; /* Cor de fundo para a linha selecionada */
+    }
+    /* Esconde a coluna de ações da tabela, já que a exclusão foi para o rodapé */
+    th:last-child, td:last-child {
+        display: none;
+    }
     /* Estilos para o novo rodapé fixo */
     #main-footer {
       position: sticky;
@@ -97,12 +109,12 @@
       background-color: var(--card);
       border-top: 1px solid var(--border);
       box-shadow: 0 -1px 4px rgba(0,0,0,0.05);
-      padding: 12px;
+      padding: 10px;
     }
     .footer-form {
       display: none;
       flex-wrap: wrap;
-      gap: 10px;
+      gap: 8px;
     }
     .footer-form.active {
       display: flex;
@@ -110,28 +122,28 @@
     .formulario-campos {
       display: flex;
       flex-wrap: wrap;
-      gap: 10px;
+      gap: 8px;
       flex: 1;
     }
     .formulario-campos input, .formulario-campos select {
-      padding: 10px;
-      font-size: 16px;
-      border-radius: 10px;
+      padding: 8px;
+      font-size: 14px;
+      border-radius: 8px;
       border: 1px solid var(--border);
       flex: 1;
       font-family: inherit;
-      min-width: 100px;
+      min-width: 80px;
     }
     .formulario-botoes {
       display: flex;
       flex-wrap: wrap;
-      gap: 10px;
+      gap: 8px;
     }
     .formulario-botoes button {
-      padding: 10px 16px;
-      font-size: 15px;
+      padding: 8px 14px;
+      font-size: 14px;
       border: none;
-      border-radius: 10px;
+      border-radius: 8px;
       color: white;
       cursor: pointer;
       transition: background-color 0.2s ease;
@@ -141,10 +153,12 @@
     .formulario-botoes button.editar { background-color: #ff9500; }
     .formulario-botoes button.txt { background-color: #5856d6; }
     .formulario-botoes button.excel { background-color: #34c759; }
+    .formulario-botoes button.excluir { background-color: #ff3b30; }
     .formulario-botoes button.salvar:hover { background-color: #00875e; }
     .formulario-botoes button.editar:hover { background-color: #e58700; }
     .formulario-botoes button.txt:hover { background-color: #4846c4; }
     .formulario-botoes button.excel:hover { background-color: #2da44b; }
+    .formulario-botoes button.excluir:hover { background-color: #e53229; }
   </style>
 </head>
 <body>
@@ -271,7 +285,11 @@
           <option disabled selected>Selecione o nome</option>
           <option>Oscar - Supervisor</option>
           <option>Leandro S.</option>
-          <option>Gil-Ser Prime.</option>
+          <option>Gil-Ser Prime</option>
+          <option>Eder R</option>
+          <option>Leandro R</option>
+          <option>Paulo R</option>
+          <option>Felipe G</option>
           <option>João Paulo - Menor Aprendiz</option>
           <option>Thalles</option>
           <option>André</option>
@@ -321,6 +339,7 @@
       <div class="formulario-botoes">
         <button class="salvar" onclick="salvarRegistro('registros')">Salvar</button>
         <button class="editar" onclick="editarRegistro('registros')">Editar</button>
+        <button class="excluir" onclick="excluirRegistroDoRodape('registros')">Excluir</button>
         <button class="txt" onclick="exportarTXT('registros')">Emitir TXT</button>
         <button class="excel" onclick="exportarExcel('registros')">Emitir Excel</button>
       </div>
@@ -338,6 +357,7 @@
       <div class="formulario-botoes">
         <button class="salvar" onclick="salvarRegistro('frota-biz')">Salvar</button>
         <button class="editar" onclick="editarRegistro('frota-biz')">Editar</button>
+        <button class="excluir" onclick="excluirRegistroDoRodape('frota-biz')">Excluir</button>
         <button class="txt" onclick="exportarTXT('frota-biz')">Emitir TXT</button>
         <button class="excel" onclick="exportarExcel('frota-biz')">Emitir Excel</button>
       </div>
@@ -361,6 +381,7 @@
       <div class="formulario-botoes">
         <button class="salvar" onclick="salvarRegistro('descarga-biz')">Salvar</button>
         <button class="editar" onclick="editarRegistro('descarga-biz')">Editar</button>
+        <button class="excluir" onclick="excluirRegistroDoRodape('descarga-biz')">Excluir</button>
         <button class="txt" onclick="exportarTXT('descarga-biz')">Emitir TXT</button>
         <button class="excel" onclick="exportarExcel('descarga-biz')">Emitir Excel</button>
       </div>
@@ -382,6 +403,7 @@
       <div class="formulario-botoes">
         <button class="salvar" onclick="salvarRegistro('carga-biz')">Salvar</button>
         <button class="editar" onclick="editarRegistro('carga-biz')">Editar</button>
+        <button class="excluir" onclick="excluirRegistroDoRodape('carga-biz')">Excluir</button>
         <button class="txt" onclick="exportarTXT('carga-biz')">Emitir TXT</button>
         <button class="excel" onclick="exportarExcel('carga-biz')">Emitir Excel</button>
       </div>
@@ -401,6 +423,7 @@
       <div class="formulario-botoes">
         <button class="salvar" onclick="salvarRegistro('prest-servicos-biz')">Salvar</button>
         <button class="editar" onclick="editarRegistro('prest-servicos-biz')">Editar</button>
+        <button class="excluir" onclick="excluirRegistroDoRodape('prest-servicos-biz')">Excluir</button>
         <button class="txt" onclick="exportarTXT('prest-servicos-biz')">Emitir TXT</button>
         <button class="excel" onclick="exportarExcel('prest-servicos-biz')">Emitir Excel</button>
       </div>
@@ -431,7 +454,8 @@
       const tabButtons = document.querySelectorAll('.tab-button');
       tabButtons.forEach(button => button.classList.remove('active'));
       event.currentTarget.classList.add('active');
-
+      
+      editIndexes[tabName] = null; // Limpa o índice de edição ao mudar de aba
       carregarRegistros(tabName);
     }
 
@@ -514,10 +538,19 @@
 
     function editarRegistro(tabName) {
       if (editIndexes[tabName] === null || editIndexes[tabName] === undefined) {
-        alert('Selecione uma linha com duplo clique.');
+        alert('Selecione uma linha com duplo clique para editar.');
         return;
       }
       salvarRegistro(tabName);
+    }
+    
+    function excluirRegistroDoRodape(tabName) {
+        if (editIndexes[tabName] === null || editIndexes[tabName] === undefined) {
+            alert('Selecione uma linha com duplo clique para excluir.');
+            return;
+        }
+        
+        excluirRegistro(tabName, editIndexes[tabName]);
     }
 
     function excluirRegistro(tabName, index) {
@@ -526,6 +559,7 @@
       const registros = JSON.parse(localStorage.getItem(storageKey) || '[]');
       registros.splice(index, 1);
       localStorage.setItem(storageKey, JSON.stringify(registros));
+      limparFormulario(tabName);
       carregarRegistros(tabName);
     }
 
@@ -584,16 +618,14 @@
           cell.textContent = value;
         });
 
-        const actionsCell = row.insertCell();
-        const delButton = document.createElement('button');
-        delButton.textContent = 'Del';
-        delButton.onclick = (event) => {
-            event.stopPropagation();
-            excluirRegistro(tabName, index);
-        };
-        actionsCell.appendChild(delButton);
+        // Adiciona a célula de ações, mas o CSS a esconde
+        row.insertCell().innerHTML = '';
 
         row.ondblclick = () => {
+          // Remove a classe 'selected' de todas as linhas e adiciona à linha atual
+          tbody.querySelectorAll('tr').forEach(tr => tr.classList.remove('selected'));
+          row.classList.add('selected');
+          
           preencherFormulario(tabName, r, index);
         };
       });
@@ -652,6 +684,9 @@
 
     function limparFormulario(tabName) {
       editIndexes[tabName] = null;
+      const tbody = document.getElementById(`tabela-${tabName}`).querySelector('tbody');
+      tbody.querySelectorAll('tr').forEach(tr => tr.classList.remove('selected'));
+      
       if (tabName === 'registros') {
         document.getElementById('nome_registros').value = '';
         document.getElementById('placa_registros').value = '';
