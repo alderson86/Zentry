@@ -3,15 +3,15 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Zentry Biz</title>
+  <title>Sistema de Gestão</title>
   <style>
     :root {
-      --bg: #f9f9fa;
+      --bg: #f5f5f7;
       --card: #ffffff;
-      --text: #2c2c2e;
+      --text: #1d1d1f;
       --accent: #007aff;
-      --border: #d2d2d6;
-      --header-bg: #f2f2f7;
+      --border: #e8e8ed;
+      --header-bg: #f0f0f3;
     }
     * {
       box-sizing: border-box;
@@ -26,23 +26,43 @@
       flex-direction: column;
       height: 100vh;
     }
+    #main-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .content-card {
+      width: 100%;
+      max-width: 1000px;
+      background-color: var(--card);
+      border-radius: 12px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      min-height: 80vh;
+    }
     #tab-header {
       display: flex;
-      justify-content: space-around;
-      padding: 8px;
-      background-color: var(--card);
+      justify-content: flex-start;
+      padding: 10px 20px;
+      background-color: var(--header-bg);
       border-bottom: 1px solid var(--border);
       overflow-x: auto;
       white-space: nowrap;
     }
     .tab-button {
-      padding: 8px 16px;
+      padding: 10px 20px;
       border: none;
       background-color: transparent;
       font-size: 15px;
       cursor: pointer;
       color: var(--text);
-      transition: color 0.2s ease;
+      transition: color 0.2s ease, background-color 0.2s ease;
+      font-weight: 500;
     }
     .tab-button.active {
       font-weight: bold;
@@ -52,14 +72,14 @@
     .tab-content {
       display: none;
       flex: 1;
-      height: calc(100% - 130px);
+      padding: 20px;
       overflow-y: auto;
     }
     .tab-content.active {
       display: block;
     }
     #tabela-container {
-      padding: 12px;
+      padding: 0;
     }
     table {
       width: 100%;
@@ -68,7 +88,6 @@
       background-color: var(--card);
       border-radius: 8px;
       overflow: hidden;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.05);
       table-layout: fixed;
     }
     thead th, tbody td {
@@ -76,8 +95,9 @@
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
-      padding: 8px 12px;
+      padding: 12px 16px;
       font-size: 14px;
+      border-bottom: 1px solid var(--border);
     }
     thead th {
       position: sticky;
@@ -85,31 +105,24 @@
       background-color: var(--header-bg);
       z-index: 1;
       font-weight: 600;
-      border-bottom: 1px solid var(--border);
-    }
-    tbody td {
-      border-bottom: 1px solid var(--border);
     }
     tbody tr:hover {
-      background-color: #f2f2f7;
+      background-color: #f0f0f3;
       cursor: pointer;
     }
     tbody tr.selected {
-        background-color: #e0e0e5;
+      background-color: #e0e0e5;
     }
     #main-footer {
-      position: sticky;
-      bottom: 0;
-      width: 100%;
-      background-color: var(--card);
+      padding: 16px 20px;
       border-top: 1px solid var(--border);
-      box-shadow: 0 -1px 4px rgba(0,0,0,0.05);
-      padding: 10px;
+      background-color: var(--card);
     }
     .footer-form {
       display: none;
       flex-wrap: wrap;
-      gap: 8px;
+      gap: 10px;
+      align-items: flex-end;
     }
     .footer-form.active {
       display: flex;
@@ -117,179 +130,396 @@
     .formulario-campos {
       display: flex;
       flex-wrap: wrap;
-      gap: 8px;
+      gap: 10px;
       flex: 1;
     }
-    .formulario-campos input, .formulario-campos select {
-      padding: 8px;
+    .formulario-campos input, .formulario-campos select, .formulario-campos textarea {
+      padding: 10px;
       font-size: 14px;
       border-radius: 8px;
       border: 1px solid var(--border);
       flex: 1;
       font-family: inherit;
       min-width: 80px;
+      background-color: var(--bg);
+      color: var(--text);
+    }
+    .formulario-campos textarea {
+      height: 100px;
+      resize: vertical;
     }
     .formulario-botoes {
       display: flex;
       flex-wrap: wrap;
-      gap: 8px;
+      gap: 10px;
     }
     .formulario-botoes button {
-      padding: 8px 14px;
+      padding: 10px 16px;
       font-size: 14px;
       border: none;
       border-radius: 8px;
-      color: white;
+      color: var(--text);
       cursor: pointer;
       transition: background-color 0.2s ease;
       font-family: inherit;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 4px;
+      gap: 6px;
+      font-weight: 600;
+      background-color: var(--header-bg);
     }
-    .formulario-botoes button.salvar { background-color: #00a877; }
-    .formulario-botoes button.editar { background-color: #ff9500; }
-    .formulario-botoes button.txt { background-color: #5856d6; }
-    .formulario-botoes button.excel { background-color: #34c759; }
-    .formulario-botoes button.erase { background-color: #ff3b30; }
-    .formulario-botoes button.salvar:hover { background-color: #00875e; }
-    .formulario-botoes button.editar:hover { background-color: #e58700; }
-    .formulario-botoes button.txt:hover { background-color: #4846c4; }
-    .formulario-botoes button.excel:hover { background-color: #2da44b; }
-    .formulario-botoes button.erase:hover { background-color: #e53229; }
+    .formulario-botoes button:hover {
+        background-color: #d8d8e0;
+    }
     
-    /* Estilo para a caixa de seleção */
     tbody tr td:first-child input[type="checkbox"] {
         margin-right: 8px;
     }
-    /* Estilo para a coluna de Ações */
-    td:last-child {
-        display: none;
+    .text-center {
+      text-align: center;
+    }
+    .grid-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      align-items: flex-start;
+    }
+    .grid-item {
+      padding: 20px;
+      background-color: var(--header-bg);
+      border-radius: 8px;
+    }
+    #clock-container, #calendar-container {
+      text-align: center;
+      padding: 20px;
+      border-radius: 8px;
+      background-color: var(--card);
+      margin-bottom: 20px;
+    }
+    #clock {
+      font-size: 4rem;
+      font-weight: 200;
+      margin: 0;
+    }
+    #date {
+      font-size: 1.2rem;
+      color: #8e8e93;
+    }
+    #calendar-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 10px;
+    }
+    #calendar-header h4 {
+        margin: 0;
+    }
+    #calendar-header button {
+        background: none;
+        border: none;
+        font-size: 18px;
+        cursor: pointer;
+        color: var(--accent);
+    }
+    #calendar {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 5px;
+      text-align: center;
+    }
+    #calendar .day-name {
+      font-weight: 600;
+      color: #8e8e93;
+      font-size: 12px;
+    }
+    #calendar .day-number {
+      padding: 8px;
+      border-radius: 50%;
+      transition: background-color 0.2s ease;
+      position: relative;
+    }
+    #calendar .day-number.has-appointment::after {
+        content: '';
+        position: absolute;
+        bottom: 2px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 4px;
+        height: 4px;
+        background-color: var(--accent);
+        border-radius: 50%;
+    }
+    #calendar .day-number.current-day {
+      background-color: var(--accent);
+      color: white;
+      font-weight: bold;
+    }
+    #appointments {
+      list-style-type: none;
+      padding: 0;
+      margin-top: 20px;
+    }
+    #appointments li {
+      background-color: var(--card);
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    #appointments .appointment-text {
+      flex: 1;
+      white-space: pre-wrap;
+      overflow-wrap: break-word;
+    }
+    .appointment-buttons {
+      display: flex;
+      gap: 5px;
+      flex-shrink: 0;
+    }
+    .appointment-buttons button {
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 16px;
+      color: #8e8e93;
+      transition: color 0.2s ease;
+    }
+    .appointment-buttons button:hover {
+      color: var(--text);
+    }
+    .note-item {
+      padding: 15px;
+      background-color: var(--header-bg);
+      border-radius: 8px;
+      margin-bottom: 10px;
+      cursor: pointer;
+      position: relative;
+      transition: background-color 0.2s ease;
+    }
+    .note-item:hover {
+        background-color: #d8d8e0;
+    }
+    .note-item h4 {
+      margin: 0 0 5px 0;
+      font-size: 16px;
+    }
+    .note-item p {
+      margin: 0;
+      font-size: 14px;
+      color: #636366;
+    }
+    #notepad-list {
+      flex: 1;
+      overflow-y: auto;
+      padding-right: 10px;
+    }
+    .floating-modal {
+      display: none;
+      position: fixed;
+      z-index: 100;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0,0,0,0.4);
+      backdrop-filter: blur(5px);
+      -webkit-backdrop-filter: blur(5px);
+      padding-top: 50px;
+    }
+    .modal-content {
+      background-color: var(--card);
+      margin: 10% auto;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+      width: 80%;
+      max-width: 600px;
+      animation: fadeIn 0.3s;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .close-button {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+    }
+    .close-button:hover, .close-button:focus {
+      color: #000;
+      text-decoration: none;
+      cursor: pointer;
     }
   </style>
 </head>
 <body>
 
-  <div id="tab-header">
-    <button class="tab-button active" onclick="openTab('registros')">Registros</button>
-    <button class="tab-button" onclick="openTab('frota-biz')">Frota Biz</button>
-    <button class="tab-button" onclick="openTab('descarga-biz')">Descarga Biz</button>
-    <button class="tab-button" onclick="openTab('carga-biz')">Carga Biz</button>
-    <button class="tab-button" onclick="openTab('prest-servicos-biz')">Prest. Serviços e Visitantes Biz</button>
-  </div>
+  <div id="main-container">
+    <div class="content-card">
+      <div id="tab-header">
+        <button class="tab-button active" onclick="openTab('registros')">Registros</button>
+        <button class="tab-button" onclick="openTab('frota-biz')">Frota Biz</button>
+        <button class="tab-button" onclick="openTab('descarga-biz')">Descarga Biz</button>
+        <button class="tab-button" onclick="openTab('carga-biz')">Carga Biz</button>
+        <button class="tab-button" onclick="openTab('prest-servicos-biz')">Prest. Serviços</button>
+        <button class="tab-button" onclick="openTab('bloco-de-notas')">Bloco de Notas</button>
+        <button class="tab-button" onclick="openTab('agenda')">Agenda</button>
+      </div>
 
-  <div id="registros" class="tab-content active">
-    <div id="tabela-container">
-      <table id="tabela-registros">
-        <thead>
-          <tr>
-            <th><input type="checkbox" id="selectAll-registros" onclick="toggleSelectAll('registros')"> Selecionar</th>
-            <th>Data e hora</th>
-            <th>Nome</th>
-            <th>Crachá</th>
-            <th>Placa</th>
-            <th>Obs.</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-    </div>
-  </div>
+      <div id="registros" class="tab-content active">
+        <div id="tabela-container">
+          <table id="tabela-registros">
+            <thead>
+              <tr>
+                <th><input type="checkbox" id="selectAll-registros" onclick="toggleSelectAll('registros')"> Select</th>
+                <th>Data</th>
+                <th>Nome</th>
+                <th>Crachá</th>
+                <th>Hora Entrada</th>
+                <th>Hora Saída</th>
+                <th>Obs</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
 
-  <div id="frota-biz" class="tab-content">
-    <div id="tabela-container">
-      <table id="tabela-frota-biz">
-        <thead>
-          <tr>
-            <th><input type="checkbox" id="selectAll-frota-biz" onclick="toggleSelectAll('frota-biz')"> Selecionar</th>
-          <th>Data Entrada</th>
-            <th>Hora Entrada</th>
-            <th>Data Saída</th>
-            <th>Hora Saída</th>
-            <th>Nome</th>
-            <th>Frota</th>
-            <th>Obs.:</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-    </div>
-  </div>
+      <div id="frota-biz" class="tab-content">
+        <div id="tabela-container">
+          <table id="tabela-frota-biz">
+            <thead>
+              <tr>
+                <th><input type="checkbox" id="selectAll-frota-biz" onclick="toggleSelectAll('frota-biz')"> Select</th>
+                <th>Data</th>
+                <th>Nome</th>
+                <th>Frota</th>
+                <th>Hora Entrada</th>
+                <th>Hora Saída</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
 
-  <div id="descarga-biz" class="tab-content">
-    <div id="tabela-container">
-      <table id="tabela-descarga-biz">
-        <thead>
-          <tr>
-            <th><input type="checkbox" id="selectAll-descarga-biz" onclick="toggleSelectAll('descarga-biz')"> Selecionar</th>
-            <th>Data</th>
-            <th>Nome</th>
-            <th>Doc.:</th>
-            <th>Tel.:</th>
-            <th>Placa CV</th>
-            <th>Placa RB.</th>
-            <th>Transp.:</th>
-            <th>Forn.:</th>
-            <th>NF/SH.</th>
-            <th>Quanti.:</th>
-            <th>Obs</th>
-          </tr>
-</thead>
-        <tbody></tbody>
-      </table>
-    </div>
-  </div>
+      <div id="descarga-biz" class="tab-content">
+        <div id="tabela-container">
+          <table id="tabela-descarga-biz">
+            <thead>
+              <tr>
+                <th><input type="checkbox" id="selectAll-descarga-biz" onclick="toggleSelectAll('descarga-biz')"> Select</th>
+                <th>Data</th>
+                <th>Hora</th>
+                <th>Nome</th>
+                <th>Tel</th>
+                <th>Doc</th>
+                <th>Placas</th>
+                <th>Transp</th>
+                <th>Forn</th>
+                <th>NF/SH</th>
+                <th>Quant</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
 
-  <div id="carga-biz" class="tab-content">
-    <div id="tabela-container">
-      <table id="tabela-carga-biz">
-        <thead>
-          <tr>
-            <th><input type="checkbox" id="selectAll-carga-biz" onclick="toggleSelectAll('carga-biz')"> Selecionar</th>
-            <th>Hora</th>
-            <th>Nome</th>
-            <th>Placa</th>
-            <th>Doc.:</th>
-            <th>Tel.:</th>
-            <th>Cliente</th>
-            <th>Produto</th>
-            <th>Nº Ordem</th>
-            <th>Obs.:</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-    </div>
-  </div>
+      <div id="carga-biz" class="tab-content">
+        <div id="tabela-container">
+          <table id="tabela-carga-biz">
+            <thead>
+              <tr>
+                <th><input type="checkbox" id="selectAll-carga-biz" onclick="toggleSelectAll('carga-biz')">Select</th>
+                <th>Data</th>
+                <th>Hora</th>
+                <th>Nome</th>
+                <th>Placas</th>
+                <th>Transp</th>
+                <th>Cliente</th>
+                <th>Nº Ordem</th>
+                <th>Produto</th>
+                <th>Quantidade</th>
+                <th>Autorização</th>
 
-  <div id="prest-servicos-biz" class="tab-content">
-    <div id="tabela-container">
-      <table id="tabela-prest-servicos-biz">
-        <thead>
-          <tr>
-            <th><input type="checkbox" id="selectAll-prest-servicos-biz" onclick="toggleSelectAll('prest-servicos-biz')"> Selecionar</th>
-            <th>Data</th>
-            <th>Nome</th>
-            <th>Placa</th>
-            <th>CPF</th>
-            <th>Tel.:</th>
-            <th>Aurizado por</th>
-            <th>Obs,:</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-    </div>
-  </div>
 
-  <div id="main-footer">
-    
-    <div id="form-registros" class="footer-form active">
-      <div class="formulario-campos">
-        <select id="nome_registros">
-          <option disabled selected>Selecione o nome</option>
-           <option>Leandro S.</option>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="prest-servicos-biz" class="tab-content">
+        <div id="tabela-container">
+          <table id="tabela-prest-servicos-biz">
+            <thead>
+              <tr>
+                <th><input type="checkbox" id="selectAll-prest-servicos-biz" onclick="toggleSelectAll('prest-servicos-biz')"> Select</th>
+                <th>Data</th>
+                <th>Hora</th>
+                <th>Nome</th>
+                <th>Placa/CPF</th>
+                <th>Empresa</th>
+                <th>Tipo de Serviço</th>
+                <th>Autorização</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
+
+      <div id="bloco-de-notas" class="tab-content">
+        <div id="notepad-list"></div>
+      </div>
+
+      <div id="agenda" class="tab-content">
+        <div class="grid-container">
+          <div class="grid-item">
+            <div id="clock-container">
+              <h1 id="clock"></h1>
+              <p id="date"></p>
+            </div>
+            <div id="calendar-container">
+              <div id="calendar-header">
+                <button onclick="changeMonth(-1)">❮</button>
+                <h4 id="current-month-year"></h4>
+                <button onclick="changeMonth(1)">❯</button>
+              </div>
+              <div id="calendar"></div>
+            </div>
+          </div>
+          <div class="grid-item">
+            <h3>Agenda de Compromissos</h3>
+            <ul id="appointments"></ul>
+            <div class="formulario-campos" style="margin-top: 20px;">
+              <input type="date" id="appointment-date" />
+              <input type="time" id="appointment-time" />
+              <input type="text" id="appointment-text" placeholder="Compromisso" />
+            </div>
+            <div class="formulario-botoes" style="margin-top: 10px;">
+              <button onclick="addAppointment()">Adicionar</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="main-footer">
+        
+        <div id="form-registros" class="footer-form active">
+          <div class="formulario-campos">
+            <input type="date" id="data_registros" disabled style="display: none;"/>
+            <select id="nome_registros">
+              <option disabled selected>Nome</option>
+              <option>Leandro S.</option>
 <option>Oscar -Supervisor</option>
 <option>João Paulo. - Menor Aprendiz</option>
 <option>Vitória Isabele</option>
@@ -338,112 +568,126 @@
 <option>Abraão - Menor Aprendiz</option>
 <option>Gabriel - Menor Aprendiz</option>
 <option>Edirlei - CPD</option>
-        </select>
-        <select id="cracha_registros">
-          <option disabled selected>Crachá</option>
-          <option>Sim</option>
-          <option>Não tem</option>
-          <option>Esqueceu</option>
-        </select>
-        <input type="text" id="placa_registros" placeholder="Placa" />
-        <input type="time" id="entrada_registros" />
-        <input type="time" id="saida_registros" />
-        <input type="text" id="obs_registros" placeholder="Observação" />
-      </div>
-      <div class="formulario-botoes">
-        <button class="salvar" onclick="salvarRegistro('registros')">✔ Salvar</button>
-        <button class="editar" onclick="editarRegistro('registros')">✎ Editar</button>
-        <button class="erase" onclick="excluirSelecionados('registros')">✖ Erase</button>
-        <button class="txt" onclick="exportarTXT('registros')">📄 TXT</button>
-        <button class="excel" onclick="exportarExcel('registros')">📊 Excel</button>
-      </div>
-    </div>
-    
-    <div id="form-frota-biz" class="footer-form">
-      <div class="formulario-campos">
-        <input type="date" id="data_entrada_frota" placeholder="Data de Entrada" />
-        <input type="time" id="hora_entrada_frota" placeholder="Hora de Entrada" />
-        <input type="date" id="data_saida_frota" placeholder="Data de Saída" />
-        <input type="time" id="hora_saida_frota" placeholder="Hora de Saída" />
-        <input type="text" id="nome_frota" placeholder="Nome" />
-        <input type="text" id="frota_frota" placeholder="Frota" />
-        <input type="text" id="obs_frota" placeholder="Observação" />
-      </div>
-      <div class="formulario-botoes">
-        <button class="salvar" onclick="salvarRegistro('frota-biz')">✔ Salvar</button>
-        <button class="editar" onclick="editarRegistro('frota-biz')">✎ Editar</button>
-        <button class="erase" onclick="excluirSelecionados('frota-biz')">✖ Erase</button>
-        <button class="txt" onclick="exportarTXT('frota-biz')">📄 TXT</button>
-        <button class="excel" onclick="exportarExcel('frota-biz')">📊 Excel</button>
-      </div>
-    </div>
+            </select>
+            <select id="cracha_registros">
+              <option disabled selected>Crachá</option>
+              <option>Sim</option>
+              <option>Não tem</option>
+              <option>Esqueceu</option>
+            </select>
+            <input type="time" id="entrada_registros" placeholder="Hora de Entrada" />
+            <input type="time" id="saida_registros" placeholder="Hora de Saída" />
+            <input type="text" id="obs_registros" placeholder="Obs" />
+          </div>
+          <div class="formulario-botoes">
+            <button onclick="salvarRegistro('registros')">Salvar</button>
+            <button onclick="editarRegistro('registros')">Editar</button>
+            <button onclick="excluirSelecionados('registros')">Excluir</button>
+            <button onclick="exportarTXT('registros')">TXT</button>
+            <button onclick="exportarExcel('registros')">Excel</button>
+          </div>
+        </div>
+        
+        <div id="form-frota-biz" class="footer-form">
+          <div class="formulario-campos">
+            <input type="date" id="data_frota_biz" disabled style="display: none;"/>
+            <input type="text" id="nome_frota_biz" placeholder="Nome" />
+            <input type="text" id="frota_frota_biz" placeholder="Frota" />
+            <input type="time" id="entrada_frota_biz" placeholder="Hora de Entrada" />
+            <input type="time" id="saida_frota_biz" placeholder="Hora de Saída" />
+          </div>
+          <div class="formulario-botoes">
+            <button onclick="salvarRegistro('frota-biz')">Salvar</button>
+            <button onclick="editarRegistro('frota-biz')">Editar</button>
+            <button onclick="excluirSelecionados('frota-biz')">Excluir</button>
+            <button onclick="exportarTXT('frota-biz')">TXT</button>
+            <button onclick="exportarExcel('frota-biz')">Excel</button>
+          </div>
+        </div>
 
-    <div id="form-descarga-biz" class="footer-form">
-      <div class="formulario-campos">
-        <input type="date" id="data_descarga" />
-        <input type="time" id="horario_descarga" />
-        <input type="text" id="nome_descarga" placeholder="Nome" />
-        <input type="text" id="doc_descarga" placeholder="Documento" />
-        <input type="text" id="contato_descarga" placeholder="Contato" />
-        <input type="text" id="placa_cv_descarga" placeholder="Placa CV" />
-        <input type="text" id="placa_rb_descarga" placeholder="Placa RB" />
-        <input type="text" id="transportadora_descarga" placeholder="Transp." />
-        <input type="text" id="fornecedor_descarga" placeholder="Fornec." />
-        <input type="text" id="sh_nf_descarga" placeholder="SH/NF" />
-        <input type="text" id="quantidades_descarga" placeholder="Quant." />
-        <input type="text" id="obs_descarga" placeholder="Observação" />
-      </div>
-      <div class="formulario-botoes">
-        <button class="salvar" onclick="salvarRegistro('descarga-biz')">✔ Salvar</button>
-        <button class="editar" onclick="editarRegistro('descarga-biz')">✎ Editar</button>
-        <button class="erase" onclick="excluirSelecionados('descarga-biz')">✖ Erase</button>
-        <button class="txt" onclick="exportarTXT('descarga-biz')">📄 TXT</button>
-        <button class="excel" onclick="exportarExcel('descarga-biz')">📊 Excel</button>
+        <div id="form-descarga-biz" class="footer-form">
+          <div class="formulario-campos">
+            <input type="date" id="data_descarga" disabled style="display: none;"/>
+            <input type="time" id="horario_descarga" />
+            <input type="text" id="nome_descarga" placeholder="Nome" />
+            <input type="text" id="tel_descarga" placeholder="Tel" />
+            <input type="text" id="doc_descarga" placeholder="Doc" />
+            <input type="text" id="placas_descarga" placeholder="Placas" />
+            <input type="text" id="transportadora_descarga" placeholder="Transp" />
+            <input type="text" id="fornecedor_descarga" placeholder="Fornec" />
+            <input type="text" id="sh_nf_descarga" placeholder="NF/SH" />
+            <input type="text" id="quantidades_descarga" placeholder="Quant" />
+          </div>
+          <div class="formulario-botoes">
+            <button onclick="salvarRegistro('descarga-biz')">Salvar</button>
+            <button onclick="editarRegistro('descarga-biz')">Editar</button>
+            <button onclick="excluirSelecionados('descarga-biz')">Excluir</button>
+            <button onclick="exportarTXT('descarga-biz')">TXT</button>
+            <button onclick="exportarExcel('descarga-biz')">Excel</button>
+          </div>
+        </div>
+
+        <div id="form-carga-biz" class="footer-form">
+          <div class="formulario-campos">
+            <input type="date" id="data_carga" disabled style="display: none;"/>
+            <input type="time" id="hora_carga" />
+            <input type="text" id="nome_carga" placeholder="Nome" />
+            <input type="text" id="placas_carga" placeholder="Placas" />
+            <input type="text" id="transp_carga" placeholder="Transp" />
+            <input type="text" id="cliente_carga" placeholder="Cliente" />
+            <input type="text" id="n_ordem_carga" placeholder="Nº Ordem" />
+            <input type="text" id="produto_carga" placeholder="Produto" />
+            <input type="text" id="quantidade_carga" placeholder="Quantidade" />
+            <input type="text" id="autorizacao_carga" placeholder="Autorização" />
+          </div>
+          <div class="formulario-botoes">
+            <button onclick="salvarRegistro('carga-biz')">Salvar</button>
+            <button onclick="editarRegistro('carga-biz')">Editar</button>
+            <button onclick="excluirSelecionados('carga-biz')">Excluir</button>
+            <button onclick="exportarTXT('carga-biz')">TXT</button>
+            <button onclick="exportarExcel('carga-biz')">Excel</button>
+          </div>
+        </div>
+
+        <div id="form-prest-servicos-biz" class="footer-form">
+          <div class="formulario-campos">
+            <input type="date" id="data_prest" disabled style="display: none;"/>
+            <input type="time" id="hora_prest" />
+            <input type="text" id="nome_prest" placeholder="Nome" />
+            <input type="text" id="placa_cpf_prest" placeholder="Placa/CPF" />
+            <input type="text" id="empresa_prest" placeholder="Empresa" />
+            <input type="text" id="tipo_servico_prest" placeholder="Tipo de Serviço" />
+            <input type="text" id="autorizacao_prest" placeholder="Autorização" />
+          </div>
+          <div class="formulario-botoes">
+            <button onclick="salvarRegistro('prest-servicos-biz')">Salvar</button>
+            <button onclick="editarRegistro('prest-servicos-biz')">Editar</button>
+            <button onclick="excluirSelecionados('prest-servicos-biz')">Excluir</button>
+            <button onclick="exportarTXT('prest-servicos-biz')">TXT</button>
+            <button onclick="exportarExcel('prest-servicos-biz')">Excel</button>
+          </div>
+        </div>
+
+        <div id="form-bloco-de-notas" class="footer-form">
+          <div class="formulario-campos">
+            <input type="text" id="note-title" placeholder="Título da anotação" />
+            <textarea id="note-content" placeholder="Conteúdo da anotação"></textarea>
+          </div>
+          <div class="formulario-botoes">
+            <button onclick="saveNote()">Salvar</button>
+            <button onclick="deleteNote()">Excluir</button>
+          </div>
+        </div>
       </div>
     </div>
+  </div>
 
-    <div id="form-carga-biz" class="footer-form">
-      <div class="formulario-campos">
-        <input type="date" id="data_carga" />
-        <input type="text" id="nome_carga" placeholder="Nome" />
-        <input type="text" id="placa_carga" placeholder="Placa" />
-        <input type="text" id="cpf_carga" placeholder="CPF" />
-        <input type="text" id="tel_carga" placeholder="Tel" />
-        <input type="text" id="cliente_carga" placeholder="Cliente" />
-        <input type="time" id="hora_carga" />
-        <input type="text" id="produto_carga" placeholder="Produto" />
-        <input type="text" id="n_ordem_carga" placeholder="Nº Ordem" />
-        <input type="text" id="obs_carga" placeholder="Obs." />
-      </div>
-      <div class="formulario-botoes">
-        <button class="salvar" onclick="salvarRegistro('carga-biz')">✔ Salvar</button>
-        <button class="editar" onclick="editarRegistro('carga-biz')">✎ Editar</button>
-        <button class="erase" onclick="excluirSelecionados('carga-biz')">✖ Erase</button>
-        <button class="txt" onclick="exportarTXT('carga-biz')">📄 TXT</button>
-        <button class="excel" onclick="exportarExcel('carga-biz')">📊 Excel</button>
-      </div>
+  <div id="noteModal" class="floating-modal">
+    <div class="modal-content">
+      <span class="close-button" onclick="closeNoteModal()">&times;</span>
+      <h3 id="modal-note-title"></h3>
+      <p id="modal-note-content"></p>
     </div>
-
-    <div id="form-prest-servicos-biz" class="footer-form">
-      <div class="formulario-campos">
-        <input type="date" id="data_prest" />
-        <input type="time" id="hora_prest" />
-        <input type="text" id="nome_prest" placeholder="Nome" />
-        <input type="text" id="placa_prest" placeholder="Placa" />
-        <input type="text" id="cpf_prest" placeholder="CPF" />
-        <input type="text" id="tel_prest" placeholder="Tel" />
-        <input type="text" id="autorizado_prest" placeholder="Autorizado por" />
-        <input type="text" id="obs_prest" placeholder="Obs." />
-      </div>
-      <div class="formulario-botoes">
-        <button class="salvar" onclick="salvarRegistro('prest-servicos-biz')">✔ Salvar</button>
-        <button class="editar" onclick="editarRegistro('prest-servicos-biz')">✎ Editar</button>
-        <button class="erase" onclick="excluirSelecionados('prest-servicos-biz')">✖ Erase</button>
-        <button class="txt" onclick="exportarTXT('prest-servicos-biz')">📄 TXT</button>
-        <button class="excel" onclick="exportarExcel('prest-servicos-biz')">📊 Excel</button>
-      </div>
-    </div>
-
   </div>
 
   <script>
@@ -452,11 +696,21 @@
       'frota-biz': 'frota_biz',
       'descarga-biz': 'descarga_biz',
       'carga-biz': 'carga_biz',
-      'prest-servicos-biz': 'prest_servicos_biz'
+      'prest-servicos-biz': 'prest_servicos_biz',
+      'bloco-de-notas': 'bloco_de_notas',
+      'agenda': 'agenda_compromissos'
     };
 
     let editIndexes = {};
-    
+    let selectedNoteIndex = null;
+    let currentMonth = new Date().getMonth();
+    let currentYear = new Date().getFullYear();
+
+    function getCurrentDate() {
+        const now = new Date();
+        return now.toISOString().split('T')[0];
+    }
+
     function getCurrentTabName() {
         const tabHeader = document.querySelector('.tab-button.active');
         return tabHeader ? tabHeader.getAttribute('onclick').match(/'([^']+)'/)[1] : null;
@@ -469,7 +723,14 @@
 
       const footerForms = document.querySelectorAll('.footer-form');
       footerForms.forEach(form => form.classList.remove('active'));
-      document.getElementById(`form-${tabName}`).classList.add('active');
+      const formElement = document.getElementById(`form-${tabName}`);
+      if (formElement) {
+        formElement.classList.add('active');
+        const dateInput = formElement.querySelector('input[type="date"]');
+        if (dateInput) {
+            dateInput.value = getCurrentDate();
+        }
+      }
 
       const tabButtons = document.querySelectorAll('.tab-button');
       tabButtons.forEach(button => button.classList.remove('active'));
@@ -477,7 +738,16 @@
       
       editIndexes[tabName] = null;
       limparFormulario(tabName);
-      carregarRegistros(tabName);
+      
+      if (tabName === 'agenda') {
+        renderCalendar();
+        updateClock();
+        loadAppointments();
+      } else if (tabName === 'bloco-de-notas') {
+        loadNotes();
+      } else {
+        carregarRegistros(tabName);
+      }
     }
     
     function toggleSelectAll(tabName) {
@@ -494,87 +764,58 @@
       let registro = {};
       const editIndex = editIndexes[tabName];
       
-      const now = new Date();
-      const dataFormatada = `${now.getDate().toString().padStart(2, '0')}-${(now.getMonth() + 1).toString().padStart(2, '0')}-${now.getFullYear()}`;
-      
       if (tabName === 'registros') {
-        const horaEntrada = document.getElementById('entrada_registros').value;
-        const horaSaida = document.getElementById('saida_registros').value;
-        const dataHoraEntrada = horaEntrada ? `${dataFormatada} ${horaEntrada}` : '';
-        const dataHoraSaida = horaSaida ? `${dataFormatada} ${horaSaida}` : '';
-
         registro = {
-          dataHoraEntrada: dataHoraEntrada,
-          dataHoraSaida: dataHoraSaida,
+          data: document.getElementById('data_registros').value,
           nome: document.getElementById('nome_registros').value,
           cracha: document.getElementById('cracha_registros').value,
-          placa: document.getElementById('placa_registros').value,
+          horaEntrada: document.getElementById('entrada_registros').value,
+          horaSaida: document.getElementById('saida_registros').value,
           obs: document.getElementById('obs_registros').value,
         };
       } else if (tabName === 'frota-biz') {
-        const dataEntrada = document.getElementById('data_entrada_frota').value;
-        const horaEntrada = document.getElementById('hora_entrada_frota').value;
-        const dataSaida = document.getElementById('data_saida_frota').value;
-        const horaSaida = document.getElementById('hora_saida_frota').value;
-        
-        const dataHoraEntrada = dataEntrada && horaEntrada ? `${dataEntrada} ${horaEntrada}` : '';
-        const dataHoraSaida = dataSaida && horaSaida ? `${dataSaida} ${horaSaida}` : '';
-
         registro = {
-          dataHoraEntrada: dataHoraEntrada,
-          dataHoraSaida: dataHoraSaida,
-          nome: document.getElementById('nome_frota').value,
-          frota: document.getElementById('frota_frota').value,
-          obs: document.getElementById('obs_frota').value,
+          data: document.getElementById('data_frota_biz').value,
+          nome: document.getElementById('nome_frota_biz').value,
+          frota: document.getElementById('frota_frota_biz').value,
+          horaEntrada: document.getElementById('entrada_frota_biz').value,
+          horaSaida: document.getElementById('saida_frota_biz').value,
         };
       } else if (tabName === 'descarga-biz') {
-        const data = document.getElementById('data_descarga').value;
-        const horario = document.getElementById('horario_descarga').value;
-        const dataHora = `${data} ${horario}`;
-
         registro = {
-          dataHora: dataHora,
+          data: document.getElementById('data_descarga').value,
+          hora: document.getElementById('horario_descarga').value,
           nome: document.getElementById('nome_descarga').value,
-          documento: document.getElementById('doc_descarga').value,
-          contato: document.getElementById('contato_descarga').value,
-          placa_cv: document.getElementById('placa_cv_descarga').value,
-          placa_rb: document.getElementById('placa_rb_descarga').value,
-          transportadora: document.getElementById('transportadora_descarga').value,
-          fornecedor: document.getElementById('fornecedor_descarga').value,
+          tel: document.getElementById('tel_descarga').value,
+          doc: document.getElementById('doc_descarga').value,
+          placas: document.getElementById('placas_descarga').value,
+          transp: document.getElementById('transportadora_descarga').value,
+          fornec: document.getElementById('fornecedor_descarga').value,
           sh_nf: document.getElementById('sh_nf_descarga').value,
-          quantidades: document.getElementById('quantidades_descarga').value,
-          obs: document.getElementById('obs_descarga').value,
+          quant: document.getElementById('quantidades_descarga').value,
         };
       } else if (tabName === 'carga-biz') {
-        const data = document.getElementById('data_carga').value;
-        const hora = document.getElementById('hora_carga').value;
-        const dataHora = `${data} ${hora}`;
-
         registro = {
-          dataHora: dataHora,
+          data: document.getElementById('data_carga').value,
+          hora: document.getElementById('hora_carga').value,
           nome: document.getElementById('nome_carga').value,
-          placa: document.getElementById('placa_carga').value,
-          cpf: document.getElementById('cpf_carga').value,
-          tel: document.getElementById('tel_carga').value,
+          placas: document.getElementById('placas_carga').value,
+          transp: document.getElementById('transp_carga').value,
           cliente: document.getElementById('cliente_carga').value,
-          hora: hora,
+          nOrdem: document.getElementById('n_ordem_carga').value,
           produto: document.getElementById('produto_carga').value,
-          n_ordem: document.getElementById('n_ordem_carga').value,
-          obs: document.getElementById('obs_carga').value,
+          quantidade: document.getElementById('quantidade_carga').value,
+          autorizacao: document.getElementById('autorizacao_carga').value,
         };
       } else if (tabName === 'prest-servicos-biz') {
-        const data = document.getElementById('data_prest').value;
-        const hora = document.getElementById('hora_prest').value;
-        const dataHora = `${data} ${hora}`;
-
         registro = {
-          dataHora: dataHora,
+          data: document.getElementById('data_prest').value,
+          hora: document.getElementById('hora_prest').value,
           nome: document.getElementById('nome_prest').value,
-          placa: document.getElementById('placa_prest').value,
-          cpf: document.getElementById('cpf_prest').value,
-          tel: document.getElementById('tel_prest').value,
-          autorizado: document.getElementById('autorizado_prest').value,
-          obs: document.getElementById('obs_prest').value,
+          placa_cpf: document.getElementById('placa_cpf_prest').value,
+          empresa: document.getElementById('empresa_prest').value,
+          tipoServico: document.getElementById('tipo_servico_prest').value,
+          autorizacao: document.getElementById('autorizacao_prest').value,
         };
       }
       
@@ -625,10 +866,10 @@
       const storageKey = STORAGE_KEYS[tabName];
       let registros = JSON.parse(localStorage.getItem(storageKey) || '[]');
       
-      const header = Object.keys(registros[0] || {}).join('\t');
-      const texto = registros.map(r => Object.values(r).join('\t')).join('\n');
+      const headers = Object.keys(registros[0] || {});
+      const texto = registros.map(r => headers.map(h => r[h]).join('\t')).join('\n');
       
-      const textoCompleto = header ? header + '\n' + texto : texto;
+      const textoCompleto = headers.length > 0 ? headers.join('\t') + '\n' + texto : texto;
 
       const blob = new Blob([textoCompleto], { type: 'text/plain' });
       const url = URL.createObjectURL(blob);
@@ -642,10 +883,10 @@
       const storageKey = STORAGE_KEYS[tabName];
       let registros = JSON.parse(localStorage.getItem(storageKey) || '[]');
       
-      const header = Object.keys(registros[0] || {}).map(h => `"${h}"`).join(',');
-      const csv = registros.map(r => Object.values(r).map(v => `"${v}"`).join(',')).join('\n');
+      const headers = Object.keys(registros[0] || {});
+      const csv = registros.map(r => headers.map(h => `"${r[h]}"`).join(',')).join('\n');
 
-      const csvCompleto = header ? header + '\n' + csv : csv;
+      const csvCompleto = headers.length > 0 ? headers.map(h => `"${h}"`).join(',') + '\n' + csv : csv;
 
       const blob = new Blob([csvCompleto], { type: 'text/csv;charset=utf-8;' });
       const url = URL.createObjectURL(blob);
@@ -667,9 +908,14 @@
 
         if (registros.length > 0) {
             registros.sort((a, b) => {
-                const dateA = new Date(a.dataHoraEntrada || a.dataHora || a.data).getTime();
-                const dateB = new Date(b.dataHoraEntrada || b.dataHora || b.data).getTime();
-                return dateA - dateB;
+                const dateA = a.data;
+                const dateB = b.data;
+                
+                if (dateA && dateB) {
+                    return new Date(dateA) - new Date(dateB);
+                } else {
+                    return 0;
+                }
             });
         }
 
@@ -678,23 +924,15 @@
             
             let orderedValues = [];
             if (tabName === 'registros') {
-                const dataHora = r.dataHoraEntrada ? r.dataHoraEntrada : '';
-                orderedValues = [dataHora, r.nome, r.cracha, r.placa, r.obs];
+                orderedValues = [r.data, r.nome, r.cracha, r.horaEntrada, r.horaSaida, r.obs];
             } else if (tabName === 'frota-biz') {
-                const dataEntrada = r.dataHoraEntrada ? r.dataHoraEntrada.split(' ')[0] : '';
-                const horaEntrada = r.dataHoraEntrada ? r.dataHoraEntrada.split(' ')[1] : '';
-                const dataSaida = r.dataHoraSaida ? r.dataHoraSaida.split(' ')[0] : '';
-                const horaSaida = r.dataHoraSaida ? r.dataHoraSaida.split(' ')[1] : '';
-                orderedValues = [dataEntrada, horaEntrada, dataSaida, horaSaida, r.nome, r.frota, r.obs];
+                orderedValues = [r.data, r.nome, r.frota, r.horaEntrada, r.horaSaida];
             } else if (tabName === 'descarga-biz') {
-                const dataHora = r.dataHora ? r.dataHora : '';
-                orderedValues = [dataHora, r.nome, r.documento, r.contato, r.placa_cv, r.placa_rb, r.transportadora, r.fornecedor, r.sh_nf, r.quantidades, r.obs];
+                orderedValues = [r.data, r.hora, r.nome, r.tel, r.doc, r.placas, r.transp, r.fornec, r.sh_nf, r.quant];
             } else if (tabName === 'carga-biz') {
-                const dataHora = r.dataHora ? r.dataHora : '';
-                orderedValues = [dataHora, r.nome, r.placa, r.cpf, r.tel, r.cliente, r.produto, r.n_ordem, r.obs];
+                orderedValues = [r.data, r.hora, r.nome, r.placas, r.transp, r.cliente, r.nOrdem, r.produto, r.quantidade, r.autorizacao];
             } else if (tabName === 'prest-servicos-biz') {
-                const dataHora = r.dataHora ? r.dataHora : '';
-                orderedValues = [dataHora, r.nome, r.placa, r.cpf, r.tel, r.autorizado, r.obs];
+                orderedValues = [r.data, r.hora, r.nome, r.placa_cpf, r.empresa, r.tipoServico, r.autorizacao];
             }
 
             const checkboxCell = row.insertCell();
@@ -721,130 +959,329 @@
     function preencherFormulario(tabName, data, index) {
       editIndexes[tabName] = index;
       
-      const clearRows = document.querySelectorAll('tbody tr');
-      clearRows.forEach(row => row.classList.remove('selected'));
-      
-      const row = document.querySelector(`#tabela-${tabName} tbody tr:nth-child(${index + 1})`);
-      if (row) {
-        row.classList.add('selected');
+      const tbody = document.getElementById(`tabela-${tabName}`).querySelector('tbody');
+      if (tbody) {
+        tbody.querySelectorAll('tr').forEach(tr => tr.classList.remove('selected'));
+        const row = tbody.querySelector(`tr:nth-child(${index + 1})`);
+        if (row) {
+          row.classList.add('selected');
+        }
       }
 
       if (tabName === 'registros') {
+        document.getElementById('data_registros').value = data.data;
         document.getElementById('nome_registros').value = data.nome;
         document.getElementById('cracha_registros').value = data.cracha;
-        document.getElementById('placa_registros').value = data.placa;
-        
-        document.getElementById('entrada_registros').value = data.dataHoraEntrada.split(' ')[1] || '';
-        document.getElementById('saida_registros').value = data.dataHoraSaida.split(' ')[1] || '';
+        document.getElementById('entrada_registros').value = data.horaEntrada;
+        document.getElementById('saida_registros').value = data.horaSaida;
         document.getElementById('obs_registros').value = data.obs;
       } else if (tabName === 'frota-biz') {
-        document.getElementById('data_entrada_frota').value = data.dataHoraEntrada.split(' ')[0] || '';
-        document.getElementById('hora_entrada_frota').value = data.dataHoraEntrada.split(' ')[1] || '';
-        document.getElementById('data_saida_frota').value = data.dataHoraSaida.split(' ')[0] || '';
-        document.getElementById('hora_saida_frota').value = data.dataHoraSaida.split(' ')[1] || '';
-        document.getElementById('nome_frota').value = data.nome;
-        document.getElementById('frota_frota').value = data.frota;
-        document.getElementById('obs_frota').value = data.obs;
+        document.getElementById('data_frota_biz').value = data.data;
+        document.getElementById('nome_frota_biz').value = data.nome;
+        document.getElementById('frota_frota_biz').value = data.frota;
+        document.getElementById('entrada_frota_biz').value = data.horaEntrada;
+        document.getElementById('saida_frota_biz').value = data.horaSaida;
       } else if (tabName === 'descarga-biz') {
-        const [dataRegistro, horario] = data.dataHora.split(' ');
-        document.getElementById('data_descarga').value = dataRegistro;
-        document.getElementById('horario_descarga').value = horario;
+        document.getElementById('data_descarga').value = data.data;
+        document.getElementById('horario_descarga').value = data.hora;
         document.getElementById('nome_descarga').value = data.nome;
-        document.getElementById('doc_descarga').value = data.documento;
-        document.getElementById('contato_descarga').value = data.contato;
-        document.getElementById('placa_cv_descarga').value = data.placa_cv;
-        document.getElementById('placa_rb_descarga').value = data.placa_rb;
-        document.getElementById('transportadora_descarga').value = data.transportadora;
-        document.getElementById('fornecedor_descarga').value = data.fornecedor;
+        document.getElementById('tel_descarga').value = data.tel;
+        document.getElementById('doc_descarga').value = data.doc;
+        document.getElementById('placas_descarga').value = data.placas;
+        document.getElementById('transportadora_descarga').value = data.transp;
+        document.getElementById('fornecedor_descarga').value = data.fornec;
         document.getElementById('sh_nf_descarga').value = data.sh_nf;
-        document.getElementById('quantidades_descarga').value = data.quantidades;
-        document.getElementById('obs_descarga').value = data.obs;
+        document.getElementById('quantidades_descarga').value = data.quant;
       } else if (tabName === 'carga-biz') {
-        const [dataRegistro, hora] = data.dataHora.split(' ');
-        document.getElementById('data_carga').value = dataRegistro;
+        document.getElementById('data_carga').value = data.data;
+        document.getElementById('hora_carga').value = data.hora;
         document.getElementById('nome_carga').value = data.nome;
-        document.getElementById('placa_carga').value = data.placa;
-        document.getElementById('cpf_carga').value = data.cpf;
-        document.getElementById('tel_carga').value = data.tel;
+        document.getElementById('placas_carga').value = data.placas;
+        document.getElementById('transp_carga').value = data.transp;
         document.getElementById('cliente_carga').value = data.cliente;
-        document.getElementById('hora_carga').value = hora;
+        document.getElementById('n_ordem_carga').value = data.nOrdem;
         document.getElementById('produto_carga').value = data.produto;
-        document.getElementById('n_ordem_carga').value = data.n_ordem;
-        document.getElementById('obs_carga').value = data.obs;
+        document.getElementById('quantidade_carga').value = data.quantidade;
+        document.getElementById('autorizacao_carga').value = data.autorizacao;
       } else if (tabName === 'prest-servicos-biz') {
-        const [dataRegistro, hora] = data.dataHora.split(' ');
-        document.getElementById('data_prest').value = dataRegistro;
-        document.getElementById('hora_prest').value = hora;
+        document.getElementById('data_prest').value = data.data;
+        document.getElementById('hora_prest').value = data.hora;
         document.getElementById('nome_prest').value = data.nome;
-        document.getElementById('placa_prest').value = data.placa;
-        document.getElementById('cpf_prest').value = data.cpf;
-        document.getElementById('tel_prest').value = data.tel;
-        document.getElementById('autorizado_prest').value = data.autorizado;
-        document.getElementById('obs_prest').value = data.obs;
+        document.getElementById('placa_cpf_prest').value = data.placa_cpf;
+        document.getElementById('empresa_prest').value = data.empresa;
+        document.getElementById('tipo_servico_prest').value = data.tipoServico;
+        document.getElementById('autorizacao_prest').value = data.autorizacao;
       }
     }
 
     function limparFormulario(tabName) {
       editIndexes[tabName] = null;
-      const tbody = document.getElementById(`tabela-${tabName}`).querySelector('tbody');
+      const tbody = document.getElementById(`tabela-${tabName}`)?.querySelector('tbody');
       if (tbody) {
         tbody.querySelectorAll('tr').forEach(tr => tr.classList.remove('selected'));
       }
       
       if (tabName === 'registros') {
+        document.getElementById('data_registros').value = getCurrentDate();
         document.getElementById('nome_registros').value = '';
         document.getElementById('cracha_registros').value = 'Crachá';
-        document.getElementById('placa_registros').value = '';
         document.getElementById('entrada_registros').value = '';
         document.getElementById('saida_registros').value = '';
         document.getElementById('obs_registros').value = '';
       } else if (tabName === 'frota-biz') {
-        document.getElementById('data_entrada_frota').value = '';
-        document.getElementById('hora_entrada_frota').value = '';
-        document.getElementById('data_saida_frota').value = '';
-        document.getElementById('hora_saida_frota').value = '';
-        document.getElementById('nome_frota').value = '';
-        document.getElementById('frota_frota').value = '';
-        document.getElementById('obs_frota').value = '';
+        document.getElementById('data_frota_biz').value = getCurrentDate();
+        document.getElementById('nome_frota_biz').value = '';
+        document.getElementById('frota_frota_biz').value = '';
+        document.getElementById('entrada_frota_biz').value = '';
+        document.getElementById('saida_frota_biz').value = '';
       } else if (tabName === 'descarga-biz') {
-        document.getElementById('data_descarga').value = '';
+        document.getElementById('data_descarga').value = getCurrentDate();
         document.getElementById('horario_descarga').value = '';
         document.getElementById('nome_descarga').value = '';
+        document.getElementById('tel_descarga').value = '';
         document.getElementById('doc_descarga').value = '';
-        document.getElementById('contato_descarga').value = '';
-        document.getElementById('placa_cv_descarga').value = '';
-        document.getElementById('placa_rb_descarga').value = '';
+        document.getElementById('placas_descarga').value = '';
         document.getElementById('transportadora_descarga').value = '';
         document.getElementById('fornecedor_descarga').value = '';
         document.getElementById('sh_nf_descarga').value = '';
         document.getElementById('quantidades_descarga').value = '';
-        document.getElementById('obs_descarga').value = '';
       } else if (tabName === 'carga-biz') {
-        document.getElementById('data_carga').value = '';
-        document.getElementById('nome_carga').value = '';
-        document.getElementById('placa_carga').value = '';
-        document.getElementById('cpf_carga').value = '';
-        document.getElementById('tel_carga').value = '';
-        document.getElementById('cliente_carga').value = '';
+        document.getElementById('data_carga').value = getCurrentDate();
         document.getElementById('hora_carga').value = '';
-        document.getElementById('produto_carga').value = '';
+        document.getElementById('nome_carga').value = '';
+        document.getElementById('placas_carga').value = '';
+        document.getElementById('transp_carga').value = '';
+        document.getElementById('cliente_carga').value = '';
         document.getElementById('n_ordem_carga').value = '';
-        document.getElementById('obs_carga').value = '';
+        document.getElementById('produto_carga').value = '';
+        document.getElementById('quantidade_carga').value = '';
+        document.getElementById('autorizacao_carga').value = '';
       } else if (tabName === 'prest-servicos-biz') {
-        document.getElementById('data_prest').value = '';
+        document.getElementById('data_prest').value = getCurrentDate();
         document.getElementById('hora_prest').value = '';
         document.getElementById('nome_prest').value = '';
-        document.getElementById('placa_prest').value = '';
-        document.getElementById('cpf_prest').value = '';
-        document.getElementById('tel_prest').value = '';
-        document.getElementById('autorizado_prest').value = '';
-        document.getElementById('obs_prest').value = '';
+        document.getElementById('placa_cpf_prest').value = '';
+        document.getElementById('empresa_prest').value = '';
+        document.getElementById('tipo_servico_prest').value = '';
+        document.getElementById('autorizacao_prest').value = '';
+      } else if (tabName === 'bloco-de-notas') {
+        selectedNoteIndex = null;
+        document.getElementById('note-title').value = '';
+        document.getElementById('note-content').value = '';
+        document.querySelectorAll('.note-item').forEach(item => item.classList.remove('selected'));
       }
       
       const selectAllCheckbox = document.getElementById(`selectAll-${tabName}`);
       if (selectAllCheckbox) {
           selectAllCheckbox.checked = false;
       }
+    }
+
+    // Lógica para o Bloco de Notas
+    function loadNotes() {
+      const notes = JSON.parse(localStorage.getItem(STORAGE_KEYS['bloco-de-notas']) || '[]');
+      const list = document.getElementById('notepad-list');
+      list.innerHTML = '';
+      notes.forEach((note, index) => {
+        const item = document.createElement('div');
+        item.classList.add('note-item');
+        item.innerHTML = `<h4>${note.title}</h4><p>${note.content.substring(0, 50)}...</p>`;
+        item.onclick = () => {
+          showNoteModal(note.title, note.content);
+        };
+        item.ondblclick = (e) => {
+          e.stopPropagation();
+          document.querySelectorAll('.note-item').forEach(i => i.classList.remove('selected'));
+          item.classList.add('selected');
+          selectedNoteIndex = index;
+          document.getElementById('note-title').value = note.title;
+          document.getElementById('note-content').value = note.content;
+        };
+        list.appendChild(item);
+      });
+      limparFormulario('bloco-de-notas');
+    }
+
+    function showNoteModal(title, content) {
+      const modal = document.getElementById('noteModal');
+      document.getElementById('modal-note-title').textContent = title;
+      document.getElementById('modal-note-content').textContent = content;
+      modal.style.display = 'block';
+    }
+
+    function closeNoteModal() {
+      const modal = document.getElementById('noteModal');
+      modal.style.display = 'none';
+    }
+
+    function saveNote() {
+      const title = document.getElementById('note-title').value;
+      const content = document.getElementById('note-content').value;
+      if (!title || !content) {
+        alert('Título e conteúdo não podem ser vazios.');
+        return;
+      }
+      let notes = JSON.parse(localStorage.getItem(STORAGE_KEYS['bloco-de-notas']) || '[]');
+      if (selectedNoteIndex !== null) {
+        notes[selectedNoteIndex] = { title, content };
+      } else {
+        notes.unshift({ title, content });
+      }
+      localStorage.setItem(STORAGE_KEYS['bloco-de-notas'], JSON.stringify(notes));
+      loadNotes();
+    }
+
+    function deleteNote() {
+      if (selectedNoteIndex === null) {
+        alert('Selecione uma anotação para excluir.');
+        return;
+      }
+      if (!confirm('Deseja realmente excluir esta anotação?')) return;
+      let notes = JSON.parse(localStorage.getItem(STORAGE_KEYS['bloco-de-notas']) || '[]');
+      notes.splice(selectedNoteIndex, 1);
+      localStorage.setItem(STORAGE_KEYS['bloco-de-notas'], JSON.stringify(notes));
+      loadNotes();
+    }
+
+    // Lógica para Agenda
+    function updateClock() {
+      const now = new Date();
+      const clockElement = document.getElementById('clock');
+      const dateElement = document.getElementById('date');
+      
+      const timeString = now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+      const dateString = now.toLocaleDateString('pt-BR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+      
+      if (clockElement) clockElement.textContent = timeString;
+      if (dateElement) dateElement.textContent = dateString;
+    }
+
+    setInterval(updateClock, 1000);
+
+    function renderCalendar() {
+        const calendar = document.getElementById('calendar');
+        const monthYearHeader = document.getElementById('current-month-year');
+        const months = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+        const daysOfWeek = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
+        
+        monthYearHeader.textContent = `${months[currentMonth]} ${currentYear}`;
+        
+        let calendarHTML = '';
+        for (let day of daysOfWeek) {
+            calendarHTML += `<div class="day-name">${day}</div>`;
+        }
+
+        const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+        const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+        const today = new Date();
+        const appointments = JSON.parse(localStorage.getItem(STORAGE_KEYS['agenda']) || '[]');
+        const appointmentsByDay = appointments.reduce((acc, appt) => {
+          const day = new Date(appt.date).getDate();
+          if (!acc[day]) acc[day] = [];
+          acc[day].push(appt);
+          return acc;
+        }, {});
+
+        for (let j = 0; j < firstDay; j++) {
+            calendarHTML += `<div></div>`;
+        }
+        for (let j = 1; j <= daysInMonth; j++) {
+            const isCurrentDay = (currentMonth === today.getMonth() && j === today.getDate() && currentYear === today.getFullYear());
+            const hasAppointment = appointmentsByDay[j] && appointmentsByDay[j].length > 0;
+            const classes = `day-number${isCurrentDay ? ' current-day' : ''}${hasAppointment ? ' has-appointment' : ''}`;
+            calendarHTML += `<div class="${classes}">${j}</div>`;
+        }
+        if (calendar) calendar.innerHTML = calendarHTML;
+    }
+
+    function changeMonth(delta) {
+        currentMonth += delta;
+        if (currentMonth > 11) {
+            currentMonth = 0;
+            currentYear++;
+        } else if (currentMonth < 0) {
+            currentMonth = 11;
+            currentYear--;
+        }
+        renderCalendar();
+    }
+    
+    function loadAppointments() {
+      const appointments = JSON.parse(localStorage.getItem(STORAGE_KEYS['agenda']) || '[]');
+      const list = document.getElementById('appointments');
+      list.innerHTML = '';
+      appointments.forEach((appt, index) => {
+        const item = document.createElement('li');
+        item.innerHTML = `<span class="appointment-text">${appt.date} ${appt.time} - ${appt.text}</span>
+          <div class="appointment-buttons">
+            <button onclick="editAppointment(${index})">✎</button>
+            <button onclick="removeAppointment(${index})">✖</button>
+          </div>`;
+        list.appendChild(item);
+      });
+    }
+
+    function addAppointment() {
+      const date = document.getElementById('appointment-date').value;
+      const time = document.getElementById('appointment-time').value;
+      const text = document.getElementById('appointment-text').value;
+
+      if (!date || !time || !text) {
+        alert('Preencha todos os campos para adicionar um compromisso.');
+        return;
+      }
+      let appointments = JSON.parse(localStorage.getItem(STORAGE_KEYS['agenda']) || '[]');
+      appointments.push({ date, time, text });
+      localStorage.setItem(STORAGE_KEYS['agenda'], JSON.stringify(appointments));
+      loadAppointments();
+      renderCalendar();
+      document.getElementById('appointment-date').value = '';
+      document.getElementById('appointment-time').value = '';
+      document.getElementById('appointment-text').value = '';
+    }
+
+    function editAppointment(index) {
+      const appointments = JSON.parse(localStorage.getItem(STORAGE_KEYS['agenda']) || '[]');
+      const appt = appointments[index];
+      document.getElementById('appointment-date').value = appt.date;
+      document.getElementById('appointment-time').value = appt.time;
+      document.getElementById('appointment-text').value = appt.text;
+      
+      const updateButton = document.createElement('button');
+      updateButton.textContent = 'Salvar Edição';
+      updateButton.onclick = () => saveAppointment(index);
+      
+      const buttonsContainer = document.querySelector('#form-agenda .formulario-botoes');
+      buttonsContainer.innerHTML = '';
+      buttonsContainer.appendChild(updateButton);
+    }
+    
+    function saveAppointment(index) {
+      const date = document.getElementById('appointment-date').value;
+      const time = document.getElementById('appointment-time').value;
+      const text = document.getElementById('appointment-text').value;
+      
+      let appointments = JSON.parse(localStorage.getItem(STORAGE_KEYS['agenda']) || '[]');
+      appointments[index] = { date, time, text };
+      localStorage.setItem(STORAGE_KEYS['agenda'], JSON.stringify(appointments));
+      loadAppointments();
+      renderCalendar();
+      
+      document.getElementById('appointment-date').value = '';
+      document.getElementById('appointment-time').value = '';
+      document.getElementById('appointment-text').value = '';
+      
+      const buttonsContainer = document.querySelector('#form-agenda .formulario-botoes');
+      buttonsContainer.innerHTML = '<button onclick="addAppointment()">Adicionar</button>';
+    }
+
+    function removeAppointment(index) {
+      if (!confirm('Deseja realmente remover este compromisso?')) return;
+      let appointments = JSON.parse(localStorage.getItem(STORAGE_KEYS['agenda']) || '[]');
+      appointments.splice(index, 1);
+      localStorage.setItem(STORAGE_KEYS['agenda'], JSON.stringify(appointments));
+      loadAppointments();
+      renderCalendar();
     }
 
     document.addEventListener('DOMContentLoaded', () => {
