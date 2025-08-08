@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Registro de Funcionários</title>
+  <title>Zentry Biz</title>
   <style>
     :root {
       --bg: #f9f9fa;
@@ -203,7 +203,7 @@
         <thead>
           <tr>
             <th><input type="checkbox" id="selectAll-frota-biz" onclick="toggleSelectAll('frota-biz')"> Selecionar</th>
-            <th>Data Entrada</th>
+          <th>Data Entrada</th>
             <th>Hora Entrada</th>
             <th>Data Saída</th>
             <th>Hora Saída</th>
@@ -234,7 +234,7 @@
             <th>Quanti.:</th>
             <th>Obs</th>
           </tr>
-        </thead>
+</thead>
         <tbody></tbody>
       </table>
     </div>
@@ -246,7 +246,7 @@
         <thead>
           <tr>
             <th><input type="checkbox" id="selectAll-carga-biz" onclick="toggleSelectAll('carga-biz')"> Selecionar</th>
-             <th>Hora</th>
+            <th>Hora</th>
             <th>Nome</th>
             <th>Placa</th>
             <th>Doc.:</th>
@@ -268,7 +268,7 @@
         <thead>
           <tr>
             <th><input type="checkbox" id="selectAll-prest-servicos-biz" onclick="toggleSelectAll('prest-servicos-biz')"> Selecionar</th>
-           <th>Data</th>
+            <th>Data</th>
             <th>Nome</th>
             <th>Placa</th>
             <th>CPF</th>
@@ -494,7 +494,7 @@
       const editIndex = editIndexes[tabName];
       
       const now = new Date();
-      const dataFormatada = now.toLocaleDateString('pt-BR');
+      const dataFormatada = `${now.getDate().toString().padStart(2, '0')}-${(now.getMonth() + 1).toString().padStart(2, '0')}-${now.getFullYear()}`;
       
       if (tabName === 'registros') {
         const horaEntrada = document.getElementById('entrada_registros').value;
@@ -677,9 +677,8 @@
             
             let orderedValues = [];
             if (tabName === 'registros') {
-                const dataEntrada = r.dataHoraEntrada ? r.dataHoraEntrada.split(' ')[0] : '';
-                const horaEntrada = r.dataHoraEntrada ? r.dataHoraEntrada.split(' ')[1] : '';
-                orderedValues = [`${dataEntrada} ${horaEntrada}`, r.nome, r.cracha, r.placa, r.obs];
+                const dataHora = r.dataHoraEntrada ? r.dataHoraEntrada : '';
+                orderedValues = [dataHora, r.nome, r.cracha, r.placa, r.obs];
             } else if (tabName === 'frota-biz') {
                 const dataEntrada = r.dataHoraEntrada ? r.dataHoraEntrada.split(' ')[0] : '';
                 const horaEntrada = r.dataHoraEntrada ? r.dataHoraEntrada.split(' ')[1] : '';
