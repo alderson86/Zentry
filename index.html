@@ -35,8 +35,8 @@
       padding: 20px;
     }
     .content-card {
-      width: 100%;
-      max-width: 1000px;
+      width: 95%; /* Alteração: Aumentado para 95% da largura da tela */
+      max-width: 1400px; /* Alteração: Aumentado para acomodar a nova largura */
       background-color: var(--card);
       border-radius: 12px;
       box-shadow: 0 4px 16px rgba(0,0,0,0.08);
@@ -356,6 +356,39 @@
       text-decoration: none;
       cursor: pointer;
     }
+    #alert-modal {
+      display: none;
+      position: fixed;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      width: 350px;
+      padding: 20px;
+      background-color: var(--card);
+      border-radius: 12px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.2);
+      z-index: 200;
+      text-align: center;
+      animation: fadeIn 0.3s;
+    }
+    #alert-modal h3 {
+      color: var(--accent);
+      margin-top: 0;
+    }
+    #alert-modal p {
+      margin-bottom: 20px;
+    }
+    #alert-modal button {
+      background-color: var(--accent);
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    #alert-modal button:hover {
+      background-color: #005bb5;
+    }
   </style>
 </head>
 <body>
@@ -590,7 +623,7 @@
         
         <div id="form-frota-biz" class="footer-form">
           <div class="formulario-campos">
-            <input type="date" id="data_frota_biz" disabled style="display: none;"/>
+            <input type="date" id="data_frota_biz" disabled hidden/>
             <input type="text" id="nome_frota_biz" placeholder="Nome" />
             <input type="text" id="frota_frota_biz" placeholder="Frota" />
             <input type="time" id="entrada_frota_biz" placeholder="Hora de Entrada" />
@@ -607,7 +640,7 @@
 
         <div id="form-descarga-biz" class="footer-form">
           <div class="formulario-campos">
-            <input type="date" id="data_descarga" disabled style="display: none;"/>
+            <input type="date" id="data_descarga" disabled hidden />
             <input type="time" id="horario_descarga" />
             <input type="text" id="nome_descarga" placeholder="Nome" />
             <input type="text" id="tel_descarga" placeholder="Tel" />
@@ -629,7 +662,7 @@
 
         <div id="form-carga-biz" class="footer-form">
           <div class="formulario-campos">
-            <input type="date" id="data_carga" disabled style="display: none;"/>
+            <input type="date" id="data_carga" disabled hidden />
             <input type="time" id="hora_carga" />
             <input type="text" id="nome_carga" placeholder="Nome" />
             <input type="text" id="placas_carga" placeholder="Placas" />
@@ -651,7 +684,7 @@
 
         <div id="form-prest-servicos-biz" class="footer-form">
           <div class="formulario-campos">
-            <input type="date" id="data_prest" disabled style="display: none;"/>
+            <input type="date" id="data_prest" disabled hidden />
             <input type="time" id="hora_prest" />
             <input type="text" id="nome_prest" placeholder="Nome" />
             <input type="text" id="placa_cpf_prest" placeholder="Placa/CPF" />
@@ -688,6 +721,12 @@
       <h3 id="modal-note-title"></h3>
       <p id="modal-note-content"></p>
     </div>
+  </div>
+
+  <div id="alert-modal">
+    <h3>Lembrete de Compromisso!</h3>
+    <p id="alert-message"></p>
+    <button onclick="closeAlertModal()">Ok</button>
   </div>
 
   <script>
@@ -734,7 +773,9 @@
 
       const tabButtons = document.querySelectorAll('.tab-button');
       tabButtons.forEach(button => button.classList.remove('active'));
-      event.currentTarget.classList.add('active');
+      
+      // Corrigido para garantir que o botão clicado se torne ativo
+      document.querySelector(`.tab-button[onclick*='${tabName}']`).classList.add('active');
       
       editIndexes[tabName] = null;
       limparFormulario(tabName);
@@ -766,7 +807,7 @@
       
       if (tabName === 'registros') {
         registro = {
-          data: document.getElementById('data_registros').value,
+          data: getCurrentDate(),
           nome: document.getElementById('nome_registros').value,
           cracha: document.getElementById('cracha_registros').value,
           horaEntrada: document.getElementById('entrada_registros').value,
@@ -775,7 +816,7 @@
         };
       } else if (tabName === 'frota-biz') {
         registro = {
-          data: document.getElementById('data_frota_biz').value,
+          data: getCurrentDate(),
           nome: document.getElementById('nome_frota_biz').value,
           frota: document.getElementById('frota_frota_biz').value,
           horaEntrada: document.getElementById('entrada_frota_biz').value,
@@ -783,7 +824,7 @@
         };
       } else if (tabName === 'descarga-biz') {
         registro = {
-          data: document.getElementById('data_descarga').value,
+          data: getCurrentDate(),
           hora: document.getElementById('horario_descarga').value,
           nome: document.getElementById('nome_descarga').value,
           tel: document.getElementById('tel_descarga').value,
@@ -796,7 +837,7 @@
         };
       } else if (tabName === 'carga-biz') {
         registro = {
-          data: document.getElementById('data_carga').value,
+          data: getCurrentDate(),
           hora: document.getElementById('hora_carga').value,
           nome: document.getElementById('nome_carga').value,
           placas: document.getElementById('placas_carga').value,
@@ -809,7 +850,7 @@
         };
       } else if (tabName === 'prest-servicos-biz') {
         registro = {
-          data: document.getElementById('data_prest').value,
+          data: getCurrentDate(),
           hora: document.getElementById('hora_prest').value,
           nome: document.getElementById('nome_prest').value,
           placa_cpf: document.getElementById('placa_cpf_prest').value,
@@ -866,6 +907,11 @@
       const storageKey = STORAGE_KEYS[tabName];
       let registros = JSON.parse(localStorage.getItem(storageKey) || '[]');
       
+      if (registros.length === 0) {
+        alert('Não há dados para exportar.');
+        return;
+      }
+
       const headers = Object.keys(registros[0] || {});
       const texto = registros.map(r => headers.map(h => r[h]).join('\t')).join('\n');
       
@@ -883,6 +929,11 @@
       const storageKey = STORAGE_KEYS[tabName];
       let registros = JSON.parse(localStorage.getItem(storageKey) || '[]');
       
+      if (registros.length === 0) {
+        alert('Não há dados para exportar.');
+        return;
+      }
+
       const headers = Object.keys(registros[0] || {});
       const csv = registros.map(r => headers.map(h => `"${r[h]}"`).join(',')).join('\n');
 
@@ -1022,20 +1073,17 @@
       }
       
       if (tabName === 'registros') {
-        document.getElementById('data_registros').value = getCurrentDate();
         document.getElementById('nome_registros').value = '';
         document.getElementById('cracha_registros').value = 'Crachá';
         document.getElementById('entrada_registros').value = '';
         document.getElementById('saida_registros').value = '';
         document.getElementById('obs_registros').value = '';
       } else if (tabName === 'frota-biz') {
-        document.getElementById('data_frota_biz').value = getCurrentDate();
         document.getElementById('nome_frota_biz').value = '';
         document.getElementById('frota_frota_biz').value = '';
         document.getElementById('entrada_frota_biz').value = '';
         document.getElementById('saida_frota_biz').value = '';
       } else if (tabName === 'descarga-biz') {
-        document.getElementById('data_descarga').value = getCurrentDate();
         document.getElementById('horario_descarga').value = '';
         document.getElementById('nome_descarga').value = '';
         document.getElementById('tel_descarga').value = '';
@@ -1046,7 +1094,6 @@
         document.getElementById('sh_nf_descarga').value = '';
         document.getElementById('quantidades_descarga').value = '';
       } else if (tabName === 'carga-biz') {
-        document.getElementById('data_carga').value = getCurrentDate();
         document.getElementById('hora_carga').value = '';
         document.getElementById('nome_carga').value = '';
         document.getElementById('placas_carga').value = '';
@@ -1057,7 +1104,6 @@
         document.getElementById('quantidade_carga').value = '';
         document.getElementById('autorizacao_carga').value = '';
       } else if (tabName === 'prest-servicos-biz') {
-        document.getElementById('data_prest').value = getCurrentDate();
         document.getElementById('hora_prest').value = '';
         document.getElementById('nome_prest').value = '';
         document.getElementById('placa_cpf_prest').value = '';
@@ -1157,7 +1203,7 @@
     }
 
     setInterval(updateClock, 1000);
-
+    
     function renderCalendar() {
         const calendar = document.getElementById('calendar');
         const monthYearHeader = document.getElementById('current-month-year');
@@ -1231,7 +1277,7 @@
         return;
       }
       let appointments = JSON.parse(localStorage.getItem(STORAGE_KEYS['agenda']) || '[]');
-      appointments.push({ date, time, text });
+      appointments.push({ date, time, text, alerted: false });
       localStorage.setItem(STORAGE_KEYS['agenda'], JSON.stringify(appointments));
       loadAppointments();
       renderCalendar();
@@ -1262,7 +1308,7 @@
       const text = document.getElementById('appointment-text').value;
       
       let appointments = JSON.parse(localStorage.getItem(STORAGE_KEYS['agenda']) || '[]');
-      appointments[index] = { date, time, text };
+      appointments[index] = { date, time, text, alerted: false };
       localStorage.setItem(STORAGE_KEYS['agenda'], JSON.stringify(appointments));
       loadAppointments();
       renderCalendar();
@@ -1283,9 +1329,42 @@
       loadAppointments();
       renderCalendar();
     }
+    
+    // Lógica para Alerta de Compromisso
+    function checkAppointments() {
+        const now = new Date();
+        const appointments = JSON.parse(localStorage.getItem(STORAGE_KEYS['agenda']) || '[]');
+        
+        appointments.forEach(appt => {
+            const apptDateTime = new Date(`${appt.date}T${appt.time}:00`);
+            const timeDifference = apptDateTime.getTime() - now.getTime();
+            const twentyMinutesInMs = 20 * 60 * 1000;
+
+            if (timeDifference > 0 && timeDifference <= twentyMinutesInMs && !appt.alerted) {
+                showAlertModal(`Seu compromisso de "${appt.text}" é em menos de 20 minutos!`);
+                appt.alerted = true;
+                localStorage.setItem(STORAGE_KEYS['agenda'], JSON.stringify(appointments));
+            }
+        });
+    }
+
+    function showAlertModal(message) {
+      const modal = document.getElementById('alert-modal');
+      document.getElementById('alert-message').textContent = message;
+      modal.style.display = 'block';
+    }
+
+    function closeAlertModal() {
+      const modal = document.getElementById('alert-modal');
+      modal.style.display = 'none';
+    }
+
+    setInterval(checkAppointments, 60000); // Checa a cada minuto
 
     document.addEventListener('DOMContentLoaded', () => {
         openTab('registros');
+        // Adicionando a verificação inicial para compromissos
+        checkAppointments();
     });
   </script>
 </body>
