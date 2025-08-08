@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Zentry-Biz</title>
+  <title>Registro de Funcionários</title>
   <style>
     :root {
       --bg: #f9f9fa;
@@ -185,11 +185,11 @@
         <thead>
           <tr>
             <th><input type="checkbox" id="selectAll-registros" onclick="toggleSelectAll('registros')"> Selecionar</th>
-            <th>Data</th>
+            <th>Data e hora</th>
             <th>Nome</th>
             <th>Crachá</th>
             <th>Placa</th>
-            <th>Obs.:</th>
+            <th>Obs.</th>
           </tr>
         </thead>
         <tbody></tbody>
@@ -203,10 +203,13 @@
         <thead>
           <tr>
             <th><input type="checkbox" id="selectAll-frota-biz" onclick="toggleSelectAll('frota-biz')"> Selecionar</th>
-            <th>Data</th>
+            <th>Data Entrada</th>
+            <th>Hora Saída</th>
+            <th>Data Saída</th>
+            <th>Hora Saída</th>
             <th>Nome</th>
             <th>Frota</th>
-            <th>Obs.:</th>
+            <th>Obs</th>
           </tr>
         </thead>
         <tbody></tbody>
@@ -244,7 +247,7 @@
         <thead>
           <tr>
             <th><input type="checkbox" id="selectAll-carga-biz" onclick="toggleSelectAll('carga-biz')"> Selecionar</th>
-            <th>Hora</th>
+             <th>Hora</th>
             <th>Nome</th>
             <th>Placa</th>
             <th>Doc.:</th>
@@ -266,7 +269,7 @@
         <thead>
           <tr>
             <th><input type="checkbox" id="selectAll-prest-servicos-biz" onclick="toggleSelectAll('prest-servicos-biz')"> Selecionar</th>
-            <th>Data</th>
+           <th>Data</th>
             <th>Nome</th>
             <th>Placa</th>
             <th>CPF</th>
@@ -286,56 +289,47 @@
       <div class="formulario-campos">
         <select id="nome_registros">
           <option disabled selected>Selecione o nome</option>
-          <option>------Turno da Manhã-----</option>
-<option>Leandro S.</option>
-<option>Oscar -Supervisor</option>
-<option>João Paulo. - Menor Aprendiz</option>
-<option>Vitória Isabele</option>
-<option>Thalles</option>
-<option>André</option>
-<option>Ezequias</option>
-<option>Luiz Carlos</option>
-<option>Raimundo</option>
-<option>Michel F. - Menor Aprendiz</option>
-<option>João Vitor</option>
-<option>Luiz Henrique</option>
-<option>Cristiano</option>
-<option>Luiz Carlos</option>
-<option>Marsergio-Gerente</option>
-<option>Jean Carlos</option>
-<option>André - ADM</option>
-
-<option>-----Turno da Tarde-----</option>
-
-<option>Enildo -Supervisor</option>
-<option>Thiago Benjamin</option>
-<option>Jayme - Encarregado - Van</option>
-<option>Raimundo - Van</option>
-<option>Marcos - Van</option>
-<option>Fábio - Van</option>
-<option>Eriton - Van</option>
-<option>Elionai - Van</option>
-<option>Edmar - Van</option>
-<option>Jefferson - Van</option>
-<option>Wanderson</option>
-<option>Kleverson</option>
-<option>Leandro F.</option>
-<option>Gilliard D.</option>
-<option>Leandro P.</option>
-<option>André F.</option>
-<option>Leonardo</option>
-<option>Dangel – Menor aprendiz</option>
-<option>Cauan – Menor aprendiz</option>
-<option>Nicolas G – Menor aprendiz</option>
-<option>Elias – Menor aprendiz</option>
-<option>Murilo - Menor Aprendiz</option>
-<option>Matias - Menor Aprendiz</option>
-<option>Yuri  - Menor Aprendiz</option>
-<option>Pedro H - Menor Aprendiz</option>
-<option>Felipe - Menor Aprendiz</option>
-<option>Abraão - Menor Aprendiz</option>
-<option>Gabriel - Menor Aprendiz</option>
-<option>Edirlei - CPD</option>
+          <option>Oscar - Supervisor</option>
+          <option>João Paulo - Menor Aprendiz</option>
+          <option>Thalles</option>
+          <option>André</option>
+          <option>Ezequias</option>
+          <option>Luiz Carlos</option>
+          <option>João Vitor</option>
+          <option>Luiz Henrique</option>
+          <option>Gean Carlos</option>
+          <option>Raimundo</option>
+          <option>Michel F. - Menor Aprendiz</option>
+          <option>Vitória Isabele</option>
+          <option>Cristiano</option>
+          <option>Marsergio - Gerente</option>
+          <option>André - ADM</option>
+          <option>Enildo - Supervisor</option>
+          <option>Thiago Benjamin</option>
+          <option>Edirlei - CPD</option>
+          <option>Yuri - Menor Aprendiz</option>
+          <option>Pedro H - Menor Aprendiz</option>
+          <option>Felipe - Menor Aprendiz</option>
+          <option>Jayme - Encarregado</option>
+          <option>Raimundo - Van</option>
+          <option>Marcos - Van</option>
+          <option>Fábio - Van</option>
+          <option>Eriton - Van</option>
+          <option>Elionai - Van</option>
+          <option>Edmar - Van</option>
+          <option>Jefferson - Van</option>
+          <option>Gabriel - Menor Aprendiz</option>
+          <option>Dangel – Menor aprendiz</option>
+          <option>Cauan – Menor aprendiz</option>
+          <option>Nicolas G – Menor aprendiz</option>
+          <option>Elias – Menor aprendiz</option>
+          <option>Abraão - Menor Aprendiz</option>
+          <option>Wanderson</option>
+          <option>Keverson</option>
+          <option>Leandro F.</option>
+          <option>Murilo - Menor Aprendiz</option>
+          <option>Matias - Menor Aprendiz</option>
+          <option>Leandro P.</option>
         </select>
         <select id="cracha_registros">
           <option disabled selected>Crachá</option>
@@ -359,11 +353,12 @@
     
     <div id="form-frota-biz" class="footer-form">
       <div class="formulario-campos">
-        <input type="date" id="data_frota" />
+        <input type="date" id="data_entrada_frota" placeholder="Data de Entrada" />
+        <input type="time" id="hora_entrada_frota" placeholder="Hora de Entrada" />
+        <input type="date" id="data_saida_frota" placeholder="Data de Saída" />
+        <input type="time" id="hora_saida_frota" placeholder="Hora de Saída" />
         <input type="text" id="nome_frota" placeholder="Nome" />
         <input type="text" id="frota_frota" placeholder="Frota" />
-        <input type="time" id="entrada_frota" />
-        <input type="time" id="saida_frota" />
         <input type="text" id="obs_frota" placeholder="Observação" />
       </div>
       <div class="formulario-botoes">
@@ -494,40 +489,40 @@
       const now = new Date();
       const dataFormatada = now.toLocaleDateString('pt-BR');
       
-      let dataHora = '';
-
       if (tabName === 'registros') {
         const horaEntrada = document.getElementById('entrada_registros').value;
         const horaSaida = document.getElementById('saida_registros').value;
-        dataHora = `${dataFormatada} ${horaEntrada || horaSaida}`;
+        const dataHoraEntrada = horaEntrada ? `${dataFormatada} ${horaEntrada}` : '';
+        const dataHoraSaida = horaSaida ? `${dataFormatada} ${horaSaida}` : '';
 
         registro = {
-          dataHora: dataHora,
+          dataHoraEntrada: dataHoraEntrada,
+          dataHoraSaida: dataHoraSaida,
           nome: document.getElementById('nome_registros').value,
           cracha: document.getElementById('cracha_registros').value,
           placa: document.getElementById('placa_registros').value,
-          entrada: horaEntrada,
-          saida: horaSaida,
           obs: document.getElementById('obs_registros').value,
         };
       } else if (tabName === 'frota-biz') {
-        const data = document.getElementById('data_frota').value;
-        const horaEntrada = document.getElementById('entrada_frota').value;
-        const horaSaida = document.getElementById('saida_frota').value;
-        dataHora = `${data} ${horaEntrada || horaSaida}`;
+        const dataEntrada = document.getElementById('data_entrada_frota').value;
+        const horaEntrada = document.getElementById('hora_entrada_frota').value;
+        const dataSaida = document.getElementById('data_saida_frota').value;
+        const horaSaida = document.getElementById('hora_saida_frota').value;
+        
+        const dataHoraEntrada = dataEntrada && horaEntrada ? `${dataEntrada} ${horaEntrada}` : '';
+        const dataHoraSaida = dataSaida && horaSaida ? `${dataSaida} ${horaSaida}` : '';
 
         registro = {
-          dataHora: dataHora,
+          dataHoraEntrada: dataHoraEntrada,
+          dataHoraSaida: dataHoraSaida,
           nome: document.getElementById('nome_frota').value,
           frota: document.getElementById('frota_frota').value,
-          entrada: horaEntrada,
-          saida: horaSaida,
           obs: document.getElementById('obs_frota').value,
         };
       } else if (tabName === 'descarga-biz') {
         const data = document.getElementById('data_descarga').value;
         const horario = document.getElementById('horario_descarga').value;
-        dataHora = `${data} ${horario}`;
+        const dataHora = `${data} ${horario}`;
 
         registro = {
           dataHora: dataHora,
@@ -545,7 +540,7 @@
       } else if (tabName === 'carga-biz') {
         const data = document.getElementById('data_carga').value;
         const hora = document.getElementById('hora_carga').value;
-        dataHora = `${data} ${hora}`;
+        const dataHora = `${data} ${hora}`;
 
         registro = {
           dataHora: dataHora,
@@ -562,7 +557,7 @@
       } else if (tabName === 'prest-servicos-biz') {
         const data = document.getElementById('data_prest').value;
         const hora = document.getElementById('hora_prest').value;
-        dataHora = `${data} ${hora}`;
+        const dataHora = `${data} ${hora}`;
 
         registro = {
           dataHora: dataHora,
@@ -653,74 +648,67 @@
     }
     
     function carregarRegistros(tabName) {
-      const tabela = document.getElementById(`tabela-${tabName}`);
-      if (!tabela) return;
+        const tabela = document.getElementById(`tabela-${tabName}`);
+        if (!tabela) return;
 
-      const tbody = tabela.querySelector('tbody');
-      tbody.innerHTML = '';
-      
-      const storageKey = STORAGE_KEYS[tabName];
-      let registros = JSON.parse(localStorage.getItem(storageKey) || '[]');
-      
-      // Ordena os registros por data e hora, se houver
-      if (registros.length > 0 && registros[0].dataHora) {
-          registros.sort((a, b) => {
-              const [dataA, horaA] = a.dataHora.split(' ');
-              const [diaA, mesA, anoA] = dataA.split('/').map(Number);
-              const [horaNumA, minutoA] = horaA ? horaA.split(':').map(Number) : [0,0];
-              const dateA = new Date(anoA, mesA - 1, diaA, horaNumA, minutoA);
-              
-              const [dataB, horaB] = b.dataHora.split(' ');
-              const [diaB, mesB, anoB] = dataB.split('/').map(Number);
-              const [horaNumB, minutoB] = horaB ? horaB.split(':').map(Number) : [0,0];
-              const dateB = new Date(anoB, mesB - 1, diaB, horaNumB, minutoB);
-
-              return dateA - dateB;
-          });
-      }
-
-      registros.forEach((r, index) => {
-        const row = tbody.insertRow();
+        const tbody = tabela.querySelector('tbody');
+        tbody.innerHTML = '';
         
-        let orderedValues = [];
-        if (tabName === 'registros') {
-            orderedValues = [r.dataHora, r.nome, r.cracha, r.placa, r.obs];
-        } else if (tabName === 'frota-biz') {
-            orderedValues = [r.dataHora, r.nome, r.frota, r.obs];
-        } else if (tabName === 'descarga-biz') {
-            orderedValues = [r.dataHora, r.nome, r.documento, r.contato, r.placa_cv, r.placa_rb, r.transportadora, r.fornecedor, r.sh_nf, r.quantidades, r.obs];
-        } else if (tabName === 'carga-biz') {
-            orderedValues = [r.dataHora, r.nome, r.placa, r.cpf, r.tel, r.cliente, r.produto, r.n_ordem, r.obs];
-        } else if (tabName === 'prest-servicos-biz') {
-            orderedValues = [r.dataHora, r.nome, r.placa, r.cpf, r.tel, r.autorizado, r.obs];
+        const storageKey = STORAGE_KEYS[tabName];
+        let registros = JSON.parse(localStorage.getItem(storageKey) || '[]');
+
+        if (registros.length > 0) {
+            registros.sort((a, b) => {
+                const dateA = new Date(a.dataHoraEntrada || a.dataHora || a.data).getTime();
+                const dateB = new Date(b.dataHoraEntrada || b.dataHora || b.data).getTime();
+                return dateA - dateB;
+            });
         }
 
-        const checkboxCell = row.insertCell();
-        const checkbox = document.createElement('input');
-        checkbox.type = 'checkbox';
-        checkbox.dataset.index = index;
-        checkbox.addEventListener('click', (e) => e.stopPropagation());
-        checkboxCell.appendChild(checkbox);
-        
-        // Exibe a data e a hora na primeira célula
-        const dataHoraCell = row.insertCell();
-        dataHoraCell.textContent = r.dataHora;
+        registros.forEach((r, index) => {
+            const row = tbody.insertRow();
+            
+            let orderedValues = [];
+            if (tabName === 'registros') {
+                const dataEntrada = r.dataHoraEntrada ? r.dataHoraEntrada.split(' ')[0] : '';
+                const horaEntrada = r.dataHoraEntrada ? r.dataHoraEntrada.split(' ')[1] : '';
+                orderedValues = [`${dataEntrada} ${horaEntrada}`, r.nome, r.cracha, r.placa, r.obs];
+            } else if (tabName === 'frota-biz') {
+                const dataEntrada = r.dataHoraEntrada ? r.dataHoraEntrada.split(' ')[0] : '';
+                const horaEntrada = r.dataHoraEntrada ? r.dataHoraEntrada.split(' ')[1] : '';
+                const dataSaida = r.dataHoraSaida ? r.dataHoraSaida.split(' ')[0] : '';
+                const horaSaida = r.dataHoraSaida ? r.dataHoraSaida.split(' ')[1] : '';
+                orderedValues = [dataEntrada, horaEntrada, dataSaida, horaSaida, r.nome, r.frota, r.obs];
+            } else if (tabName === 'descarga-biz') {
+                const dataHora = r.dataHora ? r.dataHora : '';
+                orderedValues = [dataHora, r.nome, r.documento, r.contato, r.placa_cv, r.placa_rb, r.transportadora, r.fornecedor, r.sh_nf, r.quantidades, r.obs];
+            } else if (tabName === 'carga-biz') {
+                const dataHora = r.dataHora ? r.dataHora : '';
+                orderedValues = [dataHora, r.nome, r.placa, r.cpf, r.tel, r.cliente, r.produto, r.n_ordem, r.obs];
+            } else if (tabName === 'prest-servicos-biz') {
+                const dataHora = r.dataHora ? r.dataHora : '';
+                orderedValues = [dataHora, r.nome, r.placa, r.cpf, r.tel, r.autorizado, r.obs];
+            }
 
-        orderedValues.slice(1).forEach(value => {
-            const cell = row.insertCell();
-            cell.textContent = value;
+            const checkboxCell = row.insertCell();
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.dataset.index = index;
+            checkbox.addEventListener('click', (e) => e.stopPropagation());
+            checkboxCell.appendChild(checkbox);
+            
+            orderedValues.forEach(value => {
+                const cell = row.insertCell();
+                cell.textContent = value;
+            });
+
+            row.ondblclick = () => {
+              tbody.querySelectorAll('tr').forEach(tr => tr.classList.remove('selected'));
+              row.classList.add('selected');
+              
+              preencherFormulario(tabName, r, index);
+            };
         });
-
-        // Ações - Mantemos a célula vazia para não quebrar a estrutura da tabela
-        row.insertCell().innerHTML = '';
-
-        row.ondblclick = () => {
-          tbody.querySelectorAll('tr').forEach(tr => tr.classList.remove('selected'));
-          row.classList.add('selected');
-          
-          preencherFormulario(tabName, r, index);
-        };
-      });
     }
 
     function preencherFormulario(tabName, data, index) {
@@ -739,18 +727,16 @@
         document.getElementById('cracha_registros').value = data.cracha;
         document.getElementById('placa_registros').value = data.placa;
         
-        // Separa a data e hora para preencher os campos corretamente
-        const [dataRegistro, horaEntrada] = data.dataHora.split(' ');
-        document.getElementById('entrada_registros').value = data.entrada;
-        document.getElementById('saida_registros').value = data.saida;
+        document.getElementById('entrada_registros').value = data.dataHoraEntrada.split(' ')[1] || '';
+        document.getElementById('saida_registros').value = data.dataHoraSaida.split(' ')[1] || '';
         document.getElementById('obs_registros').value = data.obs;
       } else if (tabName === 'frota-biz') {
-        const [dataRegistro, horaEntrada] = data.dataHora.split(' ');
-        document.getElementById('data_frota').value = dataRegistro;
+        document.getElementById('data_entrada_frota').value = data.dataHoraEntrada.split(' ')[0] || '';
+        document.getElementById('hora_entrada_frota').value = data.dataHoraEntrada.split(' ')[1] || '';
+        document.getElementById('data_saida_frota').value = data.dataHoraSaida.split(' ')[0] || '';
+        document.getElementById('hora_saida_frota').value = data.dataHoraSaida.split(' ')[1] || '';
         document.getElementById('nome_frota').value = data.nome;
         document.getElementById('frota_frota').value = data.frota;
-        document.getElementById('entrada_frota').value = data.entrada;
-        document.getElementById('saida_frota').value = data.saida;
         document.getElementById('obs_frota').value = data.obs;
       } else if (tabName === 'descarga-biz') {
         const [dataRegistro, horario] = data.dataHora.split(' ');
@@ -806,11 +792,12 @@
         document.getElementById('saida_registros').value = '';
         document.getElementById('obs_registros').value = '';
       } else if (tabName === 'frota-biz') {
-        document.getElementById('data_frota').value = '';
+        document.getElementById('data_entrada_frota').value = '';
+        document.getElementById('hora_entrada_frota').value = '';
+        document.getElementById('data_saida_frota').value = '';
+        document.getElementById('hora_saida_frota').value = '';
         document.getElementById('nome_frota').value = '';
         document.getElementById('frota_frota').value = '';
-        document.getElementById('entrada_frota').value = '';
-        document.getElementById('saida_frota').value = '';
         document.getElementById('obs_frota').value = '';
       } else if (tabName === 'descarga-biz') {
         document.getElementById('data_descarga').value = '';
