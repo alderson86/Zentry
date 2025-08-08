@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Zentry 2.0</title>
+  <title>Zentry-Biz</title>
   <style>
     :root {
       --bg: #f9f9fa;
@@ -97,10 +97,6 @@
     tbody tr.selected {
         background-color: #e0e0e5;
     }
-    /* Esconde a coluna de ações da tabela, já que a exclusão foi para o rodapé */
-    th:last-child, td:last-child {
-        display: none;
-    }
     #main-footer {
       position: sticky;
       bottom: 0;
@@ -147,17 +143,30 @@
       cursor: pointer;
       transition: background-color 0.2s ease;
       font-family: inherit;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
     }
     .formulario-botoes button.salvar { background-color: #00a877; }
     .formulario-botoes button.editar { background-color: #ff9500; }
     .formulario-botoes button.txt { background-color: #5856d6; }
     .formulario-botoes button.excel { background-color: #34c759; }
-    .formulario-botoes button.excluir { background-color: #ff3b30; }
+    .formulario-botoes button.erase { background-color: #ff3b30; }
     .formulario-botoes button.salvar:hover { background-color: #00875e; }
     .formulario-botoes button.editar:hover { background-color: #e58700; }
     .formulario-botoes button.txt:hover { background-color: #4846c4; }
     .formulario-botoes button.excel:hover { background-color: #2da44b; }
-    .formulario-botoes button.excluir:hover { background-color: #e53229; }
+    .formulario-botoes button.erase:hover { background-color: #e53229; }
+    
+    /* Estilo para a caixa de seleção */
+    tbody tr td:first-child input[type="checkbox"] {
+        margin-right: 8px;
+    }
+    /* Estilo para a coluna de Ações */
+    td:last-child {
+        display: none;
+    }
   </style>
 </head>
 <body>
@@ -175,14 +184,12 @@
       <table id="tabela-registros">
         <thead>
           <tr>
+            <th><input type="checkbox" id="selectAll-registros" onclick="toggleSelectAll('registros')"> Selecionar</th>
             <th>Data</th>
             <th>Nome</th>
             <th>Crachá</th>
             <th>Placa</th>
-            <th>Hora Entrada</th>
-            <th>Hora Saída</th>
-            <th>Obs.</th>
-            <th>Ações</th>
+            <th>Obs.:</th>
           </tr>
         </thead>
         <tbody></tbody>
@@ -195,13 +202,11 @@
       <table id="tabela-frota-biz">
         <thead>
           <tr>
+            <th><input type="checkbox" id="selectAll-frota-biz" onclick="toggleSelectAll('frota-biz')"> Selecionar</th>
             <th>Data</th>
             <th>Nome</th>
             <th>Frota</th>
-            <th>Hora Entrada</th>
-            <th>Hora Saída</th>
-            <th>Obs.</th>
-            <th>Ações</th>
+            <th>Obs.:</th>
           </tr>
         </thead>
         <tbody></tbody>
@@ -214,19 +219,18 @@
       <table id="tabela-descarga-biz">
         <thead>
           <tr>
+            <th><input type="checkbox" id="selectAll-descarga-biz" onclick="toggleSelectAll('descarga-biz')"> Selecionar</th>
             <th>Data</th>
-            <th>Horário</th>
             <th>Nome</th>
-            <th>Documento</th>
-            <th>Contato</th>
+            <th>Doc.:</th>
+            <th>Tel.:</th>
             <th>Placa CV</th>
-            <th>Placa RB</th>
-            <th>Transp.</th>
-            <th>Fornec.</th>
-            <th>SH/NF</th>
-            <th>Quant.</th>
-            <th>Observação</th>
-            <th>Ações</th>
+            <th>Placa RB.</th>
+            <th>Transp.:</th>
+            <th>Forn.:</th>
+            <th>NF/SH.</th>
+            <th>Quanti.:</th>
+            <th>Obs</th>
           </tr>
         </thead>
         <tbody></tbody>
@@ -239,17 +243,16 @@
       <table id="tabela-carga-biz">
         <thead>
           <tr>
-            <th>Data</th>
+            <th><input type="checkbox" id="selectAll-carga-biz" onclick="toggleSelectAll('carga-biz')"> Selecionar</th>
+            <th>Hora</th>
             <th>Nome</th>
             <th>Placa</th>
-            <th>CPF</th>
-            <th>Tel</th>
+            <th>Doc.:</th>
+            <th>Tel.:</th>
             <th>Cliente</th>
-            <th>Hora</th>
             <th>Produto</th>
             <th>Nº Ordem</th>
-            <th>Obs.</th>
-            <th>Ações</th>
+            <th>Obs.:</th>
           </tr>
         </thead>
         <tbody></tbody>
@@ -262,15 +265,14 @@
       <table id="tabela-prest-servicos-biz">
         <thead>
           <tr>
+            <th><input type="checkbox" id="selectAll-prest-servicos-biz" onclick="toggleSelectAll('prest-servicos-biz')"> Selecionar</th>
             <th>Data</th>
-            <th>Hora</th>
             <th>Nome</th>
             <th>Placa</th>
             <th>CPF</th>
-            <th>Tel</th>
-            <th>Autorizado por</th>
-            <th>Obs.</th>
-            <th>Ações</th>
+            <th>Tel.:</th>
+            <th>Aurizado por</th>
+            <th>Obs,:</th>
           </tr>
         </thead>
         <tbody></tbody>
@@ -285,23 +287,26 @@
         <select id="nome_registros">
           <option disabled selected>Selecione o nome</option>
           <option>Oscar - Supervisor</option>
-<option>Leandro S.</option>
-<option>Thalles</option>
-<option>André</option>
-<option>Ezequias</option>
-<option>Luiz Carlos</option>
-<option>João Vitor</option>
-<option>Luiz Henrique</option>
-<option>Gean Carlos</option>
-<option>Raimundo</option>
-<option>Vitória Isabele</option>
-<option>Cristiano</option>
-<option>Marsergio - Gerente</option>
-<option>André - ADM</option>
- <option>------------</option>
- <option>Enildo - Supervisor</option>
+          <option>João Paulo - Menor Aprendiz</option>
+          <option>Thalles</option>
+          <option>André</option>
+          <option>Ezequias</option>
+          <option>Luiz Carlos</option>
+          <option>João Vitor</option>
+          <option>Luiz Henrique</option>
+          <option>Gean Carlos</option>
+          <option>Raimundo</option>
+          <option>Michel F. - Menor Aprendiz</option>
+          <option>Vitória Isabele</option>
+          <option>Cristiano</option>
+          <option>Marsergio - Gerente</option>
+          <option>André - ADM</option>
+          <option>Enildo - Supervisor</option>
           <option>Thiago Benjamin</option>
           <option>Edirlei - CPD</option>
+          <option>Yuri - Menor Aprendiz</option>
+          <option>Pedro H - Menor Aprendiz</option>
+          <option>Felipe - Menor Aprendiz</option>
           <option>Jayme - Encarregado</option>
           <option>Raimundo - Van</option>
           <option>Marcos - Van</option>
@@ -310,36 +315,18 @@
           <option>Elionai - Van</option>
           <option>Edmar - Van</option>
           <option>Jefferson - Van</option>
-            <option>Wanderson</option>
-          <option>Keverson</option>
-          <option>Leandro F.</option>
-          <option>Leandro P.</option>
-          <option>Giliard Donnarumma P.</option>
-          <option>Lonardo.</option>
-          <option>André ADM.</option>
-          <option>Denner Carlo Predial.</option>
-          <option>Francisco B. Predial.</option>
-<option>------------</option>
-          <option>Yuri - Menor Aprendiz</option>
-          <option>Pedro H - Menor Aprendiz</option>
-          <option>Felipe - Menor Aprendiz</option>
           <option>Gabriel - Menor Aprendiz</option>
           <option>Dangel – Menor aprendiz</option>
           <option>Cauan – Menor aprendiz</option>
           <option>Nicolas G – Menor aprendiz</option>
           <option>Elias – Menor aprendiz</option>
           <option>Abraão - Menor Aprendiz</option>
+          <option>Wanderson</option>
+          <option>Keverson</option>
+          <option>Leandro F.</option>
           <option>Murilo - Menor Aprendiz</option>
-          <option>João Paulo - Menor Aprendiz</option>
           <option>Matias - Menor Aprendiz</option>
-          <option>Murilo - Menor Aprendiz</option>
-           <option>Michel F. - Menor Aprendiz</option>
-           <option>------------</option>
-           <option>Gil-Ser Prime</option>
-          <option>Eder R</option>
-          <option>Leandro R</option>
-          <option>Paulo R</option>
-          <option>Felipe G</option>
+          <option>Leandro P.</option>
         </select>
         <select id="cracha_registros">
           <option disabled selected>Crachá</option>
@@ -353,11 +340,11 @@
         <input type="text" id="obs_registros" placeholder="Observação" />
       </div>
       <div class="formulario-botoes">
-        <button class="salvar" onclick="salvarRegistro('registros')">Salvar</button>
-        <button class="editar" onclick="editarRegistro('registros')">Editar</button>
-        <button class="excluir" onclick="excluirRegistroDoRodape('registros')">Excluir</button>
-        <button class="txt" onclick="exportarTXT('registros')">Emitir TXT</button>
-        <button class="excel" onclick="exportarExcel('registros')">Emitir Excel</button>
+        <button class="salvar" onclick="salvarRegistro('registros')">✔ Salvar</button>
+        <button class="editar" onclick="editarRegistro('registros')">✎ Editar</button>
+        <button class="erase" onclick="excluirSelecionados('registros')">✖ Erase</button>
+        <button class="txt" onclick="exportarTXT('registros')">📄 TXT</button>
+        <button class="excel" onclick="exportarExcel('registros')">📊 Excel</button>
       </div>
     </div>
     
@@ -371,11 +358,11 @@
         <input type="text" id="obs_frota" placeholder="Observação" />
       </div>
       <div class="formulario-botoes">
-        <button class="salvar" onclick="salvarRegistro('frota-biz')">Salvar</button>
-        <button class="editar" onclick="editarRegistro('frota-biz')">Editar</button>
-        <button class="excluir" onclick="excluirRegistroDoRodape('frota-biz')">Excluir</button>
-        <button class="txt" onclick="exportarTXT('frota-biz')">Emitir TXT</button>
-        <button class="excel" onclick="exportarExcel('frota-biz')">Emitir Excel</button>
+        <button class="salvar" onclick="salvarRegistro('frota-biz')">✔ Salvar</button>
+        <button class="editar" onclick="editarRegistro('frota-biz')">✎ Editar</button>
+        <button class="erase" onclick="excluirSelecionados('frota-biz')">✖ Erase</button>
+        <button class="txt" onclick="exportarTXT('frota-biz')">📄 TXT</button>
+        <button class="excel" onclick="exportarExcel('frota-biz')">📊 Excel</button>
       </div>
     </div>
 
@@ -395,11 +382,11 @@
         <input type="text" id="obs_descarga" placeholder="Observação" />
       </div>
       <div class="formulario-botoes">
-        <button class="salvar" onclick="salvarRegistro('descarga-biz')">Salvar</button>
-        <button class="editar" onclick="editarRegistro('descarga-biz')">Editar</button>
-        <button class="excluir" onclick="excluirRegistroDoRodape('descarga-biz')">Excluir</button>
-        <button class="txt" onclick="exportarTXT('descarga-biz')">Emitir TXT</button>
-        <button class="excel" onclick="exportarExcel('descarga-biz')">Emitir Excel</button>
+        <button class="salvar" onclick="salvarRegistro('descarga-biz')">✔ Salvar</button>
+        <button class="editar" onclick="editarRegistro('descarga-biz')">✎ Editar</button>
+        <button class="erase" onclick="excluirSelecionados('descarga-biz')">✖ Erase</button>
+        <button class="txt" onclick="exportarTXT('descarga-biz')">📄 TXT</button>
+        <button class="excel" onclick="exportarExcel('descarga-biz')">📊 Excel</button>
       </div>
     </div>
 
@@ -417,11 +404,11 @@
         <input type="text" id="obs_carga" placeholder="Obs." />
       </div>
       <div class="formulario-botoes">
-        <button class="salvar" onclick="salvarRegistro('carga-biz')">Salvar</button>
-        <button class="editar" onclick="editarRegistro('carga-biz')">Editar</button>
-        <button class="excluir" onclick="excluirRegistroDoRodape('carga-biz')">Excluir</button>
-        <button class="txt" onclick="exportarTXT('carga-biz')">Emitir TXT</button>
-        <button class="excel" onclick="exportarExcel('carga-biz')">Emitir Excel</button>
+        <button class="salvar" onclick="salvarRegistro('carga-biz')">✔ Salvar</button>
+        <button class="editar" onclick="editarRegistro('carga-biz')">✎ Editar</button>
+        <button class="erase" onclick="excluirSelecionados('carga-biz')">✖ Erase</button>
+        <button class="txt" onclick="exportarTXT('carga-biz')">📄 TXT</button>
+        <button class="excel" onclick="exportarExcel('carga-biz')">📊 Excel</button>
       </div>
     </div>
 
@@ -437,11 +424,11 @@
         <input type="text" id="obs_prest" placeholder="Obs." />
       </div>
       <div class="formulario-botoes">
-        <button class="salvar" onclick="salvarRegistro('prest-servicos-biz')">Salvar</button>
-        <button class="editar" onclick="editarRegistro('prest-servicos-biz')">Editar</button>
-        <button class="excluir" onclick="excluirRegistroDoRodape('prest-servicos-biz')">Excluir</button>
-        <button class="txt" onclick="exportarTXT('prest-servicos-biz')">Emitir TXT</button>
-        <button class="excel" onclick="exportarExcel('prest-servicos-biz')">Emitir Excel</button>
+        <button class="salvar" onclick="salvarRegistro('prest-servicos-biz')">✔ Salvar</button>
+        <button class="editar" onclick="editarRegistro('prest-servicos-biz')">✎ Editar</button>
+        <button class="erase" onclick="excluirSelecionados('prest-servicos-biz')">✖ Erase</button>
+        <button class="txt" onclick="exportarTXT('prest-servicos-biz')">📄 TXT</button>
+        <button class="excel" onclick="exportarExcel('prest-servicos-biz')">📊 Excel</button>
       </div>
     </div>
 
@@ -457,6 +444,11 @@
     };
 
     let editIndexes = {};
+    
+    function getCurrentTabName() {
+        const tabHeader = document.querySelector('.tab-button.active');
+        return tabHeader ? tabHeader.getAttribute('onclick').match(/'([^']+)'/)[1] : null;
+    }
 
     function openTab(tabName) {
       const tabContents = document.querySelectorAll('.tab-content');
@@ -472,51 +464,64 @@
       event.currentTarget.classList.add('active');
       
       editIndexes[tabName] = null;
+      limparFormulario(tabName);
       carregarRegistros(tabName);
+    }
+    
+    function toggleSelectAll(tabName) {
+        const selectAllCheckbox = document.getElementById(`selectAll-${tabName}`);
+        const checkboxes = document.querySelectorAll(`#tabela-${tabName} tbody input[type="checkbox"]`);
+        checkboxes.forEach(checkbox => {
+            checkbox.checked = selectAllCheckbox.checked;
+        });
     }
 
     function salvarRegistro(tabName) {
       const storageKey = STORAGE_KEYS[tabName];
+      let registros = JSON.parse(localStorage.getItem(storageKey) || '[]');
       let registro = {};
-      const registros = JSON.parse(localStorage.getItem(storageKey) || '[]');
       const editIndex = editIndexes[tabName];
       
-      let dataFormatada = '';
-      let horaEntrada = '';
+      const now = new Date();
+      const dataFormatada = now.toLocaleDateString('pt-BR');
+      
+      let dataHora = '';
 
       if (tabName === 'registros') {
-        const now = new Date();
-        dataFormatada = now.toLocaleDateString('pt-BR');
-        horaEntrada = document.getElementById('entrada_registros').value;
+        const horaEntrada = document.getElementById('entrada_registros').value;
+        const horaSaida = document.getElementById('saida_registros').value;
+        dataHora = `${dataFormatada} ${horaEntrada || horaSaida}`;
 
         registro = {
-          data: dataFormatada,
+          dataHora: dataHora,
           nome: document.getElementById('nome_registros').value,
           cracha: document.getElementById('cracha_registros').value,
           placa: document.getElementById('placa_registros').value,
           entrada: horaEntrada,
-          saida: document.getElementById('saida_registros').value,
+          saida: horaSaida,
           obs: document.getElementById('obs_registros').value,
         };
       } else if (tabName === 'frota-biz') {
-        dataFormatada = document.getElementById('data_frota').value;
-        horaEntrada = document.getElementById('entrada_frota').value;
+        const data = document.getElementById('data_frota').value;
+        const horaEntrada = document.getElementById('entrada_frota').value;
+        const horaSaida = document.getElementById('saida_frota').value;
+        dataHora = `${data} ${horaEntrada || horaSaida}`;
 
         registro = {
-          data: dataFormatada,
+          dataHora: dataHora,
           nome: document.getElementById('nome_frota').value,
           frota: document.getElementById('frota_frota').value,
           entrada: horaEntrada,
-          saida: document.getElementById('saida_frota').value,
+          saida: horaSaida,
           obs: document.getElementById('obs_frota').value,
         };
       } else if (tabName === 'descarga-biz') {
-        dataFormatada = document.getElementById('data_descarga').value;
-        horaEntrada = document.getElementById('horario_descarga').value;
+        const data = document.getElementById('data_descarga').value;
+        const horario = document.getElementById('horario_descarga').value;
+        dataHora = `${data} ${horario}`;
 
         registro = {
-          data: dataFormatada,
-          horario: horaEntrada,
+          dataHora: dataHora,
           nome: document.getElementById('nome_descarga').value,
           documento: document.getElementById('doc_descarga').value,
           contato: document.getElementById('contato_descarga').value,
@@ -529,28 +534,29 @@
           obs: document.getElementById('obs_descarga').value,
         };
       } else if (tabName === 'carga-biz') {
-        dataFormatada = document.getElementById('data_carga').value;
-        horaEntrada = document.getElementById('hora_carga').value;
+        const data = document.getElementById('data_carga').value;
+        const hora = document.getElementById('hora_carga').value;
+        dataHora = `${data} ${hora}`;
 
         registro = {
-          data: dataFormatada,
+          dataHora: dataHora,
           nome: document.getElementById('nome_carga').value,
           placa: document.getElementById('placa_carga').value,
           cpf: document.getElementById('cpf_carga').value,
           tel: document.getElementById('tel_carga').value,
           cliente: document.getElementById('cliente_carga').value,
-          hora: horaEntrada,
+          hora: hora,
           produto: document.getElementById('produto_carga').value,
           n_ordem: document.getElementById('n_ordem_carga').value,
           obs: document.getElementById('obs_carga').value,
         };
       } else if (tabName === 'prest-servicos-biz') {
-        dataFormatada = document.getElementById('data_prest').value;
-        horaEntrada = document.getElementById('hora_prest').value;
+        const data = document.getElementById('data_prest').value;
+        const hora = document.getElementById('hora_prest').value;
+        dataHora = `${data} ${hora}`;
 
         registro = {
-          data: dataFormatada,
-          hora: horaEntrada,
+          dataHora: dataHora,
           nome: document.getElementById('nome_prest').value,
           placa: document.getElementById('placa_prest').value,
           cpf: document.getElementById('cpf_prest').value,
@@ -559,7 +565,7 @@
           obs: document.getElementById('obs_prest').value,
         };
       }
-
+      
       if (editIndex !== undefined && editIndex !== null) {
         registros[editIndex] = registro;
         editIndexes[tabName] = null;
@@ -573,55 +579,46 @@
     }
 
     function editarRegistro(tabName) {
-      if (editIndexes[tabName] === null || editIndexes[tabName] === undefined) {
-        alert('Selecione uma linha com duplo clique para editar.');
+      const selectedRows = document.querySelectorAll(`#tabela-${tabName} tbody tr.selected`);
+      if (selectedRows.length !== 1) {
+        alert('Selecione uma única linha com duplo clique para editar.');
         return;
       }
       salvarRegistro(tabName);
     }
-    
-    function excluirRegistroDoRodape(tabName) {
-        if (editIndexes[tabName] === null || editIndexes[tabName] === undefined) {
-            alert('Selecione uma linha com duplo clique para excluir.');
+
+    function excluirSelecionados(tabName) {
+        const selectedCheckboxes = document.querySelectorAll(`#tabela-${tabName} tbody input[type="checkbox"]:checked`);
+        if (selectedCheckboxes.length === 0) {
+            alert('Selecione pelo menos um registro para excluir.');
             return;
         }
-        
-        excluirRegistro(tabName, editIndexes[tabName]);
-    }
 
-    function excluirRegistro(tabName, index) {
-      if (!confirm('Deseja realmente excluir este registro?')) return;
-      const storageKey = STORAGE_KEYS[tabName];
-      const registros = JSON.parse(localStorage.getItem(storageKey) || '[]');
-      registros.splice(index, 1);
-      localStorage.setItem(storageKey, JSON.stringify(registros));
-      limparFormulario(tabName);
-      carregarRegistros(tabName);
-    }
+        if (!confirm(`Deseja realmente excluir ${selectedCheckboxes.length} registro(s)?`)) return;
 
+        const storageKey = STORAGE_KEYS[tabName];
+        let registros = JSON.parse(localStorage.getItem(storageKey) || '[]');
+        const indexesToDelete = Array.from(selectedCheckboxes).map(cb => parseInt(cb.dataset.index)).sort((a,b) => b - a);
+
+        indexesToDelete.forEach(index => {
+            registros.splice(index, 1);
+        });
+
+        localStorage.setItem(storageKey, JSON.stringify(registros));
+        limparFormulario(tabName);
+        carregarRegistros(tabName);
+    }
+    
     function exportarTXT(tabName) {
       const storageKey = STORAGE_KEYS[tabName];
       let registros = JSON.parse(localStorage.getItem(storageKey) || '[]');
       
-      // Ordena os registros antes de exportar
-      if (tabName === 'registros') {
-          registros.sort((a, b) => {
-              const [diaA, mesA, anoA] = a.data.split('/').map(Number);
-              const [diaB, mesB, anoB] = b.data.split('/').map(Number);
-              const dataA = new Date(anoA, mesA - 1, diaA, ...a.entrada.split(':').map(Number));
-              const dataB = new Date(anoB, mesB - 1, diaB, ...b.entrada.split(':').map(Number));
-              return dataA - dataB;
-          });
-      }
-
-      let header = Object.keys(registros[0] || {}).join('\t');
-      let texto = registros.map(r => Object.values(r).join('\t')).join('\n');
+      const header = Object.keys(registros[0] || {}).join('\t');
+      const texto = registros.map(r => Object.values(r).join('\t')).join('\n');
       
-      if (header) {
-        texto = header + '\n' + texto;
-      }
+      const textoCompleto = header ? header + '\n' + texto : texto;
 
-      const blob = new Blob([texto], { type: 'text/plain' });
+      const blob = new Blob([textoCompleto], { type: 'text/plain' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
@@ -633,32 +630,19 @@
       const storageKey = STORAGE_KEYS[tabName];
       let registros = JSON.parse(localStorage.getItem(storageKey) || '[]');
       
-      // Ordena os registros antes de exportar
-      if (tabName === 'registros') {
-          registros.sort((a, b) => {
-              const [diaA, mesA, anoA] = a.data.split('/').map(Number);
-              const [diaB, mesB, anoB] = b.data.split('/').map(Number);
-              const dataA = new Date(anoA, mesA - 1, diaA, ...a.entrada.split(':').map(Number));
-              const dataB = new Date(anoB, mesB - 1, diaB, ...b.entrada.split(':').map(Number));
-              return dataA - dataB;
-          });
-      }
+      const header = Object.keys(registros[0] || {}).map(h => `"${h}"`).join(',');
+      const csv = registros.map(r => Object.values(r).map(v => `"${v}"`).join(',')).join('\n');
 
-      let header = Object.keys(registros[0] || {}).map(h => `"${h}"`).join(',');
-      let csv = registros.map(r => Object.values(r).map(v => `"${v}"`).join(',')).join('\n');
+      const csvCompleto = header ? header + '\n' + csv : csv;
 
-      if (header) {
-        csv = header + '\n' + csv;
-      }
-
-      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const blob = new Blob([csvCompleto], { type: 'text/csv;charset=utf-8;' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
       a.download = `${tabName}.csv`;
       a.click();
     }
-
+    
     function carregarRegistros(tabName) {
       const tabela = document.getElementById(`tabela-${tabName}`);
       if (!tabela) return;
@@ -669,30 +653,56 @@
       const storageKey = STORAGE_KEYS[tabName];
       let registros = JSON.parse(localStorage.getItem(storageKey) || '[]');
       
-      if (tabName === 'registros') {
+      // Ordena os registros por data e hora, se houver
+      if (registros.length > 0 && registros[0].dataHora) {
           registros.sort((a, b) => {
-              // Verifica se a data e a entrada existem antes de tentar dividir
-              const [diaA, mesA, anoA] = a.data ? a.data.split('/').map(Number) : [0,0,0];
-              const [diaB, mesB, anoB] = b.data ? b.data.split('/').map(Number) : [0,0,0];
-              const [horaA, minutoA] = a.entrada ? a.entrada.split(':').map(Number) : [0,0];
-              const [horaB, minutoB] = b.entrada ? b.entrada.split(':').map(Number) : [0,0];
+              const [dataA, horaA] = a.dataHora.split(' ');
+              const [diaA, mesA, anoA] = dataA.split('/').map(Number);
+              const [horaNumA, minutoA] = horaA ? horaA.split(':').map(Number) : [0,0];
+              const dateA = new Date(anoA, mesA - 1, diaA, horaNumA, minutoA);
               
-              const dataA = new Date(anoA, mesA - 1, diaA, horaA, minutoA);
-              const dataB = new Date(anoB, mesB - 1, diaB, horaB, minutoB);
-              
-              return dataA - dataB;
+              const [dataB, horaB] = b.dataHora.split(' ');
+              const [diaB, mesB, anoB] = dataB.split('/').map(Number);
+              const [horaNumB, minutoB] = horaB ? horaB.split(':').map(Number) : [0,0];
+              const dateB = new Date(anoB, mesB - 1, diaB, horaNumB, minutoB);
+
+              return dateA - dateB;
           });
       }
 
       registros.forEach((r, index) => {
         const row = tbody.insertRow();
-        const orderedValues = tabName === 'registros' ? [r.data, r.nome, r.cracha, r.placa, r.entrada, r.saida, r.obs] : Object.values(r);
+        
+        let orderedValues = [];
+        if (tabName === 'registros') {
+            orderedValues = [r.dataHora, r.nome, r.cracha, r.placa, r.obs];
+        } else if (tabName === 'frota-biz') {
+            orderedValues = [r.dataHora, r.nome, r.frota, r.obs];
+        } else if (tabName === 'descarga-biz') {
+            orderedValues = [r.dataHora, r.nome, r.documento, r.contato, r.placa_cv, r.placa_rb, r.transportadora, r.fornecedor, r.sh_nf, r.quantidades, r.obs];
+        } else if (tabName === 'carga-biz') {
+            orderedValues = [r.dataHora, r.nome, r.placa, r.cpf, r.tel, r.cliente, r.produto, r.n_ordem, r.obs];
+        } else if (tabName === 'prest-servicos-biz') {
+            orderedValues = [r.dataHora, r.nome, r.placa, r.cpf, r.tel, r.autorizado, r.obs];
+        }
 
-        orderedValues.forEach(value => {
-          const cell = row.insertCell();
-          cell.textContent = value;
+        const checkboxCell = row.insertCell();
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.dataset.index = index;
+        checkbox.addEventListener('click', (e) => e.stopPropagation());
+        checkboxCell.appendChild(checkbox);
+        
+        // Exibe a data e a hora na primeira célula
+        const dataHoraCell = row.insertCell();
+        dataHoraCell.textContent = r.dataHora;
+
+        orderedValues.slice(1).forEach(value => {
+            const cell = row.insertCell();
+            cell.textContent = value;
         });
 
+        // Ações - Mantemos a célula vazia para não quebrar a estrutura da tabela
         row.insertCell().innerHTML = '';
 
         row.ondblclick = () => {
@@ -706,23 +716,37 @@
 
     function preencherFormulario(tabName, data, index) {
       editIndexes[tabName] = index;
+      
+      const clearRows = document.querySelectorAll('tbody tr');
+      clearRows.forEach(row => row.classList.remove('selected'));
+      
+      const row = document.querySelector(`#tabela-${tabName} tbody tr:nth-child(${index + 1})`);
+      if (row) {
+        row.classList.add('selected');
+      }
+
       if (tabName === 'registros') {
         document.getElementById('nome_registros').value = data.nome;
         document.getElementById('cracha_registros').value = data.cracha;
         document.getElementById('placa_registros').value = data.placa;
+        
+        // Separa a data e hora para preencher os campos corretamente
+        const [dataRegistro, horaEntrada] = data.dataHora.split(' ');
         document.getElementById('entrada_registros').value = data.entrada;
         document.getElementById('saida_registros').value = data.saida;
         document.getElementById('obs_registros').value = data.obs;
       } else if (tabName === 'frota-biz') {
-        document.getElementById('data_frota').value = data.data;
+        const [dataRegistro, horaEntrada] = data.dataHora.split(' ');
+        document.getElementById('data_frota').value = dataRegistro;
         document.getElementById('nome_frota').value = data.nome;
         document.getElementById('frota_frota').value = data.frota;
         document.getElementById('entrada_frota').value = data.entrada;
         document.getElementById('saida_frota').value = data.saida;
         document.getElementById('obs_frota').value = data.obs;
       } else if (tabName === 'descarga-biz') {
-        document.getElementById('data_descarga').value = data.data;
-        document.getElementById('horario_descarga').value = data.horario;
+        const [dataRegistro, horario] = data.dataHora.split(' ');
+        document.getElementById('data_descarga').value = dataRegistro;
+        document.getElementById('horario_descarga').value = horario;
         document.getElementById('nome_descarga').value = data.nome;
         document.getElementById('doc_descarga').value = data.documento;
         document.getElementById('contato_descarga').value = data.contato;
@@ -734,19 +758,21 @@
         document.getElementById('quantidades_descarga').value = data.quantidades;
         document.getElementById('obs_descarga').value = data.obs;
       } else if (tabName === 'carga-biz') {
-        document.getElementById('data_carga').value = data.data;
+        const [dataRegistro, hora] = data.dataHora.split(' ');
+        document.getElementById('data_carga').value = dataRegistro;
         document.getElementById('nome_carga').value = data.nome;
         document.getElementById('placa_carga').value = data.placa;
         document.getElementById('cpf_carga').value = data.cpf;
         document.getElementById('tel_carga').value = data.tel;
         document.getElementById('cliente_carga').value = data.cliente;
-        document.getElementById('hora_carga').value = data.hora;
+        document.getElementById('hora_carga').value = hora;
         document.getElementById('produto_carga').value = data.produto;
         document.getElementById('n_ordem_carga').value = data.n_ordem;
         document.getElementById('obs_carga').value = data.obs;
       } else if (tabName === 'prest-servicos-biz') {
-        document.getElementById('data_prest').value = data.data;
-        document.getElementById('hora_prest').value = data.hora;
+        const [dataRegistro, hora] = data.dataHora.split(' ');
+        document.getElementById('data_prest').value = dataRegistro;
+        document.getElementById('hora_prest').value = hora;
         document.getElementById('nome_prest').value = data.nome;
         document.getElementById('placa_prest').value = data.placa;
         document.getElementById('cpf_prest').value = data.cpf;
@@ -810,6 +836,11 @@
         document.getElementById('tel_prest').value = '';
         document.getElementById('autorizado_prest').value = '';
         document.getElementById('obs_prest').value = '';
+      }
+      
+      const selectAllCheckbox = document.getElementById(`selectAll-${tabName}`);
+      if (selectAllCheckbox) {
+          selectAllCheckbox.checked = false;
       }
     }
 
