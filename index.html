@@ -1,1371 +1,864 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sistema de Gestão</title>
-  <style>
-    :root {
-      --bg: #f5f5f7;
-      --card: #ffffff;
-      --text: #1d1d1f;
-      --accent: #007aff;
-      --border: #e8e8ed;
-      --header-bg: #f0f0f3;
-    }
-    * {
-      box-sizing: border-box;
-    }
-    body {
-      font-family: 'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen;
-      margin: 0;
-      padding: 0;
-      background-color: var(--bg);
-      color: var(--text);
-      display: flex;
-      flex-direction: column;
-      height: 100vh;
-    }
-    #main-container {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-    }
-    .content-card {
-      width: 95%; /* Alteração: Aumentado para 95% da largura da tela */
-      max-width: 1400px; /* Alteração: Aumentado para acomodar a nova largura */
-      background-color: var(--card);
-      border-radius: 12px;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.08);
-      display: flex;
-      flex-direction: column;
-      overflow: hidden;
-      min-height: 80vh;
-    }
-    #tab-header {
-      display: flex;
-      justify-content: flex-start;
-      padding: 10px 20px;
-      background-color: var(--header-bg);
-      border-bottom: 1px solid var(--border);
-      overflow-x: auto;
-      white-space: nowrap;
-    }
-    .tab-button {
-      padding: 10px 20px;
-      border: none;
-      background-color: transparent;
-      font-size: 15px;
-      cursor: pointer;
-      color: var(--text);
-      transition: color 0.2s ease, background-color 0.2s ease;
-      font-weight: 500;
-    }
-    .tab-button.active {
-      font-weight: bold;
-      color: var(--accent);
-      border-bottom: 2px solid var(--accent);
-    }
-    .tab-content {
-      display: none;
-      flex: 1;
-      padding: 20px;
-      overflow-y: auto;
-    }
-    .tab-content.active {
-      display: block;
-    }
-    #tabela-container {
-      padding: 0;
-    }
-    table {
-      width: 100%;
-      border-collapse: separate;
-      border-spacing: 0;
-      background-color: var(--card);
-      border-radius: 8px;
-      overflow: hidden;
-      table-layout: fixed;
-    }
-    thead th, tbody td {
-      text-align: left;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      padding: 12px 16px;
-      font-size: 14px;
-      border-bottom: 1px solid var(--border);
-    }
-    thead th {
-      position: sticky;
-      top: 0;
-      background-color: var(--header-bg);
-      z-index: 1;
-      font-weight: 600;
-    }
-    tbody tr:hover {
-      background-color: #f0f0f3;
-      cursor: pointer;
-    }
-    tbody tr.selected {
-      background-color: #e0e0e5;
-    }
-    #main-footer {
-      padding: 16px 20px;
-      border-top: 1px solid var(--border);
-      background-color: var(--card);
-    }
-    .footer-form {
-      display: none;
-      flex-wrap: wrap;
-      gap: 10px;
-      align-items: flex-end;
-    }
-    .footer-form.active {
-      display: flex;
-    }
-    .formulario-campos {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      flex: 1;
-    }
-    .formulario-campos input, .formulario-campos select, .formulario-campos textarea {
-      padding: 10px;
-      font-size: 14px;
-      border-radius: 8px;
-      border: 1px solid var(--border);
-      flex: 1;
-      font-family: inherit;
-      min-width: 80px;
-      background-color: var(--bg);
-      color: var(--text);
-    }
-    .formulario-campos textarea {
-      height: 100px;
-      resize: vertical;
-    }
-    .formulario-botoes {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-    }
-    .formulario-botoes button {
-      padding: 10px 16px;
-      font-size: 14px;
-      border: none;
-      border-radius: 8px;
-      color: var(--text);
-      cursor: pointer;
-      transition: background-color 0.2s ease;
-      font-family: inherit;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
-      font-weight: 600;
-      background-color: var(--header-bg);
-    }
-    .formulario-botoes button:hover {
-        background-color: #d8d8e0;
-    }
-    
-    tbody tr td:first-child input[type="checkbox"] {
-        margin-right: 8px;
-    }
-    .text-center {
-      text-align: center;
-    }
-    .grid-container {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 20px;
-      align-items: flex-start;
-    }
-    .grid-item {
-      padding: 20px;
-      background-color: var(--header-bg);
-      border-radius: 8px;
-    }
-    #clock-container, #calendar-container {
-      text-align: center;
-      padding: 20px;
-      border-radius: 8px;
-      background-color: var(--card);
-      margin-bottom: 20px;
-    }
-    #clock {
-      font-size: 4rem;
-      font-weight: 200;
-      margin: 0;
-    }
-    #date {
-      font-size: 1.2rem;
-      color: #8e8e93;
-    }
-    #calendar-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 10px;
-    }
-    #calendar-header h4 {
-        margin: 0;
-    }
-    #calendar-header button {
-        background: none;
-        border: none;
-        font-size: 18px;
-        cursor: pointer;
-        color: var(--accent);
-    }
-    #calendar {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap: 5px;
-      text-align: center;
-    }
-    #calendar .day-name {
-      font-weight: 600;
-      color: #8e8e93;
-      font-size: 12px;
-    }
-    #calendar .day-number {
-      padding: 8px;
-      border-radius: 50%;
-      transition: background-color 0.2s ease;
-      position: relative;
-    }
-    #calendar .day-number.has-appointment::after {
-        content: '';
-        position: absolute;
-        bottom: 2px;
-        left: 50%;
-        transform: translateX(-50%);
-        width: 4px;
-        height: 4px;
-        background-color: var(--accent);
-        border-radius: 50%;
-    }
-    #calendar .day-number.current-day {
-      background-color: var(--accent);
-      color: white;
-      font-weight: bold;
-    }
-    #appointments {
-      list-style-type: none;
-      padding: 0;
-      margin-top: 20px;
-    }
-    #appointments li {
-      background-color: var(--card);
-      padding: 12px;
-      border-radius: 8px;
-      margin-bottom: 8px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-    }
-    #appointments .appointment-text {
-      flex: 1;
-      white-space: pre-wrap;
-      overflow-wrap: break-word;
-    }
-    .appointment-buttons {
-      display: flex;
-      gap: 5px;
-      flex-shrink: 0;
-    }
-    .appointment-buttons button {
-      background: none;
-      border: none;
-      cursor: pointer;
-      font-size: 16px;
-      color: #8e8e93;
-      transition: color 0.2s ease;
-    }
-    .appointment-buttons button:hover {
-      color: var(--text);
-    }
-    .note-item {
-      padding: 15px;
-      background-color: var(--header-bg);
-      border-radius: 8px;
-      margin-bottom: 10px;
-      cursor: pointer;
-      position: relative;
-      transition: background-color 0.2s ease;
-    }
-    .note-item:hover {
-        background-color: #d8d8e0;
-    }
-    .note-item h4 {
-      margin: 0 0 5px 0;
-      font-size: 16px;
-    }
-    .note-item p {
-      margin: 0;
-      font-size: 14px;
-      color: #636366;
-    }
-    #notepad-list {
-      flex: 1;
-      overflow-y: auto;
-      padding-right: 10px;
-    }
-    .floating-modal {
-      display: none;
-      position: fixed;
-      z-index: 100;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      overflow: auto;
-      background-color: rgba(0,0,0,0.4);
-      backdrop-filter: blur(5px);
-      -webkit-backdrop-filter: blur(5px);
-      padding-top: 50px;
-    }
-    .modal-content {
-      background-color: var(--card);
-      margin: 10% auto;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-      width: 80%;
-      max-width: 600px;
-      animation: fadeIn 0.3s;
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(-20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-    .close-button {
-      color: #aaa;
-      float: right;
-      font-size: 28px;
-      font-weight: bold;
-    }
-    .close-button:hover, .close-button:focus {
-      color: #000;
-      text-decoration: none;
-      cursor: pointer;
-    }
-    #alert-modal {
-      display: none;
-      position: fixed;
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%);
-      width: 350px;
-      padding: 20px;
-      background-color: var(--card);
-      border-radius: 12px;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.2);
-      z-index: 200;
-      text-align: center;
-      animation: fadeIn 0.3s;
-    }
-    #alert-modal h3 {
-      color: var(--accent);
-      margin-top: 0;
-    }
-    #alert-modal p {
-      margin-bottom: 20px;
-    }
-    #alert-modal button {
-      background-color: var(--accent);
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-    #alert-modal button:hover {
-      background-color: #005bb5;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <title>Zentry</title>
+    <style>
+        :root {
+            --bg-body-light: linear-gradient(135deg, #d4e3f3, #e8f0f8);
+            --bg-header-light: rgba(255, 255, 255, 0.4);
+            --bg-tab-container-light: rgba(255, 255, 255, 0.6);
+            --bg-table-light: rgba(255, 255, 255, 0.7);
+            --bg-th-light: rgba(240, 245, 250, 0.9);
+            --bg-footer-light: rgba(255, 255, 255, 0.5);
+            --bg-input-light: rgba(255, 255, 255, 0.85);
+            --text-color-light: #333;
+            --text-header-light: #222;
+            --border-color-light: rgba(0, 0, 0, 0.1);
+            --shadow-light: 0 4px 10px rgba(0, 0, 0, 0.08);
+            --shadow-input-light: inset 0 1px 3px rgba(0, 0, 0, 0.05);
+            --bg-selected-light: rgba(120, 180, 255, 0.3);
+
+            --bg-body-dark: linear-gradient(135deg, #1a2a3a, #20354b);
+            --bg-header-dark: rgba(0, 0, 0, 0.4);
+            --bg-tab-container-dark: rgba(0, 0, 0, 0.6);
+            --bg-table-dark: rgba(0, 0, 0, 0.7);
+            --bg-th-dark: rgba(40, 55, 70, 0.9);
+            --bg-footer-dark: rgba(0, 0, 0, 0.5);
+            --bg-input-dark: rgba(30, 45, 60, 0.85);
+            --text-color-dark: #e0e0e0;
+            --text-header-dark: #f0f0f0;
+            --border-color-dark: rgba(255, 255, 255, 0.1);
+            --shadow-dark: 0 4px 10px rgba(0, 0, 0, 0.2);
+            --shadow-input-dark: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+            --bg-selected-dark: rgba(100, 150, 255, 0.3);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial;
+            margin: 0;
+            background: var(--bg-body-light);
+            color: var(--text-color-light);
+            transition: background 0.3s, color 0.3s;
+        }
+
+        body.dark-mode {
+            background: var(--bg-body-dark);
+            color: var(--text-color-dark);
+        }
+
+        header {
+            background: var(--bg-header-light);
+            backdrop-filter: blur(12px);
+            box-shadow: var(--shadow-light);
+            text-align: center;
+            padding: 15px;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--text-header-light);
+        }
+
+        body.dark-mode header {
+            background: var(--bg-header-dark);
+            box-shadow: var(--shadow-dark);
+            color: var(--text-header-dark);
+        }
+
+        .tab-container {
+            display: flex;
+            justify-content: center;
+            background: var(--bg-tab-container-light);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+            padding: 5px;
+            border-bottom: 1px solid var(--border-color-light);
+        }
+
+        body.dark-mode .tab-container {
+            background: var(--bg-tab-container-dark);
+            border-bottom: 1px solid var(--border-color-dark);
+        }
+
+        .tab-button {
+            padding: 10px 20px;
+            cursor: pointer;
+            border: none;
+            background: transparent;
+            font-size: 1rem;
+            font-weight: 500;
+            color: #555;
+            transition: 0.2s;
+            border-bottom: 2px solid transparent;
+        }
+
+        body.dark-mode .tab-button {
+            color: #ccc;
+        }
+
+        .tab-button:hover {
+            color: #000;
+        }
+
+        body.dark-mode .tab-button:hover {
+            color: #fff;
+        }
+
+        .tab-button.active {
+            font-weight: 700;
+            color: #007aff;
+            border-bottom: 2px solid #007aff;
+        }
+        
+        main {
+            padding: 20px;
+            padding-bottom: 140px;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            border-radius: 16px;
+            overflow: hidden;
+            background: var(--bg-table-light);
+            backdrop-filter: blur(8px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        body.dark-mode table {
+            background: var(--bg-table-dark);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        th, td {
+            padding: 14px;
+            border-bottom: 1px solid var(--border-color-light);
+            text-align: left;
+        }
+
+        body.dark-mode th, body.dark-mode td {
+            border-bottom: 1px solid var(--border-color-dark);
+        }
+
+        th {
+            background: var(--bg-th-light);
+            font-weight: 600;
+        }
+
+        body.dark-mode th {
+            background: var(--bg-th-dark);
+        }
+
+        tbody {
+            display: block;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        thead, tbody tr {
+            display: table;
+            width: 100%;
+            table-layout: fixed;
+        }
+
+        .search-bar {
+            margin-bottom: 16px;
+        }
+
+        .search-bar input {
+            width: 100%;
+            padding: 12px;
+            border-radius: 16px;
+            border: 1px solid var(--border-color-light);
+            font-size: 14px;
+            outline: none;
+            background: var(--bg-input-light);
+            box-shadow: var(--shadow-input-light);
+        }
+
+        body.dark-mode .search-bar input {
+            background: var(--bg-input-dark);
+            border: 1px solid var(--border-color-dark);
+            color: var(--text-color-dark);
+            box-shadow: var(--shadow-input-dark);
+        }
+
+        footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            background: var(--bg-footer-light);
+            backdrop-filter: blur(12px);
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.08);
+            padding: 15px 10px;
+        }
+
+        body.dark-mode footer {
+            background: var(--bg-footer-dark);
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .form-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        form {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+        }
+
+        .footer-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        select, input, textarea {
+            padding: 10px 14px;
+            border-radius: 12px;
+            border: 1px solid var(--border-color-light);
+            font-size: 14px;
+            outline: none;
+            background: var(--bg-input-light);
+            backdrop-filter: blur(4px);
+            box-shadow: var(--shadow-input-light);
+            max-width: 180px;
+        }
+
+        body.dark-mode select, body.dark-mode input, body.dark-mode textarea {
+            background: var(--bg-input-dark);
+            border: 1px solid var(--border-color-dark);
+            color: var(--text-color-dark);
+            box-shadow: var(--shadow-input-dark);
+        }
+
+        .icon-button {
+            padding: 10px;
+            border-radius: 16px;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            transition: 0.2s;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            width: 40px; /* Tamanho fixo para os ícones */
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .icon-button.salvar {
+            background: linear-gradient(135deg, #4ad268, #35b350);
+            color: white;
+        }
+
+        .icon-button.editar {
+            background: linear-gradient(135deg, #ffc107, #e0a300);
+            color: white;
+        }
+
+        .icon-button.excluir {
+            background: linear-gradient(135deg, #ff5757, #e84545);
+            color: white;
+        }
+
+        .icon-button.relatorio, .icon-button.theme-toggle {
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            color: white;
+        }
+
+        .icon-button:hover {
+            transform: scale(1.05);
+        }
+
+        tr.selecionado {
+            background-color: var(--bg-selected-light);
+        }
+
+        body.dark-mode tr.selecionado {
+            background-color: var(--bg-selected-dark);
+        }
+
+        svg {
+            stroke: currentColor;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+            fill: none;
+            width: 24px;
+            height: 24px;
+        }
+    </style>
 </head>
 <body>
 
-  <div id="main-container">
-    <div class="content-card">
-      <div id="tab-header">
-        <button class="tab-button active" onclick="openTab('registros')">Registros</button>
-        <button class="tab-button" onclick="openTab('frota-biz')">Frota Biz</button>
-        <button class="tab-button" onclick="openTab('descarga-biz')">Descarga Biz</button>
-        <button class="tab-button" onclick="openTab('carga-biz')">Carga Biz</button>
-        <button class="tab-button" onclick="openTab('prest-servicos-biz')">Prest. Serviços</button>
-        <button class="tab-button" onclick="openTab('bloco-de-notas')">Bloco de Notas</button>
-        <button class="tab-button" onclick="openTab('agenda')">Agenda</button>
-      </div>
+<header>
+    Rede Biz - Distribuição
+</header>
 
-      <div id="registros" class="tab-content active">
-        <div id="tabela-container">
-          <table id="tabela-registros">
+<div class="tab-container">
+    <button class="tab-button active" onclick="mostrarAba(1)">Funcionários Biz</button>
+    <button class="tab-button" onclick="mostrarAba(2)">Frotas Biz</button>
+    <button class="tab-button" onclick="mostrarAba(3)">Descargas Biz</button>
+    <button class="tab-button" onclick="mostrarAba(4)">Cargas Biz</button>
+    <button class="tab-button" onclick="mostrarAba(5)">Outros Registros</button>
+</div>
+
+<main>
+    <div id="aba-1" class="tab-content active">
+        <div class="search-bar">
+            <input type="text" id="search-1" placeholder="Pesquisar por nome...">
+        </div>
+        <table>
             <thead>
-              <tr>
-                <th><input type="checkbox" id="selectAll-registros" onclick="toggleSelectAll('registros')"> Select</th>
-                <th>Data</th>
-                <th>Nome</th>
-                <th>Crachá</th>
-                <th>Hora Entrada</th>
-                <th>Hora Saída</th>
-                <th>Obs</th>
-              </tr>
+                <tr>
+                    <th>Nome</th>
+                    <th>H. Entrada</th>
+                    <th>H. Saída</th>
+                    <th>Crachá</th>
+                    <th>Observações</th>
+                </tr>
             </thead>
-            <tbody></tbody>
-          </table>
-        </div>
-      </div>
-
-      <div id="frota-biz" class="tab-content">
-        <div id="tabela-container">
-          <table id="tabela-frota-biz">
-            <thead>
-              <tr>
-                <th><input type="checkbox" id="selectAll-frota-biz" onclick="toggleSelectAll('frota-biz')"> Select</th>
-                <th>Data</th>
-                <th>Nome</th>
-                <th>Frota</th>
-                <th>Hora Entrada</th>
-                <th>Hora Saída</th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-          </table>
-        </div>
-      </div>
-
-      <div id="descarga-biz" class="tab-content">
-        <div id="tabela-container">
-          <table id="tabela-descarga-biz">
-            <thead>
-              <tr>
-                <th><input type="checkbox" id="selectAll-descarga-biz" onclick="toggleSelectAll('descarga-biz')"> Select</th>
-                <th>Data</th>
-                <th>Hora</th>
-                <th>Nome</th>
-                <th>Tel</th>
-                <th>Doc</th>
-                <th>Placas</th>
-                <th>Transp</th>
-                <th>Forn</th>
-                <th>NF/SH</th>
-                <th>Quant</th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-          </table>
-        </div>
-      </div>
-
-      <div id="carga-biz" class="tab-content">
-        <div id="tabela-container">
-          <table id="tabela-carga-biz">
-            <thead>
-              <tr>
-                <th><input type="checkbox" id="selectAll-carga-biz" onclick="toggleSelectAll('carga-biz')">Select</th>
-                <th>Data</th>
-                <th>Hora</th>
-                <th>Nome</th>
-                <th>Placas</th>
-                <th>Transp</th>
-                <th>Cliente</th>
-                <th>Nº Ordem</th>
-                <th>Produto</th>
-                <th>Quantidade</th>
-                <th>Autorização</th>
-
-
-              </tr>
-            </thead>
-            <tbody></tbody>
-          </table>
-        </div>
-      </div>
-
-      <div id="prest-servicos-biz" class="tab-content">
-        <div id="tabela-container">
-          <table id="tabela-prest-servicos-biz">
-            <thead>
-              <tr>
-                <th><input type="checkbox" id="selectAll-prest-servicos-biz" onclick="toggleSelectAll('prest-servicos-biz')"> Select</th>
-                <th>Data</th>
-                <th>Hora</th>
-                <th>Nome</th>
-                <th>Placa/CPF</th>
-                <th>Empresa</th>
-                <th>Tipo de Serviço</th>
-                <th>Autorização</th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-          </table>
-        </div>
-      </div>
-
-      <div id="bloco-de-notas" class="tab-content">
-        <div id="notepad-list"></div>
-      </div>
-
-      <div id="agenda" class="tab-content">
-        <div class="grid-container">
-          <div class="grid-item">
-            <div id="clock-container">
-              <h1 id="clock"></h1>
-              <p id="date"></p>
-            </div>
-            <div id="calendar-container">
-              <div id="calendar-header">
-                <button onclick="changeMonth(-1)">❮</button>
-                <h4 id="current-month-year"></h4>
-                <button onclick="changeMonth(1)">❯</button>
-              </div>
-              <div id="calendar"></div>
-            </div>
-          </div>
-          <div class="grid-item">
-            <h3>Agenda de Compromissos</h3>
-            <ul id="appointments"></ul>
-            <div class="formulario-campos" style="margin-top: 20px;">
-              <input type="date" id="appointment-date" />
-              <input type="time" id="appointment-time" />
-              <input type="text" id="appointment-text" placeholder="Compromisso" />
-            </div>
-            <div class="formulario-botoes" style="margin-top: 10px;">
-              <button onclick="addAppointment()">Adicionar</button>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div id="main-footer">
-        
-        <div id="form-registros" class="footer-form active">
-          <div class="formulario-campos">
-            <input type="date" id="data_registros" disabled style="display: none;"/>
-            <select id="nome_registros">
-              <option disabled selected>Nome</option>
-              <option>Leandro S.</option>
-<option>Oscar -Supervisor</option>
-<option>João Paulo. - Menor Aprendiz</option>
-<option>Vitória Isabele</option>
-<option>Thalles</option>
-<option>André</option>
-<option>Ezequias</option>
-<option>Luiz Carlos</option>
-<option>Raimundo</option>
-<option>Michel F. - Menor Aprendiz</option>
-<option>João Vitor</option>
-<option>Luiz Henrique</option>
-<option>Cristiano</option>
-<option>Luiz Carlos</option>
-<option>Marsergio-Gerente</option>
-<option>Jean Carlos</option>
-<option>André - ADM</option>
-
-<option>-----Turno da Tarde-----</option>
-
-<option>Enildo -Supervisor</option>
-<option>Thiago Benjamin</option>
-<option>Jayme - Encarregado - Van</option>
-<option>Raimundo - Van</option>
-<option>Marcos - Van</option>
-<option>Fábio - Van</option>
-<option>Eriton - Van</option>
-<option>Elionai - Van</option>
-<option>Edmar - Van</option>
-<option>Jefferson - Van</option>
-<option>Wanderson</option>
-<option>Kleverson</option>
-<option>Leandro F.</option>
-<option>Gilliard D.</option>
-<option>Leandro P.</option>
-<option>André F.</option>
-<option>Leonardo</option>
-<option>Dangel – Menor aprendiz</option>
-<option>Cauan – Menor aprendiz</option>
-<option>Nicolas G – Menor aprendiz</option>
-<option>Elias – Menor aprendiz</option>
-<option>Murilo - Menor Aprendiz</option>
-<option>Matias - Menor Aprendiz</option>
-<option>Yuri  - Menor Aprendiz</option>
-<option>Pedro H - Menor Aprendiz</option>
-<option>Felipe - Menor Aprendiz</option>
-<option>Abraão - Menor Aprendiz</option>
-<option>Gabriel - Menor Aprendiz</option>
-<option>Edirlei - CPD</option>
-            </select>
-            <select id="cracha_registros">
-              <option disabled selected>Crachá</option>
-              <option>Sim</option>
-              <option>Não tem</option>
-              <option>Esqueceu</option>
-            </select>
-            <input type="time" id="entrada_registros" placeholder="Hora de Entrada" />
-            <input type="time" id="saida_registros" placeholder="Hora de Saída" />
-            <input type="text" id="obs_registros" placeholder="Obs" />
-          </div>
-          <div class="formulario-botoes">
-            <button onclick="salvarRegistro('registros')">Salvar</button>
-            <button onclick="editarRegistro('registros')">Editar</button>
-            <button onclick="excluirSelecionados('registros')">Excluir</button>
-            <button onclick="exportarTXT('registros')">TXT</button>
-            <button onclick="exportarExcel('registros')">Excel</button>
-          </div>
-        </div>
-        
-        <div id="form-frota-biz" class="footer-form">
-          <div class="formulario-campos">
-            <input type="date" id="data_frota_biz" disabled hidden/>
-            <input type="text" id="nome_frota_biz" placeholder="Nome" />
-            <input type="text" id="frota_frota_biz" placeholder="Frota" />
-            <input type="time" id="entrada_frota_biz" placeholder="Hora de Entrada" />
-            <input type="time" id="saida_frota_biz" placeholder="Hora de Saída" />
-          </div>
-          <div class="formulario-botoes">
-            <button onclick="salvarRegistro('frota-biz')">Salvar</button>
-            <button onclick="editarRegistro('frota-biz')">Editar</button>
-            <button onclick="excluirSelecionados('frota-biz')">Excluir</button>
-            <button onclick="exportarTXT('frota-biz')">TXT</button>
-            <button onclick="exportarExcel('frota-biz')">Excel</button>
-          </div>
-        </div>
-
-        <div id="form-descarga-biz" class="footer-form">
-          <div class="formulario-campos">
-            <input type="date" id="data_descarga" disabled hidden />
-            <input type="time" id="horario_descarga" />
-            <input type="text" id="nome_descarga" placeholder="Nome" />
-            <input type="text" id="tel_descarga" placeholder="Tel" />
-            <input type="text" id="doc_descarga" placeholder="Doc" />
-            <input type="text" id="placas_descarga" placeholder="Placas" />
-            <input type="text" id="transportadora_descarga" placeholder="Transp" />
-            <input type="text" id="fornecedor_descarga" placeholder="Fornec" />
-            <input type="text" id="sh_nf_descarga" placeholder="NF/SH" />
-            <input type="text" id="quantidades_descarga" placeholder="Quant" />
-          </div>
-          <div class="formulario-botoes">
-            <button onclick="salvarRegistro('descarga-biz')">Salvar</button>
-            <button onclick="editarRegistro('descarga-biz')">Editar</button>
-            <button onclick="excluirSelecionados('descarga-biz')">Excluir</button>
-            <button onclick="exportarTXT('descarga-biz')">TXT</button>
-            <button onclick="exportarExcel('descarga-biz')">Excel</button>
-          </div>
-        </div>
-
-        <div id="form-carga-biz" class="footer-form">
-          <div class="formulario-campos">
-            <input type="date" id="data_carga" disabled hidden />
-            <input type="time" id="hora_carga" />
-            <input type="text" id="nome_carga" placeholder="Nome" />
-            <input type="text" id="placas_carga" placeholder="Placas" />
-            <input type="text" id="transp_carga" placeholder="Transp" />
-            <input type="text" id="cliente_carga" placeholder="Cliente" />
-            <input type="text" id="n_ordem_carga" placeholder="Nº Ordem" />
-            <input type="text" id="produto_carga" placeholder="Produto" />
-            <input type="text" id="quantidade_carga" placeholder="Quantidade" />
-            <input type="text" id="autorizacao_carga" placeholder="Autorização" />
-          </div>
-          <div class="formulario-botoes">
-            <button onclick="salvarRegistro('carga-biz')">Salvar</button>
-            <button onclick="editarRegistro('carga-biz')">Editar</button>
-            <button onclick="excluirSelecionados('carga-biz')">Excluir</button>
-            <button onclick="exportarTXT('carga-biz')">TXT</button>
-            <button onclick="exportarExcel('carga-biz')">Excel</button>
-          </div>
-        </div>
-
-        <div id="form-prest-servicos-biz" class="footer-form">
-          <div class="formulario-campos">
-            <input type="date" id="data_prest" disabled hidden />
-            <input type="time" id="hora_prest" />
-            <input type="text" id="nome_prest" placeholder="Nome" />
-            <input type="text" id="placa_cpf_prest" placeholder="Placa/CPF" />
-            <input type="text" id="empresa_prest" placeholder="Empresa" />
-            <input type="text" id="tipo_servico_prest" placeholder="Tipo de Serviço" />
-            <input type="text" id="autorizacao_prest" placeholder="Autorização" />
-          </div>
-          <div class="formulario-botoes">
-            <button onclick="salvarRegistro('prest-servicos-biz')">Salvar</button>
-            <button onclick="editarRegistro('prest-servicos-biz')">Editar</button>
-            <button onclick="excluirSelecionados('prest-servicos-biz')">Excluir</button>
-            <button onclick="exportarTXT('prest-servicos-biz')">TXT</button>
-            <button onclick="exportarExcel('prest-servicos-biz')">Excel</button>
-          </div>
-        </div>
-
-        <div id="form-bloco-de-notas" class="footer-form">
-          <div class="formulario-campos">
-            <input type="text" id="note-title" placeholder="Título da anotação" />
-            <textarea id="note-content" placeholder="Conteúdo da anotação"></textarea>
-          </div>
-          <div class="formulario-botoes">
-            <button onclick="saveNote()">Salvar</button>
-            <button onclick="deleteNote()">Excluir</button>
-          </div>
-        </div>
-      </div>
+            <tbody id="registro-lista-1"></tbody>
+        </table>
     </div>
-  </div>
 
-  <div id="noteModal" class="floating-modal">
-    <div class="modal-content">
-      <span class="close-button" onclick="closeNoteModal()">&times;</span>
-      <h3 id="modal-note-title"></h3>
-      <p id="modal-note-content"></p>
+    <div id="aba-2" class="tab-content">
+        <div class="search-bar">
+            <input type="text" id="search-2" placeholder="Pesquisar por nome...">
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>H. Entrada</th>
+                    <th>H. Saída</th>
+                    <th>Frota</th>
+                    <th>Observações</th>
+                </tr>
+            </thead>
+            <tbody id="registro-lista-2"></tbody>
+        </table>
     </div>
-  </div>
 
-  <div id="alert-modal">
-    <h3>Lembrete de Compromisso!</h3>
-    <p id="alert-message"></p>
-    <button onclick="closeAlertModal()">Ok</button>
-  </div>
+    <div id="aba-3" class="tab-content">
+        <div class="search-bar">
+            <input type="text" id="search-3" placeholder="Pesquisar por nome...">
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Horário</th>
+                    <th>Nome</th>
+                    <th>Doc.</th>
+                    <th>Contato</th>
+                    <th>Placa CV</th>
+                    <th>Placa RB</th>
+                    <th>Transp.</th>
+                    <th>Fornec.</th>
+                    <th>SH</th>
+                    <th>Qtd</th>
+                    <th>Observação</th>
+                </tr>
+            </thead>
+            <tbody id="registro-lista-3"></tbody>
+        </table>
+    </div>
 
-  <script>
-    const STORAGE_KEYS = {
-      'registros': 'registro_funcionarios_skairipa',
-      'frota-biz': 'frota_biz',
-      'descarga-biz': 'descarga_biz',
-      'carga-biz': 'carga_biz',
-      'prest-servicos-biz': 'prest_servicos_biz',
-      'bloco-de-notas': 'bloco_de_notas',
-      'agenda': 'agenda_compromissos'
-    };
+    <div id="aba-4" class="tab-content">
+        <div class="search-bar">
+            <input type="text" id="search-4" placeholder="Pesquisar por nome...">
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>H. Entrada</th>
+                    <th>Motorista</th>
+                    <th>Doc.</th>
+                    <th>Contato</th>
+                    <th>Cliente</th>
+                    <th>Placas</th>
+                    <th>Autorização</th>
+                    <th>Observações</th>
+                </tr>
+            </thead>
+            <tbody id="registro-lista-4"></tbody>
+        </table>
+    </div>
 
-    let editIndexes = {};
-    let selectedNoteIndex = null;
-    let currentMonth = new Date().getMonth();
-    let currentYear = new Date().getFullYear();
+    <div id="aba-5" class="tab-content">
+        <div class="search-bar">
+            <input type="text" id="search-5" placeholder="Pesquisar por nome...">
+        </div>
+        <table>
+            <thead>
+                <tr>
+                    <th>Hora</th>
+                    <th>Nome</th>
+                    <th>CPF / Placa</th>
+                    <th>Empresa</th>
+                    <th>Autorização</th>
+                    <th>Observações</th>
+                </tr>
+            </thead>
+            <tbody id="registro-lista-5"></tbody>
+        </table>
+    </div>
+</main>
 
-    function getCurrentDate() {
-        const now = new Date();
-        return now.toISOString().split('T')[0];
-    }
+<footer>
+    <div class="form-container">
+        <form id="registro-form-1" class="registro-form">
+            <select id="nome-1" required>
+                <option value="">Funcionário...</option>
+                <option>Leandro S.</option>
+                <option>Oscar - Supervisor</option>
+                <option>João Paulo - Menor Aprendiz</option>
+                <option>Vitória Isabele</option>
+                <option>Thalles</option>
+                <option>André</option>
+                <option>Ezequias</option>
+                <option>João Vitor</option>
+                <option>Luiz Carlos</option>
+                <option>Luiz Henrique</option>
+                <option>Cristiano</option>
+                <option>Jean Carlos</option>
+                <option>Marsergio - Gerente</option>
+                <option>Michel F. - Menor Aprendiz</option>
+                <option>Raimundo</option>
+                <option>Enildo - Supervisor</option>
+                <option>Thiago Benjamin</option>
+                <option>Jayme - Encarregado - Van</option>
+                <option>Raimundo - Van</option>
+                <option>Marcos - Van</option>
+                <option>Fábio - Van</option>
+                <option>Eriton - Van</option>
+                <option>Elionai - Van</option>
+                <option>Edmar - Van</option>
+                <option>Jefferson - Van</option>
+                <option>Wanderson</option>
+                <option>Kleverson</option>
+                <option>Leandro F.</option>
+                <option>Gilliard D.</option>
+                <option>Leandro P.</option>
+                <option>André F.</option>
+                <option>Leonardo</option>
+                <option>Dangel – Menor aprendiz</option>
+                <option>Cauan – Menor aprendiz</option>
+                <option>Nicolas G – Menor aprendiz</option>
+                <option>Elias – Menor aprendiz</option>
+                <option>Murilo - Menor Aprendiz</option>
+                <option>Matias - Menor Aprendiz</option>
+                <option>Yuri  - Menor Aprendiz</option>
+                <option>Pedro H - Menor Aprendiz</option>
+                <option>Felipe - Menor Aprendiz</option>
+                <option>Abraão - Menor Aprendiz</option>
+                <option>Gabriel - Menor Aprendiz</option>
+                <option>Edirlei - CPD</option>
+                <option>Denne Carlo - Predial</option>
+                <option>Francisco B. - Predial</option>
+            </select>
+            <input type="time" id="entrada-1">
+            <input type="time" id="saida-1">
+            <select id="cracha-1">
+                <option>Sim</option>
+                <option>Não</option>
+            </select>
+            <textarea id="obs-1" placeholder="Observações" rows="1"></textarea>
+        </form>
 
-    function getCurrentTabName() {
-        const tabHeader = document.querySelector('.tab-button.active');
-        return tabHeader ? tabHeader.getAttribute('onclick').match(/'([^']+)'/)[1] : null;
-    }
+        <form id="registro-form-2" class="registro-form" style="display:none;">
+            <input type="time" id="entrada-2" placeholder="H. Entrada">
+            <input type="time" id="saida-2" placeholder="H. Saída">
+            <input type="text" id="frotas-2" placeholder="Frota">
+            <input type="text" id="nomes-2" placeholder="Nomes">
+            <textarea id="obs-2" placeholder="Observações" rows="1"></textarea>
+        </form>
 
-    function openTab(tabName) {
-      const tabContents = document.querySelectorAll('.tab-content');
-      tabContents.forEach(tab => tab.style.display = 'none');
-      document.getElementById(tabName).style.display = 'block';
+        <form id="registro-form-3" class="registro-form" style="display:none;">
+            <input type="time" id="horario-3" required>
+            <input type="text" id="nome-3" placeholder="Nome">
+            <input type="text" id="documento-3" placeholder="Documento">
+            <input type="text" id="contato-3" placeholder="Contato">
+            <input type="text" id="placa-cv-3" placeholder="Placa CV">
+            <input type="text" id="placa-rb-3" placeholder="Placa RB">
+            <input type="text" id="transportadora-3" placeholder="Transportadora">
+            <input type="text" id="fornecedor-3" placeholder="Fornecedor">
+            <input type="text" id="sh-3" placeholder="SH">
+            <input type="text" id="quantidade-3" placeholder="Quantidades">
+            <textarea id="observacao-3" placeholder="Observação" rows="1"></textarea>
+        </form>
 
-      const footerForms = document.querySelectorAll('.footer-form');
-      footerForms.forEach(form => form.classList.remove('active'));
-      const formElement = document.getElementById(`form-${tabName}`);
-      if (formElement) {
-        formElement.classList.add('active');
-        const dateInput = formElement.querySelector('input[type="date"]');
-        if (dateInput) {
-            dateInput.value = getCurrentDate();
+        <form id="registro-form-4" class="registro-form" style="display:none;">
+            <input type="time" id="entrada-4" required>
+            <input type="text" id="motorista-4" placeholder="Motorista">
+            <input type="text" id="documento-4" placeholder="Documento">
+            <input type="text" id="contato-4" placeholder="Contato">
+            <input type="text" id="cliente-4" placeholder="Cliente">
+            <input type="text" id="placas-4" placeholder="Placas">
+            <input type="text" id="autorizacao-4" placeholder="Autorização">
+            <textarea id="observacoes-4" placeholder="Observações" rows="1"></textarea>
+        </form>
+
+        <form id="registro-form-5" class="registro-form" style="display:none;">
+            <input type="time" id="hora-5" required>
+            <input type="text" id="nome-5" placeholder="Nome">
+            <input type="text" id="cpf-placa-5" placeholder="CPF / Placa">
+            <input type="text" id="empresa-5" placeholder="Empresa">
+            <input type="text" id="autorizacao-5" placeholder="Autorização">
+            <textarea id="observacoes-5" placeholder="Observações" rows="1"></textarea>
+        </form>
+
+        <div class="footer-buttons">
+            <button type="submit" form="registro-form-1" class="icon-button salvar">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+            </button>
+            <button type="button" class="icon-button editar" onclick="editarRegistro(abaAtual)">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+            </button>
+            <button type="button" class="icon-button excluir" onclick="excluirRegistro(abaAtual)">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+            </button>
+            <button type="button" class="icon-button relatorio" onclick="gerarRelatorioTXT()">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+            </button>
+            <button type="button" class="icon-button theme-toggle" onclick="toggleTheme()">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+            </button>
+        </div>
+    </div>
+</footer>
+
+<script>
+    let registros = {};
+    let selecionado = {};
+    let abaAtual = 1;
+
+    function carregarDados() {
+        for (let i = 1; i <= 5; i++) {
+            registros[i] = JSON.parse(localStorage.getItem(`registrosAba${i}`)) || [];
+            selecionado[i] = null;
         }
-      }
-
-      const tabButtons = document.querySelectorAll('.tab-button');
-      tabButtons.forEach(button => button.classList.remove('active'));
-      
-      // Corrigido para garantir que o botão clicado se torne ativo
-      document.querySelector(`.tab-button[onclick*='${tabName}']`).classList.add('active');
-      
-      editIndexes[tabName] = null;
-      limparFormulario(tabName);
-      
-      if (tabName === 'agenda') {
-        renderCalendar();
-        updateClock();
-        loadAppointments();
-      } else if (tabName === 'bloco-de-notas') {
-        loadNotes();
-      } else {
-        carregarRegistros(tabName);
-      }
     }
-    
-    function toggleSelectAll(tabName) {
-        const selectAllCheckbox = document.getElementById(`selectAll-${tabName}`);
-        const checkboxes = document.querySelectorAll(`#tabela-${tabName} tbody input[type="checkbox"]`);
-        checkboxes.forEach(checkbox => {
-            checkbox.checked = selectAllCheckbox.checked;
+
+    function salvarDados(aba) {
+        localStorage.setItem(`registrosAba${aba}`, JSON.stringify(registros[aba]));
+    }
+
+    function mostrarAba(aba) {
+        document.querySelectorAll('.tab-content').forEach(content => content.style.display = 'none');
+        document.getElementById(`aba-${aba}`).style.display = 'block';
+
+        document.querySelectorAll('.registro-form').forEach(form => form.style.display = 'none');
+        document.getElementById(`registro-form-${aba}`).style.display = 'flex';
+        
+        document.querySelector('.footer-buttons .salvar').setAttribute('form', `registro-form-${aba}`);
+
+        document.querySelectorAll('.tab-button').forEach(button => button.classList.remove('active'));
+        document.querySelector(`.tab-button:nth-child(${aba})`).classList.add('active');
+        
+        abaAtual = aba;
+        renderTabela(aba);
+    }
+
+    function renderTabela(aba) {
+        const tbody = document.getElementById(`registro-lista-${aba}`);
+        tbody.innerHTML = "";
+        const filtro = document.getElementById(`search-${aba}`).value.toLowerCase();
+        
+        const registrosDaAba = registros[aba] || [];
+        const registrosFiltrados = registrosDaAba.filter(r => {
+            const values = Object.values(r).join(' ').toLowerCase();
+            return values.includes(filtro);
+        });
+
+        registrosFiltrados.forEach((r, index) => {
+            const tr = document.createElement("tr");
+            let html = "";
+            switch (aba) {
+                case 1:
+                    html = `<td>${r.nome}</td><td>${r.entrada || ""}</td><td>${r.saida || ""}</td><td>${r.cracha}</td><td>${r.obs}</td>`;
+                    break;
+                case 2:
+                    html = `<td>${r.nomes}</td><td>${r.entrada || ""}</td><td>${r.saida || ""}</td><td>${r.frotas}</td><td>${r.obs}</td>`;
+                    break;
+                case 3:
+                    html = `<td>${r.horario}</td><td>${r.nome}</td><td>${r.documento}</td><td>${r.contato}</td><td>${r.placaCv}</td><td>${r.placaRb}</td><td>${r.transportadora}</td><td>${r.fornecedor}</td><td>${r.sh}</td><td>${r.quantidade}</td><td>${r.observacao}</td>`;
+                    break;
+                case 4:
+                    html = `<td>${r.entrada}</td><td>${r.motorista}</td><td>${r.documento}</td><td>${r.contato}</td><td>${r.cliente}</td><td>${r.placas}</td><td>${r.autorizacao}</td><td>${r.observacoes}</td>`;
+                    break;
+                case 5:
+                    html = `<td>${r.hora}</td><td>${r.nome}</td><td>${r.cpfPlaca}</td><td>${r.empresa}</td><td>${r.autorizacao}</td><td>${r.observacoes}</td>`;
+                    break;
+            }
+            tr.innerHTML = html;
+            tr.onclick = () => {
+                selecionado[aba] = index;
+                document.querySelectorAll(`#registro-lista-${aba} tr`).forEach(row => row.classList.remove("selecionado"));
+                tr.classList.add("selecionado");
+            };
+            tbody.appendChild(tr);
         });
     }
 
-    function salvarRegistro(tabName) {
-      const storageKey = STORAGE_KEYS[tabName];
-      let registros = JSON.parse(localStorage.getItem(storageKey) || '[]');
-      let registro = {};
-      const editIndex = editIndexes[tabName];
-      
-      if (tabName === 'registros') {
-        registro = {
-          data: getCurrentDate(),
-          nome: document.getElementById('nome_registros').value,
-          cracha: document.getElementById('cracha_registros').value,
-          horaEntrada: document.getElementById('entrada_registros').value,
-          horaSaida: document.getElementById('saida_registros').value,
-          obs: document.getElementById('obs_registros').value,
-        };
-      } else if (tabName === 'frota-biz') {
-        registro = {
-          data: getCurrentDate(),
-          nome: document.getElementById('nome_frota_biz').value,
-          frota: document.getElementById('frota_frota_biz').value,
-          horaEntrada: document.getElementById('entrada_frota_biz').value,
-          horaSaida: document.getElementById('saida_frota_biz').value,
-        };
-      } else if (tabName === 'descarga-biz') {
-        registro = {
-          data: getCurrentDate(),
-          hora: document.getElementById('horario_descarga').value,
-          nome: document.getElementById('nome_descarga').value,
-          tel: document.getElementById('tel_descarga').value,
-          doc: document.getElementById('doc_descarga').value,
-          placas: document.getElementById('placas_descarga').value,
-          transp: document.getElementById('transportadora_descarga').value,
-          fornec: document.getElementById('fornecedor_descarga').value,
-          sh_nf: document.getElementById('sh_nf_descarga').value,
-          quant: document.getElementById('quantidades_descarga').value,
-        };
-      } else if (tabName === 'carga-biz') {
-        registro = {
-          data: getCurrentDate(),
-          hora: document.getElementById('hora_carga').value,
-          nome: document.getElementById('nome_carga').value,
-          placas: document.getElementById('placas_carga').value,
-          transp: document.getElementById('transp_carga').value,
-          cliente: document.getElementById('cliente_carga').value,
-          nOrdem: document.getElementById('n_ordem_carga').value,
-          produto: document.getElementById('produto_carga').value,
-          quantidade: document.getElementById('quantidade_carga').value,
-          autorizacao: document.getElementById('autorizacao_carga').value,
-        };
-      } else if (tabName === 'prest-servicos-biz') {
-        registro = {
-          data: getCurrentDate(),
-          hora: document.getElementById('hora_prest').value,
-          nome: document.getElementById('nome_prest').value,
-          placa_cpf: document.getElementById('placa_cpf_prest').value,
-          empresa: document.getElementById('empresa_prest').value,
-          tipoServico: document.getElementById('tipo_servico_prest').value,
-          autorizacao: document.getElementById('autorizacao_prest').value,
-        };
-      }
-      
-      if (editIndex !== undefined && editIndex !== null) {
-        registros[editIndex] = registro;
-        editIndexes[tabName] = null;
-      } else {
-        registros.push(registro);
-      }
-
-      localStorage.setItem(storageKey, JSON.stringify(registros));
-      limparFormulario(tabName);
-      carregarRegistros(tabName);
+    function getFormValues(aba) {
+        switch (aba) {
+            case 1:
+                return {
+                    nome: document.getElementById(`nome-${aba}`).value,
+                    entrada: document.getElementById(`entrada-${aba}`).value,
+                    saida: document.getElementById(`saida-${aba}`).value,
+                    cracha: document.getElementById(`cracha-${aba}`).value,
+                    obs: document.getElementById(`obs-${aba}`).value,
+                    timestamp: new Date().getTime()
+                };
+            case 2:
+                return {
+                    entrada: document.getElementById(`entrada-${aba}`).value,
+                    saida: document.getElementById(`saida-${aba}`).value,
+                    frotas: document.getElementById(`frotas-${aba}`).value,
+                    nomes: document.getElementById(`nomes-${aba}`).value,
+                    obs: document.getElementById(`obs-${aba}`).value,
+                    timestamp: new Date().getTime()
+                };
+            case 3:
+                return {
+                    horario: document.getElementById(`horario-${aba}`).value,
+                    nome: document.getElementById(`nome-${aba}`).value,
+                    documento: document.getElementById(`documento-${aba}`).value,
+                    contato: document.getElementById(`contato-${aba}`).value,
+                    placaCv: document.getElementById(`placa-cv-${aba}`).value,
+                    placaRb: document.getElementById(`placa-rb-${aba}`).value,
+                    transportadora: document.getElementById(`transportadora-${aba}`).value,
+                    fornecedor: document.getElementById(`fornecedor-${aba}`).value,
+                    sh: document.getElementById(`sh-${aba}`).value,
+                    quantidade: document.getElementById(`quantidade-${aba}`).value,
+                    observacao: document.getElementById(`observacao-${aba}`).value,
+                    timestamp: new Date().getTime()
+                };
+            case 4:
+                return {
+                    entrada: document.getElementById(`entrada-${aba}`).value,
+                    motorista: document.getElementById(`motorista-${aba}`).value,
+                    documento: document.getElementById(`documento-${aba}`).value,
+                    contato: document.getElementById(`contato-${aba}`).value,
+                    cliente: document.getElementById(`cliente-${aba}`).value,
+                    placas: document.getElementById(`placas-${aba}`).value,
+                    autorizacao: document.getElementById(`autorizacao-${aba}`).value,
+                    observacoes: document.getElementById(`observacoes-${aba}`).value,
+                    timestamp: new Date().getTime()
+                };
+            case 5:
+                return {
+                    hora: document.getElementById(`hora-${aba}`).value,
+                    nome: document.getElementById(`nome-${aba}`).value,
+                    cpfPlaca: document.getElementById(`cpf-placa-${aba}`).value,
+                    empresa: document.getElementById(`empresa-${aba}`).value,
+                    autorizacao: document.getElementById(`autorizacao-${aba}`).value,
+                    observacoes: document.getElementById(`observacoes-${aba}`).value,
+                    timestamp: new Date().getTime()
+                };
+        }
     }
 
-    function editarRegistro(tabName) {
-      const selectedRows = document.querySelectorAll(`#tabela-${tabName} tbody tr.selected`);
-      if (selectedRows.length !== 1) {
-        alert('Selecione uma única linha com duplo clique para editar.');
-        return;
-      }
-      salvarRegistro(tabName);
+    function setFormValues(aba, registro) {
+        const form = document.getElementById(`registro-form-${aba}`);
+        switch (aba) {
+            case 1:
+                form.querySelector(`#nome-${aba}`).value = registro.nome;
+                form.querySelector(`#entrada-${aba}`).value = registro.entrada;
+                form.querySelector(`#saida-${aba}`).value = registro.saida;
+                form.querySelector(`#cracha-${aba}`).value = registro.cracha;
+                form.querySelector(`#obs-${aba}`).value = registro.obs;
+                break;
+            case 2:
+                form.querySelector(`#entrada-${aba}`).value = registro.entrada;
+                form.querySelector(`#saida-${aba}`).value = registro.saida;
+                form.querySelector(`#frotas-${aba}`).value = registro.frotas;
+                form.querySelector(`#nomes-${aba}`).value = registro.nomes;
+                form.querySelector(`#obs-${aba}`).value = registro.obs;
+                break;
+            case 3:
+                form.querySelector(`#horario-${aba}`).value = registro.horario;
+                form.querySelector(`#nome-${aba}`).value = registro.nome;
+                form.querySelector(`#documento-${aba}`).value = registro.documento;
+                form.querySelector(`#contato-${aba}`).value = registro.contato;
+                form.querySelector(`#placa-cv-${aba}`).value = registro.placaCv;
+                form.querySelector(`#placa-rb-${aba}`).value = registro.placaRb;
+                form.querySelector(`#transportadora-${aba}`).value = registro.transportadora;
+                form.querySelector(`#fornecedor-${aba}`).value = registro.fornecedor;
+                form.querySelector(`#sh-${aba}`).value = registro.sh;
+                form.querySelector(`#quantidade-${aba}`).value = registro.quantidade;
+                form.querySelector(`#observacao-${aba}`).value = registro.observacao;
+                break;
+            case 4:
+                form.querySelector(`#entrada-${aba}`).value = registro.entrada;
+                form.querySelector(`#motorista-${aba}`).value = registro.motorista;
+                form.querySelector(`#documento-${aba}`).value = registro.documento;
+                form.querySelector(`#contato-${aba}`).value = registro.contato;
+                form.querySelector(`#cliente-${aba}`).value = registro.cliente;
+                form.querySelector(`#placas-${aba}`).value = registro.placas;
+                form.querySelector(`#autorizacao-${aba}`).value = registro.autorizacao;
+                form.querySelector(`#observacoes-${aba}`).value = registro.observacoes;
+                break;
+            case 5:
+                form.querySelector(`#hora-${aba}`).value = registro.hora;
+                form.querySelector(`#nome-${aba}`).value = registro.nome;
+                form.querySelector(`#cpf-placa-${aba}`).value = registro.cpfPlaca;
+                form.querySelector(`#empresa-${aba}`).value = registro.empresa;
+                form.querySelector(`#autorizacao-${aba}`).value = registro.autorizacao;
+                form.querySelector(`#observacoes-${aba}`).value = registro.observacoes;
+                break;
+        }
     }
 
-    function excluirSelecionados(tabName) {
-        const selectedCheckboxes = document.querySelectorAll(`#tabela-${tabName} tbody input[type="checkbox"]:checked`);
-        if (selectedCheckboxes.length === 0) {
-            alert('Selecione pelo menos um registro para excluir.');
+    function salvarRegistro(e) {
+        e.preventDefault();
+        const aba = abaAtual;
+        const form = document.getElementById(`registro-form-${aba}`);
+        const novoRegistro = getFormValues(aba);
+        
+        // Obtém o campo de hora correto para a ordenação
+        let campoHora = 'timestamp';
+        switch (aba) {
+            case 1: campoHora = 'entrada'; break;
+            case 2: campoHora = 'entrada'; break;
+            case 3: campoHora = 'horario'; break;
+            case 4: campoHora = 'entrada'; break;
+            case 5: campoHora = 'hora'; break;
+        }
+        
+        // Converte a hora para um formato comparável, se existir
+        const horaNovo = novoRegistro[campoHora];
+
+        // Insere o novo registro na posição correta
+        let inserido = false;
+        for (let i = 0; i < registros[aba].length; i++) {
+            const horaExistente = registros[aba][i][campoHora];
+            if (horaExistente && horaNovo < horaExistente) {
+                registros[aba].splice(i, 0, novoRegistro);
+                inserido = true;
+                break;
+            }
+        }
+        if (!inserido) {
+            registros[aba].push(novoRegistro);
+        }
+
+        salvarDados(aba);
+        form.reset();
+        renderTabela(aba);
+    }
+
+    function editarRegistro(aba) {
+        if (selecionado[aba] === null) {
+            alert("Selecione um registro para editar.");
             return;
         }
+        const registro = registros[aba][selecionado[aba]];
+        setFormValues(aba, registro);
 
-        if (!confirm(`Deseja realmente excluir ${selectedCheckboxes.length} registro(s)?`)) return;
-
-        const storageKey = STORAGE_KEYS[tabName];
-        let registros = JSON.parse(localStorage.getItem(storageKey) || '[]');
-        const indexesToDelete = Array.from(selectedCheckboxes).map(cb => parseInt(cb.dataset.index)).sort((a,b) => b - a);
-
-        indexesToDelete.forEach(index => {
-            registros.splice(index, 1);
-        });
-
-        localStorage.setItem(storageKey, JSON.stringify(registros));
-        limparFormulario(tabName);
-        carregarRegistros(tabName);
-    }
-    
-    function exportarTXT(tabName) {
-      const storageKey = STORAGE_KEYS[tabName];
-      let registros = JSON.parse(localStorage.getItem(storageKey) || '[]');
-      
-      if (registros.length === 0) {
-        alert('Não há dados para exportar.');
-        return;
-      }
-
-      const headers = Object.keys(registros[0] || {});
-      const texto = registros.map(r => headers.map(h => r[h]).join('\t')).join('\n');
-      
-      const textoCompleto = headers.length > 0 ? headers.join('\t') + '\n' + texto : texto;
-
-      const blob = new Blob([textoCompleto], { type: 'text/plain' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `${tabName}.txt`;
-      a.click();
+        // Remove o registro selecionado antes de re-salvar
+        registros[aba].splice(selecionado[aba], 1);
+        salvarDados(aba);
+        selecionado[aba] = null;
+        renderTabela(aba);
     }
 
-    function exportarExcel(tabName) {
-      const storageKey = STORAGE_KEYS[tabName];
-      let registros = JSON.parse(localStorage.getItem(storageKey) || '[]');
-      
-      if (registros.length === 0) {
-        alert('Não há dados para exportar.');
-        return;
-      }
-
-      const headers = Object.keys(registros[0] || {});
-      const csv = registros.map(r => headers.map(h => `"${r[h]}"`).join(',')).join('\n');
-
-      const csvCompleto = headers.length > 0 ? headers.map(h => `"${h}"`).join(',') + '\n' + csv : csv;
-
-      const blob = new Blob([csvCompleto], { type: 'text/csv;charset=utf-8;' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = `${tabName}.csv`;
-      a.click();
-    }
-    
-    function carregarRegistros(tabName) {
-        const tabela = document.getElementById(`tabela-${tabName}`);
-        if (!tabela) return;
-
-        const tbody = tabela.querySelector('tbody');
-        tbody.innerHTML = '';
-        
-        const storageKey = STORAGE_KEYS[tabName];
-        let registros = JSON.parse(localStorage.getItem(storageKey) || '[]');
-
-        if (registros.length > 0) {
-            registros.sort((a, b) => {
-                const dateA = a.data;
-                const dateB = b.data;
-                
-                if (dateA && dateB) {
-                    return new Date(dateA) - new Date(dateB);
-                } else {
-                    return 0;
-                }
-            });
+    function excluirRegistro(aba) {
+        if (selecionado[aba] === null) {
+            alert("Selecione um registro para excluir.");
+            return;
         }
-
-        registros.forEach((r, index) => {
-            const row = tbody.insertRow();
-            
-            let orderedValues = [];
-            if (tabName === 'registros') {
-                orderedValues = [r.data, r.nome, r.cracha, r.horaEntrada, r.horaSaida, r.obs];
-            } else if (tabName === 'frota-biz') {
-                orderedValues = [r.data, r.nome, r.frota, r.horaEntrada, r.horaSaida];
-            } else if (tabName === 'descarga-biz') {
-                orderedValues = [r.data, r.hora, r.nome, r.tel, r.doc, r.placas, r.transp, r.fornec, r.sh_nf, r.quant];
-            } else if (tabName === 'carga-biz') {
-                orderedValues = [r.data, r.hora, r.nome, r.placas, r.transp, r.cliente, r.nOrdem, r.produto, r.quantidade, r.autorizacao];
-            } else if (tabName === 'prest-servicos-biz') {
-                orderedValues = [r.data, r.hora, r.nome, r.placa_cpf, r.empresa, r.tipoServico, r.autorizacao];
-            }
-
-            const checkboxCell = row.insertCell();
-            const checkbox = document.createElement('input');
-            checkbox.type = 'checkbox';
-            checkbox.dataset.index = index;
-            checkbox.addEventListener('click', (e) => e.stopPropagation());
-            checkboxCell.appendChild(checkbox);
-            
-            orderedValues.forEach(value => {
-                const cell = row.insertCell();
-                cell.textContent = value;
-            });
-
-            row.ondblclick = () => {
-              tbody.querySelectorAll('tr').forEach(tr => tr.classList.remove('selected'));
-              row.classList.add('selected');
-              
-              preencherFormulario(tabName, r, index);
-            };
-        });
-    }
-
-    function preencherFormulario(tabName, data, index) {
-      editIndexes[tabName] = index;
-      
-      const tbody = document.getElementById(`tabela-${tabName}`).querySelector('tbody');
-      if (tbody) {
-        tbody.querySelectorAll('tr').forEach(tr => tr.classList.remove('selected'));
-        const row = tbody.querySelector(`tr:nth-child(${index + 1})`);
-        if (row) {
-          row.classList.add('selected');
+        if (confirm("Deseja realmente excluir este registro?")) {
+            registros[aba].splice(selecionado[aba], 1);
+            salvarDados(aba);
+            selecionado[aba] = null;
+            renderTabela(aba);
         }
-      }
-
-      if (tabName === 'registros') {
-        document.getElementById('data_registros').value = data.data;
-        document.getElementById('nome_registros').value = data.nome;
-        document.getElementById('cracha_registros').value = data.cracha;
-        document.getElementById('entrada_registros').value = data.horaEntrada;
-        document.getElementById('saida_registros').value = data.horaSaida;
-        document.getElementById('obs_registros').value = data.obs;
-      } else if (tabName === 'frota-biz') {
-        document.getElementById('data_frota_biz').value = data.data;
-        document.getElementById('nome_frota_biz').value = data.nome;
-        document.getElementById('frota_frota_biz').value = data.frota;
-        document.getElementById('entrada_frota_biz').value = data.horaEntrada;
-        document.getElementById('saida_frota_biz').value = data.horaSaida;
-      } else if (tabName === 'descarga-biz') {
-        document.getElementById('data_descarga').value = data.data;
-        document.getElementById('horario_descarga').value = data.hora;
-        document.getElementById('nome_descarga').value = data.nome;
-        document.getElementById('tel_descarga').value = data.tel;
-        document.getElementById('doc_descarga').value = data.doc;
-        document.getElementById('placas_descarga').value = data.placas;
-        document.getElementById('transportadora_descarga').value = data.transp;
-        document.getElementById('fornecedor_descarga').value = data.fornec;
-        document.getElementById('sh_nf_descarga').value = data.sh_nf;
-        document.getElementById('quantidades_descarga').value = data.quant;
-      } else if (tabName === 'carga-biz') {
-        document.getElementById('data_carga').value = data.data;
-        document.getElementById('hora_carga').value = data.hora;
-        document.getElementById('nome_carga').value = data.nome;
-        document.getElementById('placas_carga').value = data.placas;
-        document.getElementById('transp_carga').value = data.transp;
-        document.getElementById('cliente_carga').value = data.cliente;
-        document.getElementById('n_ordem_carga').value = data.nOrdem;
-        document.getElementById('produto_carga').value = data.produto;
-        document.getElementById('quantidade_carga').value = data.quantidade;
-        document.getElementById('autorizacao_carga').value = data.autorizacao;
-      } else if (tabName === 'prest-servicos-biz') {
-        document.getElementById('data_prest').value = data.data;
-        document.getElementById('hora_prest').value = data.hora;
-        document.getElementById('nome_prest').value = data.nome;
-        document.getElementById('placa_cpf_prest').value = data.placa_cpf;
-        document.getElementById('empresa_prest').value = data.empresa;
-        document.getElementById('tipo_servico_prest').value = data.tipoServico;
-        document.getElementById('autorizacao_prest').value = data.autorizacao;
-      }
     }
 
-    function limparFormulario(tabName) {
-      editIndexes[tabName] = null;
-      const tbody = document.getElementById(`tabela-${tabName}`)?.querySelector('tbody');
-      if (tbody) {
-        tbody.querySelectorAll('tr').forEach(tr => tr.classList.remove('selected'));
-      }
-      
-      if (tabName === 'registros') {
-        document.getElementById('nome_registros').value = '';
-        document.getElementById('cracha_registros').value = 'Crachá';
-        document.getElementById('entrada_registros').value = '';
-        document.getElementById('saida_registros').value = '';
-        document.getElementById('obs_registros').value = '';
-      } else if (tabName === 'frota-biz') {
-        document.getElementById('nome_frota_biz').value = '';
-        document.getElementById('frota_frota_biz').value = '';
-        document.getElementById('entrada_frota_biz').value = '';
-        document.getElementById('saida_frota_biz').value = '';
-      } else if (tabName === 'descarga-biz') {
-        document.getElementById('horario_descarga').value = '';
-        document.getElementById('nome_descarga').value = '';
-        document.getElementById('tel_descarga').value = '';
-        document.getElementById('doc_descarga').value = '';
-        document.getElementById('placas_descarga').value = '';
-        document.getElementById('transportadora_descarga').value = '';
-        document.getElementById('fornecedor_descarga').value = '';
-        document.getElementById('sh_nf_descarga').value = '';
-        document.getElementById('quantidades_descarga').value = '';
-      } else if (tabName === 'carga-biz') {
-        document.getElementById('hora_carga').value = '';
-        document.getElementById('nome_carga').value = '';
-        document.getElementById('placas_carga').value = '';
-        document.getElementById('transp_carga').value = '';
-        document.getElementById('cliente_carga').value = '';
-        document.getElementById('n_ordem_carga').value = '';
-        document.getElementById('produto_carga').value = '';
-        document.getElementById('quantidade_carga').value = '';
-        document.getElementById('autorizacao_carga').value = '';
-      } else if (tabName === 'prest-servicos-biz') {
-        document.getElementById('hora_prest').value = '';
-        document.getElementById('nome_prest').value = '';
-        document.getElementById('placa_cpf_prest').value = '';
-        document.getElementById('empresa_prest').value = '';
-        document.getElementById('tipo_servico_prest').value = '';
-        document.getElementById('autorizacao_prest').value = '';
-      } else if (tabName === 'bloco-de-notas') {
-        selectedNoteIndex = null;
-        document.getElementById('note-title').value = '';
-        document.getElementById('note-content').value = '';
-        document.querySelectorAll('.note-item').forEach(item => item.classList.remove('selected'));
-      }
-      
-      const selectAllCheckbox = document.getElementById(`selectAll-${tabName}`);
-      if (selectAllCheckbox) {
-          selectAllCheckbox.checked = false;
-      }
-    }
-
-    // Lógica para o Bloco de Notas
-    function loadNotes() {
-      const notes = JSON.parse(localStorage.getItem(STORAGE_KEYS['bloco-de-notas']) || '[]');
-      const list = document.getElementById('notepad-list');
-      list.innerHTML = '';
-      notes.forEach((note, index) => {
-        const item = document.createElement('div');
-        item.classList.add('note-item');
-        item.innerHTML = `<h4>${note.title}</h4><p>${note.content.substring(0, 50)}...</p>`;
-        item.onclick = () => {
-          showNoteModal(note.title, note.content);
-        };
-        item.ondblclick = (e) => {
-          e.stopPropagation();
-          document.querySelectorAll('.note-item').forEach(i => i.classList.remove('selected'));
-          item.classList.add('selected');
-          selectedNoteIndex = index;
-          document.getElementById('note-title').value = note.title;
-          document.getElementById('note-content').value = note.content;
-        };
-        list.appendChild(item);
-      });
-      limparFormulario('bloco-de-notas');
-    }
-
-    function showNoteModal(title, content) {
-      const modal = document.getElementById('noteModal');
-      document.getElementById('modal-note-title').textContent = title;
-      document.getElementById('modal-note-content').textContent = content;
-      modal.style.display = 'block';
-    }
-
-    function closeNoteModal() {
-      const modal = document.getElementById('noteModal');
-      modal.style.display = 'none';
-    }
-
-    function saveNote() {
-      const title = document.getElementById('note-title').value;
-      const content = document.getElementById('note-content').value;
-      if (!title || !content) {
-        alert('Título e conteúdo não podem ser vazios.');
-        return;
-      }
-      let notes = JSON.parse(localStorage.getItem(STORAGE_KEYS['bloco-de-notas']) || '[]');
-      if (selectedNoteIndex !== null) {
-        notes[selectedNoteIndex] = { title, content };
-      } else {
-        notes.unshift({ title, content });
-      }
-      localStorage.setItem(STORAGE_KEYS['bloco-de-notas'], JSON.stringify(notes));
-      loadNotes();
-    }
-
-    function deleteNote() {
-      if (selectedNoteIndex === null) {
-        alert('Selecione uma anotação para excluir.');
-        return;
-      }
-      if (!confirm('Deseja realmente excluir esta anotação?')) return;
-      let notes = JSON.parse(localStorage.getItem(STORAGE_KEYS['bloco-de-notas']) || '[]');
-      notes.splice(selectedNoteIndex, 1);
-      localStorage.setItem(STORAGE_KEYS['bloco-de-notas'], JSON.stringify(notes));
-      loadNotes();
-    }
-
-    // Lógica para Agenda
-    function updateClock() {
-      const now = new Date();
-      const clockElement = document.getElementById('clock');
-      const dateElement = document.getElementById('date');
-      
-      const timeString = now.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-      const dateString = now.toLocaleDateString('pt-BR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-      
-      if (clockElement) clockElement.textContent = timeString;
-      if (dateElement) dateElement.textContent = dateString;
-    }
-
-    setInterval(updateClock, 1000);
-    
-    function renderCalendar() {
-        const calendar = document.getElementById('calendar');
-        const monthYearHeader = document.getElementById('current-month-year');
-        const months = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
-        const daysOfWeek = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];
-        
-        monthYearHeader.textContent = `${months[currentMonth]} ${currentYear}`;
-        
-        let calendarHTML = '';
-        for (let day of daysOfWeek) {
-            calendarHTML += `<div class="day-name">${day}</div>`;
-        }
-
-        const firstDay = new Date(currentYear, currentMonth, 1).getDay();
-        const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
-        const today = new Date();
-        const appointments = JSON.parse(localStorage.getItem(STORAGE_KEYS['agenda']) || '[]');
-        const appointmentsByDay = appointments.reduce((acc, appt) => {
-          const day = new Date(appt.date).getDate();
-          if (!acc[day]) acc[day] = [];
-          acc[day].push(appt);
-          return acc;
-        }, {});
-
-        for (let j = 0; j < firstDay; j++) {
-            calendarHTML += `<div></div>`;
-        }
-        for (let j = 1; j <= daysInMonth; j++) {
-            const isCurrentDay = (currentMonth === today.getMonth() && j === today.getDate() && currentYear === today.getFullYear());
-            const hasAppointment = appointmentsByDay[j] && appointmentsByDay[j].length > 0;
-            const classes = `day-number${isCurrentDay ? ' current-day' : ''}${hasAppointment ? ' has-appointment' : ''}`;
-            calendarHTML += `<div class="${classes}">${j}</div>`;
-        }
-        if (calendar) calendar.innerHTML = calendarHTML;
-    }
-
-    function changeMonth(delta) {
-        currentMonth += delta;
-        if (currentMonth > 11) {
-            currentMonth = 0;
-            currentYear++;
-        } else if (currentMonth < 0) {
-            currentMonth = 11;
-            currentYear--;
-        }
-        renderCalendar();
-    }
-    
-    function loadAppointments() {
-      const appointments = JSON.parse(localStorage.getItem(STORAGE_KEYS['agenda']) || '[]');
-      const list = document.getElementById('appointments');
-      list.innerHTML = '';
-      appointments.forEach((appt, index) => {
-        const item = document.createElement('li');
-        item.innerHTML = `<span class="appointment-text">${appt.date} ${appt.time} - ${appt.text}</span>
-          <div class="appointment-buttons">
-            <button onclick="editAppointment(${index})">✎</button>
-            <button onclick="removeAppointment(${index})">✖</button>
-          </div>`;
-        list.appendChild(item);
-      });
-    }
-
-    function addAppointment() {
-      const date = document.getElementById('appointment-date').value;
-      const time = document.getElementById('appointment-time').value;
-      const text = document.getElementById('appointment-text').value;
-
-      if (!date || !time || !text) {
-        alert('Preencha todos os campos para adicionar um compromisso.');
-        return;
-      }
-      let appointments = JSON.parse(localStorage.getItem(STORAGE_KEYS['agenda']) || '[]');
-      appointments.push({ date, time, text, alerted: false });
-      localStorage.setItem(STORAGE_KEYS['agenda'], JSON.stringify(appointments));
-      loadAppointments();
-      renderCalendar();
-      document.getElementById('appointment-date').value = '';
-      document.getElementById('appointment-time').value = '';
-      document.getElementById('appointment-text').value = '';
-    }
-
-    function editAppointment(index) {
-      const appointments = JSON.parse(localStorage.getItem(STORAGE_KEYS['agenda']) || '[]');
-      const appt = appointments[index];
-      document.getElementById('appointment-date').value = appt.date;
-      document.getElementById('appointment-time').value = appt.time;
-      document.getElementById('appointment-text').value = appt.text;
-      
-      const updateButton = document.createElement('button');
-      updateButton.textContent = 'Salvar Edição';
-      updateButton.onclick = () => saveAppointment(index);
-      
-      const buttonsContainer = document.querySelector('#form-agenda .formulario-botoes');
-      buttonsContainer.innerHTML = '';
-      buttonsContainer.appendChild(updateButton);
-    }
-    
-    function saveAppointment(index) {
-      const date = document.getElementById('appointment-date').value;
-      const time = document.getElementById('appointment-time').value;
-      const text = document.getElementById('appointment-text').value;
-      
-      let appointments = JSON.parse(localStorage.getItem(STORAGE_KEYS['agenda']) || '[]');
-      appointments[index] = { date, time, text, alerted: false };
-      localStorage.setItem(STORAGE_KEYS['agenda'], JSON.stringify(appointments));
-      loadAppointments();
-      renderCalendar();
-      
-      document.getElementById('appointment-date').value = '';
-      document.getElementById('appointment-time').value = '';
-      document.getElementById('appointment-text').value = '';
-      
-      const buttonsContainer = document.querySelector('#form-agenda .formulario-botoes');
-      buttonsContainer.innerHTML = '<button onclick="addAppointment()">Adicionar</button>';
-    }
-
-    function removeAppointment(index) {
-      if (!confirm('Deseja realmente remover este compromisso?')) return;
-      let appointments = JSON.parse(localStorage.getItem(STORAGE_KEYS['agenda']) || '[]');
-      appointments.splice(index, 1);
-      localStorage.setItem(STORAGE_KEYS['agenda'], JSON.stringify(appointments));
-      loadAppointments();
-      renderCalendar();
-    }
-    
-    // Lógica para Alerta de Compromisso
-    function checkAppointments() {
+    function gerarRelatorioTXT() {
+        let relatorio = "";
         const now = new Date();
-        const appointments = JSON.parse(localStorage.getItem(STORAGE_KEYS['agenda']) || '[]');
-        
-        appointments.forEach(appt => {
-            const apptDateTime = new Date(`${appt.date}T${appt.time}:00`);
-            const timeDifference = apptDateTime.getTime() - now.getTime();
-            const twentyMinutesInMs = 20 * 60 * 1000;
+        const titulo = `Relatório Completo - Gerado em: ${now.toLocaleString()}\n\n`;
+        relatorio += titulo;
 
-            if (timeDifference > 0 && timeDifference <= twentyMinutesInMs && !appt.alerted) {
-                showAlertModal(`Seu compromisso de "${appt.text}" é em menos de 20 minutos!`);
-                appt.alerted = true;
-                localStorage.setItem(STORAGE_KEYS['agenda'], JSON.stringify(appointments));
+        for (let i = 1; i <= 5; i++) {
+            const nomeAba = `--- ABA ${i} ---\n\n`;
+            const registrosDaAba = registros[i] || [];
+            
+            if (registrosDaAba.length > 0) {
+                relatorio += nomeAba;
+                registrosDaAba.forEach(r => {
+                    relatorio += `Registro: ${JSON.stringify(r)}\n`;
+                });
+                relatorio += "\n";
             }
-        });
+        }
+
+        const dataFormatada = now.toISOString().replace(/T/, '_').replace(/\..+/, '').replace(/:/g, '-');
+        const nomeArquivo = `Relatorio_${dataFormatada}.txt`;
+        const blob = new Blob([relatorio], { type: 'text/plain;charset=utf-8' });
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = nomeArquivo;
+        link.click();
     }
 
-    function showAlertModal(message) {
-      const modal = document.getElementById('alert-modal');
-      document.getElementById('alert-message').textContent = message;
-      modal.style.display = 'block';
+    function toggleTheme() {
+        const body = document.body;
+        const themeButton = document.querySelector('.theme-toggle');
+        body.classList.toggle('dark-mode');
+        if (body.classList.contains('dark-mode')) {
+            localStorage.setItem('theme', 'dark-mode');
+        } else {
+            localStorage.setItem('theme', 'light-mode');
+        }
     }
 
-    function closeAlertModal() {
-      const modal = document.getElementById('alert-modal');
-      modal.style.display = 'none';
+    function carregarTema() {
+        const savedTheme = localStorage.getItem('theme');
+        const body = document.body;
+        if (savedTheme === 'dark-mode') {
+            body.classList.add('dark-mode');
+        } else {
+            body.classList.remove('dark-mode');
+        }
     }
 
-    setInterval(checkAppointments, 60000); // Checa a cada minuto
+    document.getElementById("registro-form-1").addEventListener("submit", salvarRegistro);
+    document.getElementById("registro-form-2").addEventListener("submit", salvarRegistro);
+    document.getElementById("registro-form-3").addEventListener("submit", salvarRegistro);
+    document.getElementById("registro-form-4").addEventListener("submit", salvarRegistro);
+    document.getElementById("registro-form-5").addEventListener("submit", salvarRegistro);
 
-    document.addEventListener('DOMContentLoaded', () => {
-        openTab('registros');
-        // Adicionando a verificação inicial para compromissos
-        checkAppointments();
-    });
-  </script>
+    document.getElementById("search-1").addEventListener("input", () => renderTabela(1));
+    document.getElementById("search-2").addEventListener("input", () => renderTabela(2));
+    document.getElementById("search-3").addEventListener("input", () => renderTabela(3));
+    document.getElementById("search-4").addEventListener("input", () => renderTabela(4));
+    document.getElementById("search-5").addEventListener("input", () => renderTabela(5));
+
+    carregarDados();
+    carregarTema();
+    mostrarAba(1);
+</script>
+
 </body>
 </html>
