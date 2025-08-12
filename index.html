@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Zentry</title>
+    <title>Multi Abas de Registros</title>
     <style>
         :root {
             --bg-body-light: linear-gradient(135deg, #d4e3f3, #e8f0f8);
@@ -56,6 +56,7 @@
             font-size: 1.5rem;
             font-weight: bold;
             color: var(--text-header-light);
+            animation: fadeIn 0.5s ease-in-out;
         }
 
         body.dark-mode header {
@@ -89,6 +90,7 @@
             color: #555;
             transition: 0.2s;
             border-bottom: 2px solid transparent;
+            animation: fadeIn 0.5s ease-in-out;
         }
 
         body.dark-mode .tab-button {
@@ -138,7 +140,8 @@
         }
 
         th, td {
-            padding: 14px;
+            padding: 8px 14px; /* Altura reduzida */
+            font-size: 0.9rem; /* Fonte reduzida */
             border-bottom: 1px solid var(--border-color-light);
             text-align: left;
         }
@@ -167,6 +170,10 @@
             width: 100%;
             table-layout: fixed;
         }
+        
+        tbody tr {
+            animation: slideIn 0.3s ease-out;
+        }
 
         .search-bar {
             margin-bottom: 16px;
@@ -181,6 +188,7 @@
             outline: none;
             background: var(--bg-input-light);
             box-shadow: var(--shadow-input-light);
+            animation: fadeIn 0.5s ease-in-out;
         }
 
         body.dark-mode .search-bar input {
@@ -255,7 +263,7 @@
             font-size: 14px;
             transition: 0.2s;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            width: 40px; /* Tamanho fixo para os ícones */
+            width: 40px;
             height: 40px;
             display: flex;
             align-items: center;
@@ -284,6 +292,7 @@
 
         .icon-button:hover {
             transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
 
         tr.selecionado {
@@ -302,6 +311,16 @@
             fill: none;
             width: 24px;
             height: 24px;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(10px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
         }
     </style>
 </head>
@@ -534,8 +553,8 @@
             <button type="button" class="icon-button excluir" onclick="excluirRegistro(abaAtual)">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
             </button>
-            <button type="button" class="icon-button relatorio" onclick="gerarRelatorioTXT()">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"></polyline><polyline points="8 6 2 12 8 18"></polyline></svg>
+            <button type="button" class="icon-button relatorio" onclick="gerarRelatorioXLS()">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><line x1="10" y1="9" x2="8" y2="9"></line></svg>
             </button>
             <button type="button" class="icon-button theme-toggle" onclick="toggleTheme()">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
@@ -544,6 +563,7 @@
     </div>
 </footer>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
 <script>
     let registros = {};
     let selecionado = {};
@@ -576,7 +596,7 @@
         renderTabela(aba);
     }
 
-    function renderTabela(aba) {
+    function renderTabela(aba, scrollToBottom = false) {
         const tbody = document.getElementById(`registro-lista-${aba}`);
         tbody.innerHTML = "";
         const filtro = document.getElementById(`search-${aba}`).value.toLowerCase();
@@ -586,7 +606,7 @@
             const values = Object.values(r).join(' ').toLowerCase();
             return values.includes(filtro);
         });
-
+        
         registrosFiltrados.forEach((r, index) => {
             const tr = document.createElement("tr");
             let html = "";
@@ -615,6 +635,10 @@
             };
             tbody.appendChild(tr);
         });
+
+        if (scrollToBottom) {
+            tbody.scrollTop = tbody.scrollHeight;
+        }
     }
 
     function getFormValues(aba) {
@@ -734,7 +758,6 @@
         const form = document.getElementById(`registro-form-${aba}`);
         const novoRegistro = getFormValues(aba);
         
-        // Obtém o campo de hora correto para a ordenação
         let campoHora = 'timestamp';
         switch (aba) {
             case 1: campoHora = 'entrada'; break;
@@ -744,17 +767,17 @@
             case 5: campoHora = 'hora'; break;
         }
         
-        // Converte a hora para um formato comparável, se existir
         const horaNovo = novoRegistro[campoHora];
 
-        // Insere o novo registro na posição correta
         let inserido = false;
-        for (let i = 0; i < registros[aba].length; i++) {
-            const horaExistente = registros[aba][i][campoHora];
-            if (horaExistente && horaNovo < horaExistente) {
-                registros[aba].splice(i, 0, novoRegistro);
-                inserido = true;
-                break;
+        if (horaNovo) {
+            for (let i = 0; i < registros[aba].length; i++) {
+                const horaExistente = registros[aba][i][campoHora];
+                if (horaExistente && horaNovo < horaExistente) {
+                    registros[aba].splice(i, 0, novoRegistro);
+                    inserido = true;
+                    break;
+                }
             }
         }
         if (!inserido) {
@@ -763,7 +786,7 @@
 
         salvarDados(aba);
         form.reset();
-        renderTabela(aba);
+        renderTabela(aba, true);
     }
 
     function editarRegistro(aba) {
@@ -774,7 +797,6 @@
         const registro = registros[aba][selecionado[aba]];
         setFormValues(aba, registro);
 
-        // Remove o registro selecionado antes de re-salvar
         registros[aba].splice(selecionado[aba], 1);
         salvarDados(aba);
         selecionado[aba] = null;
@@ -794,37 +816,35 @@
         }
     }
 
-    function gerarRelatorioTXT() {
-        let relatorio = "";
-        const now = new Date();
-        const titulo = `Relatório Completo - Gerado em: ${now.toLocaleString()}\n\n`;
-        relatorio += titulo;
+    function gerarRelatorioXLS() {
+        const wb = XLSX.utils.book_new();
 
         for (let i = 1; i <= 5; i++) {
-            const nomeAba = `--- ABA ${i} ---\n\n`;
             const registrosDaAba = registros[i] || [];
-            
             if (registrosDaAba.length > 0) {
-                relatorio += nomeAba;
-                registrosDaAba.forEach(r => {
-                    relatorio += `Registro: ${JSON.stringify(r)}\n`;
+                const headers = Object.keys(registrosDaAba[0]).filter(key => key !== 'timestamp');
+                const data = registrosDaAba.map(r => {
+                    const row = {};
+                    headers.forEach(header => {
+                        row[header] = r[header];
+                    });
+                    return row;
                 });
-                relatorio += "\n";
+                const ws = XLSX.utils.json_to_sheet(data, { header: headers });
+                XLSX.utils.book_append_sheet(wb, ws, `Aba ${i}`);
             }
         }
 
-        const dataFormatada = now.toISOString().replace(/T/, '_').replace(/\..+/, '').replace(/:/g, '-');
-        const nomeArquivo = `Relatorio_${dataFormatada}.txt`;
-        const blob = new Blob([relatorio], { type: 'text/plain;charset=utf-8' });
-        const link = document.createElement('a');
-        link.href = URL.createObjectURL(blob);
-        link.download = nomeArquivo;
-        link.click();
+        if (wb.SheetNames.length > 0) {
+            const dataFormatada = new Date().toISOString().replace(/T/, '_').replace(/\..+/, '').replace(/:/g, '-');
+            XLSX.writeFile(wb, `Relatorio_movimentacoes_${dataFormatada}.xlsx`);
+        } else {
+            alert("Nenhum registro para gerar o relatório.");
+        }
     }
 
     function toggleTheme() {
         const body = document.body;
-        const themeButton = document.querySelector('.theme-toggle');
         body.classList.toggle('dark-mode');
         if (body.classList.contains('dark-mode')) {
             localStorage.setItem('theme', 'dark-mode');
