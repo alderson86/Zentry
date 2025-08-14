@@ -2,8 +2,9 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Zentry</title>
+    <title>Zentry 3.0</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
     <style>
         :root {
             --bg-body-light: linear-gradient(135deg, #d4e3f3, #e8f0f8);
@@ -208,6 +209,7 @@
             backdrop-filter: blur(12px);
             box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.08);
             padding: 15px 10px;
+            z-index: 999;
         }
 
         body.dark-mode footer {
@@ -233,6 +235,7 @@
         .footer-buttons {
             display: flex;
             justify-content: center;
+            align-items: center;
             gap: 12px;
             margin-top: 15px;
         }
@@ -254,6 +257,25 @@
             border: 1px solid var(--border-color-dark);
             color: var(--text-color-dark);
             box-shadow: var(--shadow-input-dark);
+        }
+        
+        input[type="text"][list] {
+            position: relative;
+        }
+
+        datalist {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            background-color: var(--bg-input-light);
+            border: 1px solid var(--border-color-light);
+            border-radius: 8px;
+            width: 100%;
+            z-index: 100;
+        }
+        body.dark-mode datalist {
+            background-color: var(--bg-input-dark);
+            border: 1px solid var(--border-color-dark);
         }
 
         .icon-button {
@@ -286,8 +308,13 @@
             color: white;
         }
 
-        .icon-button.relatorio, .icon-button.theme-toggle {
+        .icon-button.relatorio, .icon-button.theme-toggle, .icon-button.search {
             background: linear-gradient(135deg, #007bff, #0056b3);
+            color: white;
+        }
+        
+        .icon-button.exportar-txt, .icon-button.exportar-xls {
+            background: linear-gradient(135deg, #6c757d, #5a6268);
             color: white;
         }
 
@@ -337,7 +364,7 @@
             box-shadow: var(--shadow-dark);
         }
 
-        .placar h3 {
+        .placar h3, .grafico-container h3 {
             margin: 0 0 10px 0;
             font-size: 1.2rem;
             color: #007aff;
@@ -353,7 +380,108 @@
             width: 200px;
             height: 200px;
         }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(5px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: var(--bg-table-light);
+            color: var(--text-color-light);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: var(--shadow-light);
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            position: relative;
+        }
+
+        .modal-content .close-button {
+            position: absolute;
+            top: 15px;
+            right: 20px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            border: none;
+            background: transparent;
+            color: var(--text-color-light);
+        }
+
+        body.dark-mode .modal-content .close-button {
+            color: var(--text-color-dark);
+        }
+
+        .modal-content h3 {
+            margin-top: 0;
+            color: #007aff;
+        }
+
+        #modal-consulta .modal-content {
+            max-width: 90%;
+            min-width: 600px;
+            background: var(--bg-table-light);
+            color: var(--text-color-light);
+            box-shadow: var(--shadow-light);
+        }
         
+        #modal-consulta input, #modal-consulta select {
+            background: var(--bg-input-light);
+            border-color: var(--border-color-light);
+            color: var(--text-color-light);
+        }
+        
+        #modal-consulta table {
+            background: var(--bg-table-light);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+        
+        #modal-consulta th {
+            background: var(--bg-th-light);
+        }
+
+        #modal-consulta th, #modal-consulta td {
+            border-bottom: 1px solid var(--border-color-light);
+        }
+
+
+        .filtro-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+            justify-content: center;
+        }
+
+        .filtro-container input, .filtro-container select {
+            flex-grow: 1;
+            min-width: 150px;
+        }
+        
+        .modal-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        /* Novo estilo para o campo de nome com datalist */
+        #nome-1-datalist {
+            position: absolute;
+            left: 0;
+            z-index: 10;
+        }
+
         @keyframes fadeIn {
             from { opacity: 0; }
             to { opacity: 1; }
@@ -368,11 +496,11 @@
 <body>
 
 <header>
-    Rede Biz - Distribuidora
+    Rede Biz - Distribuição
 </header>
 
 <div class="tab-container">
-    <button class="tab-button active" onclick="mostrarAba(1)">Funcionários Biz</button>
+    <button class="tab-button active" onclick="mostrarAba(1)">Colaborador Biz</button>
     <button class="tab-button" onclick="mostrarAba(2)">Frotas Biz</button>
     <button class="tab-button" onclick="mostrarAba(3)">Descargas Biz</button>
     <button class="tab-button" onclick="mostrarAba(4)">Cargas Biz</button>
@@ -450,7 +578,7 @@
                     <th>Qtd</th>
                     <th>Observação</th>
                 </tr>
-            </thead>
+</thead>
             <tbody id="registro-lista-3"></tbody>
         </table>
     </div>
@@ -477,11 +605,6 @@
     </div>
 
     <div id="aba-5" class="tab-content">
-        <div class="dashboard-container">
-            <div class="grafico-container" style="width: 100%;">
-                <canvas id="horarios-chart"></canvas>
-            </div>
-        </div>
         <div class="search-bar">
             <input type="text" id="search-5" placeholder="Pesquisar por nome...">
         </div>
@@ -548,7 +671,7 @@
                 <option>Pedro H - Menor Aprendiz</option>
                 <option>Felipe - Menor Aprendiz</option>
                 <option>Abraão - Menor Aprendiz</option>
-                <option>Gabriel - Menor Aprendiz</option>
+                <option id="gabriel-rabelo">Gabriel - Menor Aprendiz</option>
                 <option>Edirlei - CPD</option>
                 <option>Denne Carlo - Predial</option>
                 <option>Francisco B. - Predial</option>
@@ -560,6 +683,7 @@
                 <option>Não</option>
             </select>
             <textarea id="obs-1" placeholder="Observações" rows="1"></textarea>
+            <datalist id="datalist-nomes-1"></datalist>
         </form>
 
         <form id="registro-form-2" class="registro-form" style="display:none;">
@@ -599,7 +723,8 @@
             <input type="time" id="hora-5" required>
             <input type="text" id="nome-5" placeholder="Nome">
             <input type="text" id="cpf-placa-5" placeholder="CPF / Placa">
-            <input type="text" id="empresa-5" placeholder="Empresa">
+            <input type="text" id="empresa-5" placeholder="Empresa" list="datalist-empresas-5">
+            <datalist id="datalist-empresas-5"></datalist>
             <input type="text" id="autorizacao-5" placeholder="Autorização">
             <textarea id="observacoes-5" placeholder="Observações" rows="1"></textarea>
         </form>
@@ -614,8 +739,11 @@
             <button type="button" class="icon-button excluir" onclick="excluirRegistro(abaAtual)">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
             </button>
-            <button type="button" class="icon-button relatorio" onclick="gerarRelatorioXLS()">
+            <button type="button" class="icon-button exportar-xls" onclick="gerarRelatorioXLS(abaAtual)">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><line x1="10" y1="9" x2="8" y2="9"></line></svg>
+            </button>
+            <button type="button" class="icon-button search" onclick="abrirModalConsulta()">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14z"></path><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
             </button>
             <button type="button" class="icon-button theme-toggle" onclick="toggleTheme()">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
@@ -624,13 +752,70 @@
     </div>
 </footer>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+<div id="modal-alerta" class="modal-overlay" style="display: none;">
+    <div class="modal-content">
+        <button class="close-button" onclick="fecharModalAlerta()">&times;</button>
+        <h3>Aviso</h3>
+        <p>Planilha zerada para novo dia. Dados disponíveis para consulta.</p>
+    </div>
+</div>
+
+<div id="modal-consulta" class="modal-overlay" style="display: none;">
+    <div class="modal-content" style="max-width: 90%; min-width: 600px;">
+        <button class="close-button" onclick="fecharModalConsulta()">&times;</button>
+        <h3>Consulta Histórica</h3>
+        
+        <div class="filtro-container">
+            <input type="text" id="filtro-texto" placeholder="Pesquisar por nome, placa, CPF...">
+            <select id="filtro-aba">
+                <option value="all">Todas as Abas</option>
+                <option value="1">Colaborador Biz</option>
+                <option value="2">Frotas Biz</option>
+                <option value="3">Descargas Biz</option>
+                <option value="4">Cargas Biz</option>
+                <option value="5">Outros Registros</option>
+            </select>
+            <input type="date" id="filtro-data-inicio">
+            <input type="date" id="filtro-data-fim">
+        </div>
+        
+        <div style="max-height: 400px; overflow-y: auto;">
+            <table style="width: 100%;">
+                <thead>
+                    <tr>
+                        <th>Aba</th>
+                        <th>Data</th>
+                        <th>Detalhes</th>
+                    </tr>
+                </thead>
+                <tbody id="lista-historico"></tbody>
+            </table>
+        </div>
+
+        <div class="modal-buttons">
+            <button type="button" class="icon-button exportar-txt" onclick="exportarTXT()">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="8" y1="12" x2="8" y2="12"></line><line x1="8" y1="16" x2="8" y2="16"></line><line x1="12" y1="12" x2="12" y2="12"></line><line x1="12" y1="16" x2="12" y2="16"></line><line x1="16" y1="12" x2="16" y2="12"></line><line x1="16" y1="16" x2="16" y2="16"></line></svg>
+            </button>
+        </div>
+    </div>
+</div>
+
+<div id="modal-proibido" class="modal-overlay" style="display: none;">
+    <div class="modal-content">
+        <h3>Entrada Proibida</h3>
+        <p>Gabriel Rabelo não faz mais parte do quadro. Entrada Proibida.</p>
+        <button class="icon-button" style="background: linear-gradient(135deg, #007bff, #0056b3); width: auto;" onclick="fecharModalProibido()">OK</button>
+    </div>
+</div>
+
 <script>
     let registros = {};
     let selecionado = {};
     let abaAtual = 1;
     let chartCracha = null;
     let chartHorarios = null;
+    let chartEmpresas = null;
+    let resultadosConsulta = [];
 
     function carregarDados() {
         for (let i = 1; i <= 5; i++) {
@@ -655,8 +840,18 @@
         document.querySelectorAll('.tab-button').forEach(button => button.classList.remove('active'));
         document.querySelector(`.tab-button:nth-child(${aba})`).classList.add('active');
         
+        // Atualiza o atributo form dos botões de exportação e edição
+        document.querySelector('.footer-buttons .salvar').setAttribute('form', `registro-form-${aba}`);
+        
         abaAtual = aba;
         renderTabela(aba);
+        
+        // Atualiza a datalist para a aba 1 e 5
+        if (aba === 1) {
+            updateDatalist('nome-1', 'datalist-nomes-1', 'nome');
+        } else if (aba === 5) {
+            updateDatalist('empresa-5', 'datalist-empresas-5', 'empresa');
+        }
     }
 
     function renderTabela(aba, scrollToBottom = false) {
@@ -710,9 +905,6 @@
         }
         if (aba === 2) {
             atualizarPlacar2();
-        }
-        if (aba === 5) {
-            atualizarGrafico5();
         }
     }
 
@@ -768,13 +960,10 @@
                 const hora5 = document.getElementById(`hora-${aba}`).value;
                 if (hora5) {
                     const [h, m] = hora5.split(':').map(Number);
-                    if ((h > 11 && h < 17) || (h === 11 && m > 0) || (h > 17 && h < 24) || (h === 17 && m > 30) || (h < 11)) {
-                         // Atraso não aplica entre 11 e 17:30
-                         if( (h > 11 || h === 11 && m > 0) && (h < 17 || (h === 17 && m <= 30) ) ){
-                            // não é atraso
-                         } else {
-                            obs5 = obs5 ? obs5 + " (Atraso)" : "Atraso";
-                         }
+                    if ((h > 11 || (h === 11 && m > 0)) && (h < 17 || (h === 17 && m <= 30))) {
+                        // Não é atraso
+                    } else if (h > 17 || (h === 17 && m > 30)) {
+                        obs5 = obs5 ? obs5 + " (Atraso)" : "Atraso";
                     }
                 }
                 return {
@@ -904,11 +1093,11 @@
         }
     }
 
-    function gerarRelatorioXLS() {
+    function gerarRelatorioXLS(aba = null) {
         const wb = XLSX.utils.book_new();
 
-        for (let i = 1; i <= 5; i++) {
-            const registrosDaAba = registros[i] || [];
+        if (aba && aba >= 1 && aba <= 5) {
+            const registrosDaAba = registros[aba] || [];
             if (registrosDaAba.length > 0) {
                 const headers = Object.keys(registrosDaAba[0]).filter(key => key !== 'timestamp');
                 const data = registrosDaAba.map(r => {
@@ -919,13 +1108,30 @@
                     return row;
                 });
                 const ws = XLSX.utils.json_to_sheet(data, { header: headers });
-                XLSX.utils.book_append_sheet(wb, ws, `Aba ${i}`);
+                XLSX.utils.book_append_sheet(wb, ws, `Aba ${aba}`);
+            }
+        } else {
+            for (let i = 1; i <= 5; i++) {
+                const registrosDaAba = registros[i] || [];
+                if (registrosDaAba.length > 0) {
+                    const headers = Object.keys(registrosDaAba[0]).filter(key => key !== 'timestamp');
+                    const data = registrosDaAba.map(r => {
+                        const row = {};
+                        headers.forEach(header => {
+                            row[header] = r[header];
+                        });
+                        return row;
+                    });
+                    const ws = XLSX.utils.json_to_sheet(data, { header: headers });
+                    XLSX.utils.book_append_sheet(wb, ws, `Aba ${i}`);
+                }
             }
         }
 
         if (wb.SheetNames.length > 0) {
             const dataFormatada = new Date().toISOString().replace(/T/, '_').replace(/\..+/, '').replace(/:/g, '-');
-            XLSX.writeFile(wb, `Relatorio_movimentacoes_${dataFormatada}.xlsx`);
+            const nomeArquivo = aba ? `Relatorio_Aba_${aba}_${dataFormatada}.xlsx` : `Relatorio_movimentacoes_${dataFormatada}.xlsx`;
+            XLSX.writeFile(wb, nomeArquivo);
         } else {
             alert("Nenhum registro para gerar o relatório.");
         }
@@ -997,66 +1203,186 @@
         document.getElementById('patio-placar').textContent = noPatio;
     }
 
-    function atualizarGrafico5() {
-        const registrosAba5 = registros[5] || [];
-        const horarios = registrosAba5.map(r => r.hora).filter(h => h);
-        
-        const labels = Array.from(new Set(horarios));
-        const data = labels.map(label => {
-            const horas = registrosAba5.filter(r => r.hora === label).length;
-            return horas;
-        });
+    function fazerBackupELimpeza() {
+        const today = new Date();
+        const yesterday = new Date(today);
+        yesterday.setDate(today.getDate() - 1);
+        const dataFormatada = yesterday.toISOString().split('T')[0];
 
-        const ctx = document.getElementById('horarios-chart').getContext('2d');
-        if (chartHorarios) {
-            chartHorarios.destroy();
+        for (let i = 1; i <= 5; i++) {
+            const registrosDaAba = registros[i] || [];
+            if (registrosDaAba.length > 0) {
+                const chaveBackup = `backupAba${i}_${dataFormatada}`;
+                localStorage.setItem(chaveBackup, JSON.stringify(registrosDaAba));
+                console.log(`Backup da Aba ${i} para ${dataFormatada} criado.`);
+                registros[i] = [];
+            }
+            salvarDados(i);
         }
         
-        chartHorarios = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: 'Registros por Horário',
-                    data: data,
-                    borderColor: '#007aff',
-                    backgroundColor: 'rgba(0, 123, 255, 0.2)',
-                    tension: 0.1,
-                    fill: true
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    x: {
-                        ticks: {
-                            color: document.body.classList.contains('dark-mode') ? '#e0e0e0' : '#333'
-                        },
-                        grid: {
-                            color: 'rgba(0, 0, 0, 0.1)'
-                        }
-                    },
-                    y: {
-                        beginAtZero: true,
-                        ticks: {
-                            color: document.body.classList.contains('dark-mode') ? '#e0e0e0' : '#333'
-                        },
-                        grid: {
-                            color: 'rgba(0, 0, 0, 0.1)'
-                        }
-                    }
-                },
-                plugins: {
-                    legend: {
-                        labels: {
-                            color: document.body.classList.contains('dark-mode') ? '#e0e0e0' : '#333'
-                        }
-                    }
+        renderTabela(abaAtual);
+        mostrarModalAlerta();
+    }
+    
+    let lastCleanedDate = null;
+    function verificarEexecutarBackup() {
+        const now = new Date();
+        if (now.getHours() === 0 && now.getMinutes() === 0 && (lastCleanedDate !== now.getDate())) {
+            fazerBackupELimpeza();
+            lastCleanedDate = now.getDate();
+        }
+    }
+    setInterval(verificarEexecutarBackup, 60000);
+
+    // Modal de Alerta de Limpeza
+    function mostrarModalAlerta() {
+        document.getElementById('modal-alerta').style.display = 'flex';
+    }
+
+    function fecharModalAlerta() {
+        document.getElementById('modal-alerta').style.display = 'none';
+    }
+
+    // Modal de Consulta
+    function abrirModalConsulta() {
+        document.getElementById('modal-consulta').style.display = 'flex';
+        renderHistorico();
+    }
+
+    function fecharModalConsulta() {
+        document.getElementById('modal-consulta').style.display = 'none';
+        document.getElementById('lista-historico').innerHTML = '';
+        document.getElementById('filtro-texto').value = '';
+        document.getElementById('filtro-aba').value = 'all';
+        document.getElementById('filtro-data-inicio').value = '';
+        document.getElementById('filtro-data-fim').value = '';
+    }
+
+    function renderHistorico() {
+        const tbody = document.getElementById('lista-historico');
+        tbody.innerHTML = '';
+        
+        const filtroTexto = document.getElementById('filtro-texto').value.toLowerCase();
+        const filtroAba = document.getElementById('filtro-aba').value;
+        const filtroDataInicio = document.getElementById('filtro-data-inicio').value;
+        const filtroDataFim = document.getElementById('filtro-data-fim').value;
+
+        resultadosConsulta = [];
+
+        for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (key.startsWith('backupAba')) {
+                const [_, aba, data] = key.split('_');
+
+                if (filtroAba !== 'all' && aba !== filtroAba) {
+                    continue;
                 }
+
+                if (filtroDataInicio && data < filtroDataInicio) {
+                    continue;
+                }
+
+                if (filtroDataFim && data > filtroDataFim) {
+                    continue;
+                }
+
+                const registrosBackup = JSON.parse(localStorage.getItem(key));
+                registrosBackup.forEach(r => {
+                    const values = Object.values(r).join(' ').toLowerCase();
+                    if (values.includes(filtroTexto)) {
+                        let detalhes = '';
+                        switch (parseInt(aba)) {
+                            case 1: detalhes = `Nome: ${r.nome}, Entrada: ${r.entrada || 'N/A'}, Saída: ${r.saida || 'N/A'}`; break;
+                            case 2: detalhes = `Nome: ${r.nomes}, Frota: ${r.frotas}, Entrada: ${r.entrada || 'N/A'}, Saída: ${r.saida || 'N/A'}`; break;
+                            case 3: detalhes = `Nome: ${r.nome}, Horário: ${r.horario}, Doc: ${r.documento}, Placa CV: ${r.placaCv}, Placa RB: ${r.placaRb}`; break;
+                            case 4: detalhes = `Motorista: ${r.motorista}, Placas: ${r.placas}, Cliente: ${r.cliente}`; break;
+                            case 5: detalhes = `Nome: ${r.nome}, Horário: ${r.hora}, CPF/Placa: ${r.cpfPlaca}`; break;
+                        }
+                        resultadosConsulta.push({ aba: `Aba ${aba}`, data, detalhes });
+                    }
+                });
             }
+        }
+        
+        resultadosConsulta.sort((a, b) => new Date(b.data) - new Date(a.data));
+
+        resultadosConsulta.forEach(record => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `<td>${record.aba}</td><td>${record.data}</td><td>${record.detalhes}</td>`;
+            tbody.appendChild(tr);
         });
     }
+
+    function exportarTXT() {
+        if (resultadosConsulta.length === 0) {
+            alert("Nenhum resultado para exportar.");
+            return;
+        }
+
+        let txtContent = "Relatório de Consulta Histórica\n\n";
+        
+        const filtroTexto = document.getElementById('filtro-texto').value;
+        const filtroAba = document.getElementById('filtro-aba').options[document.getElementById('filtro-aba').selectedIndex].text;
+        const filtroDataInicio = document.getElementById('filtro-data-inicio').value;
+        const filtroDataFim = document.getElementById('filtro-data-fim').value;
+        
+        txtContent += `Filtros:\n`;
+        txtContent += `  - Termo de busca: "${filtroTexto || 'Nenhum'}"\n`;
+        txtContent += `  - Aba: ${filtroAba}\n`;
+        txtContent += `  - Período: ${filtroDataInicio || 'Início'} a ${filtroDataFim || 'Fim'}\n\n`;
+        
+        txtContent += "Resultados:\n";
+        resultadosConsulta.forEach(record => {
+            txtContent += `----------------------------------------\n`;
+            txtContent += `Aba: ${record.aba}\n`;
+            txtContent += `Data: ${record.data}\n`;
+            txtContent += `Detalhes: ${record.detalhes}\n`;
+        });
+        
+        const blob = new Blob([txtContent], { type: 'text/plain;charset=utf-8' });
+        const dataFormatada = new Date().toISOString().split('T')[0];
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `relatorio_consulta_${dataFormatada}.txt`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+    }
+    
+    // Autocomplete
+    function updateDatalist(inputId, datalistId, field) {
+        const datalist = document.getElementById(datalistId);
+        datalist.innerHTML = '';
+        
+        let uniqueValues = new Set();
+        registros[abaAtual].forEach(r => {
+            if (r[field]) {
+                uniqueValues.add(r[field]);
+            }
+        });
+
+        uniqueValues.forEach(value => {
+            const option = document.createElement('option');
+            option.value = value;
+            datalist.appendChild(option);
+        });
+    }
+    
+    // Novo Modal de Aviso para Gabriel
+    function abrirModalProibido() {
+        document.getElementById('modal-proibido').style.display = 'flex';
+    }
+
+    function fecharModalProibido() {
+        document.getElementById('modal-proibido').style.display = 'none';
+        document.getElementById('nome-1').value = "";
+    }
+
+    document.getElementById("nome-1").addEventListener("change", function(e) {
+        if (e.target.value === "Gabriel - Menor Aprendiz") {
+            abrirModalProibido();
+        }
+    });
 
     document.getElementById("registro-form-1").addEventListener("submit", salvarRegistro);
     document.getElementById("registro-form-2").addEventListener("submit", salvarRegistro);
@@ -1069,6 +1395,11 @@
     document.getElementById("search-3").addEventListener("input", () => renderTabela(3));
     document.getElementById("search-4").addEventListener("input", () => renderTabela(4));
     document.getElementById("search-5").addEventListener("input", () => renderTabela(5));
+    
+    document.getElementById("filtro-texto").addEventListener("input", renderHistorico);
+    document.getElementById("filtro-aba").addEventListener("change", renderHistorico);
+    document.getElementById("filtro-data-inicio").addEventListener("change", renderHistorico);
+    document.getElementById("filtro-data-fim").addEventListener("change", renderHistorico);
 
     carregarDados();
     carregarTema();
