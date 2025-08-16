@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Zentry 3.0</title>
+    <title>Zentry 3.1 teste</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
     <style>
@@ -496,7 +496,7 @@
 <body>
 
 <header>
-    Rede Biz - Distribuição
+    Registro de Movimentações
 </header>
 
 <div class="tab-container">
@@ -813,9 +813,9 @@
     let selecionado = {};
     let abaAtual = 1;
     let chartCracha = null;
-    let chartHorarios = null;
-    let chartEmpresas = null;
     let resultadosConsulta = [];
+    let lastCleanedDate = localStorage.getItem('lastCleanedDate');
+    const today = new Date().toISOString().split('T')[0];
 
     function carregarDados() {
         for (let i = 1; i <= 5; i++) {
@@ -840,13 +840,11 @@
         document.querySelectorAll('.tab-button').forEach(button => button.classList.remove('active'));
         document.querySelector(`.tab-button:nth-child(${aba})`).classList.add('active');
         
-        // Atualiza o atributo form dos botões de exportação e edição
         document.querySelector('.footer-buttons .salvar').setAttribute('form', `registro-form-${aba}`);
         
         abaAtual = aba;
         renderTabela(aba);
         
-        // Atualiza a datalist para a aba 1 e 5
         if (aba === 1) {
             updateDatalist('nome-1', 'datalist-nomes-1', 'nome');
         } else if (aba === 5) {
@@ -1204,37 +1202,31 @@
     }
 
     function fazerBackupELimpeza() {
-        const today = new Date();
-        const yesterday = new Date(today);
-        yesterday.setDate(today.getDate() - 1);
-        const dataFormatada = yesterday.toISOString().split('T')[0];
+        if (lastCleanedDate !== today) {
+            console.log("Dia novo detectado. Realizando backup e limpeza.");
+            const yesterday = new Date();
+            yesterday.setDate(yesterday.getDate() - 1);
+            const dataFormatada = yesterday.toISOString().split('T')[0];
 
-        for (let i = 1; i <= 5; i++) {
-            const registrosDaAba = registros[i] || [];
-            if (registrosDaAba.length > 0) {
-                const chaveBackup = `backupAba${i}_${dataFormatada}`;
-                localStorage.setItem(chaveBackup, JSON.stringify(registrosDaAba));
-                console.log(`Backup da Aba ${i} para ${dataFormatada} criado.`);
+            for (let i = 1; i <= 5; i++) {
+                const registrosDaAba = registros[i] || [];
+                if (registrosDaAba.length > 0) {
+                    const chaveBackup = `backupAba${i}_${dataFormatada}`;
+                    localStorage.setItem(chaveBackup, JSON.stringify(registrosDaAba));
+                    console.log(`Backup da Aba ${i} para ${dataFormatada} criado.`);
+                }
                 registros[i] = [];
+                salvarDados(i);
             }
-            salvarDados(i);
-        }
-        
-        renderTabela(abaAtual);
-        mostrarModalAlerta();
-    }
-    
-    let lastCleanedDate = null;
-    function verificarEexecutarBackup() {
-        const now = new Date();
-        if (now.getHours() === 0 && now.getMinutes() === 0 && (lastCleanedDate !== now.getDate())) {
-            fazerBackupELimpeza();
-            lastCleanedDate = now.getDate();
+            localStorage.setItem('lastCleanedDate', today);
+            lastCleanedDate = today;
+            renderTabela(abaAtual);
+            mostrarModalAlerta();
+        } else {
+            console.log("Backup de hoje já realizado.");
         }
     }
-    setInterval(verificarEexecutarBackup, 60000);
 
-    // Modal de Alerta de Limpeza
     function mostrarModalAlerta() {
         document.getElementById('modal-alerta').style.display = 'flex';
     }
@@ -1243,9 +1235,10 @@
         document.getElementById('modal-alerta').style.display = 'none';
     }
 
-    // Modal de Consulta
     function abrirModalConsulta() {
         document.getElementById('modal-consulta').style.display = 'flex';
+        // Define o valor do filtro da aba como a aba atual
+        document.getElementById('filtro-aba').value = abaAtual; 
         renderHistorico();
     }
 
@@ -1256,6 +1249,17 @@
         document.getElementById('filtro-aba').value = 'all';
         document.getElementById('filtro-data-inicio').value = '';
         document.getElementById('filtro-data-fim').value = '';
+    }
+
+    function getAbaDetails(aba, r) {
+        switch (parseInt(aba)) {
+            case 1: return `Nome: ${r.nome}, Entrada: ${r.entrada || 'N/A'}, Saída: ${r.saida || 'N/A'}`;
+            case 2: return `Nome: ${r.nomes}, Frota: ${r.frotas}, Entrada: ${r.entrada || 'N/A'}, Saída: ${r.saida || 'N/A'}`;
+            case 3: return `Nome: ${r.nome}, Horário: ${r.horario}, Doc: ${r.documento}, Placa CV: ${r.placaCv}, Placa RB: ${r.placaRb}`;
+            case 4: return `Motorista: ${r.motorista}, Placas: ${r.placas}, Cliente: ${r.cliente}`;
+            case 5: return `Nome: ${r.nome}, Horário: ${r.hora}, CPF/Placa: ${r.cpfPlaca}`;
+            default: return '';
+        }
     }
 
     function renderHistorico() {
@@ -1269,6 +1273,26 @@
 
         resultadosConsulta = [];
 
+        // 1. Incluir os registros da planilha atual
+        if (filtroAba === 'all' || filtroAba == abaAtual) {
+            const registrosAtuais = registros[abaAtual] || [];
+            const dataAtual = today;
+
+            registrosAtuais.forEach(r => {
+                const values = Object.values(r).join(' ').toLowerCase();
+                if (values.includes(filtroTexto)) {
+                    resultadosConsulta.push({
+                        aba: `Aba ${abaAtual} (Atual)`,
+                        data: dataAtual,
+                        detalhes: getAbaDetails(abaAtual, r),
+                        timestamp: r.timestamp // Para ordenação
+                    });
+                }
+            });
+        }
+
+
+        // 2. Incluir os registros dos backups
         for (let i = 0; i < localStorage.length; i++) {
             const key = localStorage.key(i);
             if (key.startsWith('backupAba')) {
@@ -1290,21 +1314,18 @@
                 registrosBackup.forEach(r => {
                     const values = Object.values(r).join(' ').toLowerCase();
                     if (values.includes(filtroTexto)) {
-                        let detalhes = '';
-                        switch (parseInt(aba)) {
-                            case 1: detalhes = `Nome: ${r.nome}, Entrada: ${r.entrada || 'N/A'}, Saída: ${r.saida || 'N/A'}`; break;
-                            case 2: detalhes = `Nome: ${r.nomes}, Frota: ${r.frotas}, Entrada: ${r.entrada || 'N/A'}, Saída: ${r.saida || 'N/A'}`; break;
-                            case 3: detalhes = `Nome: ${r.nome}, Horário: ${r.horario}, Doc: ${r.documento}, Placa CV: ${r.placaCv}, Placa RB: ${r.placaRb}`; break;
-                            case 4: detalhes = `Motorista: ${r.motorista}, Placas: ${r.placas}, Cliente: ${r.cliente}`; break;
-                            case 5: detalhes = `Nome: ${r.nome}, Horário: ${r.hora}, CPF/Placa: ${r.cpfPlaca}`; break;
-                        }
-                        resultadosConsulta.push({ aba: `Aba ${aba}`, data, detalhes });
+                        resultadosConsulta.push({
+                            aba: `Aba ${aba} (Histórico)`,
+                            data,
+                            detalhes: getAbaDetails(aba, r),
+                            timestamp: r.timestamp // Para ordenação
+                        });
                     }
                 });
             }
         }
         
-        resultadosConsulta.sort((a, b) => new Date(b.data) - new Date(a.data));
+        resultadosConsulta.sort((a, b) => b.timestamp - a.timestamp);
 
         resultadosConsulta.forEach(record => {
             const tr = document.createElement('tr');
@@ -1349,7 +1370,6 @@
         document.body.removeChild(a);
     }
     
-    // Autocomplete
     function updateDatalist(inputId, datalistId, field) {
         const datalist = document.getElementById(datalistId);
         datalist.innerHTML = '';
@@ -1368,7 +1388,6 @@
         });
     }
     
-    // Novo Modal de Aviso para Gabriel
     function abrirModalProibido() {
         document.getElementById('modal-proibido').style.display = 'flex';
     }
@@ -1401,9 +1420,12 @@
     document.getElementById("filtro-data-inicio").addEventListener("change", renderHistorico);
     document.getElementById("filtro-data-fim").addEventListener("change", renderHistorico);
 
-    carregarDados();
-    carregarTema();
-    mostrarAba(1);
+    document.addEventListener('DOMContentLoaded', () => {
+        carregarDados();
+        carregarTema();
+        fazerBackupELimpeza(); // Executa o backup na primeira carga do dia
+        mostrarAba(1);
+    });
 </script>
 
 </body>
