@@ -2,42 +2,42 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <title>Zentry 3.5 teste</title>
+    <title>Zentry teste 4.1</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
     <style>
         :root {
-            --bg-body-light: linear-gradient(135deg, #d4e3f3, #e8f0f8);
-            --bg-header-light: rgba(255, 255, 255, 0.4);
-            --bg-tab-container-light: rgba(255, 255, 255, 0.6);
-            --bg-table-light: rgba(255, 255, 255, 0.7);
-            --bg-th-light: rgba(240, 245, 250, 0.9);
-            --bg-footer-light: rgba(255, 255, 255, 0.5);
-            --bg-input-light: rgba(255, 255, 255, 0.85);
-            --text-color-light: #333;
-            --text-header-light: #222;
-            --border-color-light: rgba(0, 0, 0, 0.1);
-            --shadow-light: 0 4px 10px rgba(0, 0, 0, 0.08);
-            --shadow-input-light: inset 0 1px 3px rgba(0, 0, 0, 0.05);
-            --bg-selected-light: rgba(120, 180, 255, 0.3);
+            --bg-body-light: linear-gradient(135deg, #f0f4f7, #e6e9ed);
+            --bg-header-light: rgba(255, 255, 255, 0.7);
+            --bg-tab-container-light: rgba(255, 255, 255, 0.8);
+            --bg-table-light: rgba(255, 255, 255, 0.9);
+            --bg-th-light: rgba(245, 248, 251, 1);
+            --bg-footer-light: rgba(255, 255, 255, 0.8);
+            --bg-input-light: rgba(255, 255, 255, 0.95);
+            --text-color-light: #444;
+            --text-header-light: #2c3e50;
+            --border-color-light: rgba(0, 0, 0, 0.08);
+            --shadow-light: 0 2px 6px rgba(0, 0, 0, 0.05);
+            --shadow-input-light: inset 0 1px 2px rgba(0, 0, 0, 0.04);
+            --bg-selected-light: rgba(120, 180, 255, 0.1);
 
-            --bg-body-dark: linear-gradient(135deg, #1a2a3a, #20354b);
-            --bg-header-dark: rgba(0, 0, 0, 0.4);
+            --bg-body-dark: linear-gradient(135deg, #2c3e50, #1a2a3a);
+            --bg-header-dark: rgba(0, 0, 0, 0.5);
             --bg-tab-container-dark: rgba(0, 0, 0, 0.6);
             --bg-table-dark: rgba(0, 0, 0, 0.7);
             --bg-th-dark: rgba(40, 55, 70, 0.9);
-            --bg-footer-dark: rgba(0, 0, 0, 0.5);
-            --bg-input-dark: rgba(30, 45, 60, 0.85);
+            --bg-footer-dark: rgba(0, 0, 0, 0.6);
+            --bg-input-dark: rgba(30, 45, 60, 0.95);
             --text-color-dark: #e0e0e0;
             --text-header-dark: #f0f0f0;
             --border-color-dark: rgba(255, 255, 255, 0.1);
-            --shadow-dark: 0 4px 10px rgba(0, 0, 0, 0.2);
-            --shadow-input-dark: inset 0 1px 3px rgba(0, 0, 0, 0.1);
-            --bg-selected-dark: rgba(100, 150, 255, 0.3);
+            --shadow-dark: 0 2px 6px rgba(0, 0, 0, 0.2);
+            --shadow-input-dark: inset 0 1px 2px rgba(0, 0, 0, 0.1);
+            --bg-selected-dark: rgba(100, 150, 255, 0.2);
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
             margin: 0;
             background: var(--bg-body-light);
             color: var(--text-color-light);
@@ -72,7 +72,7 @@
             justify-content: center;
             background: var(--bg-tab-container-light);
             backdrop-filter: blur(10px);
-            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
             padding: 5px;
             border-bottom: 1px solid var(--border-color-light);
         }
@@ -89,14 +89,14 @@
             background: transparent;
             font-size: 1rem;
             font-weight: 500;
-            color: #555;
+            color: #777;
             transition: 0.2s;
             border-bottom: 2px solid transparent;
             animation: fadeIn 0.5s ease-in-out;
         }
 
         body.dark-mode .tab-button {
-            color: #ccc;
+            color: #aaa;
         }
 
         .tab-button:hover {
@@ -125,24 +125,24 @@
         .tab-content.active {
             display: block;
         }
-
+        
         table {
             width: 100%;
             border-collapse: collapse;
-            border-radius: 16px;
+            border-radius: 12px;
             overflow: hidden;
             background: var(--bg-table-light);
             backdrop-filter: blur(8px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
         }
 
         body.dark-mode table {
             background: var(--bg-table-dark);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
 
         th, td {
-            padding: 8px 14px;
+            padding: 10px 14px;
             font-size: 0.9rem;
             border-bottom: 1px solid var(--border-color-light);
             text-align: left;
@@ -183,8 +183,8 @@
 
         .search-bar input {
             width: 100%;
-            padding: 12px;
-            border-radius: 16px;
+            padding: 10px;
+            border-radius: 12px;
             border: 1px solid var(--border-color-light);
             font-size: 14px;
             outline: none;
@@ -207,14 +207,14 @@
             width: 100%;
             background: var(--bg-footer-light);
             backdrop-filter: blur(12px);
-            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.08);
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
             padding: 15px 10px;
             z-index: 999;
         }
 
         body.dark-mode footer {
             background: var(--bg-footer-dark);
-            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
         }
 
         .form-container {
@@ -226,7 +226,7 @@
         form {
             display: flex;
             flex-wrap: wrap;
-            gap: 12px;
+            gap: 10px;
             justify-content: center;
             align-items: center;
             width: 100%;
@@ -236,13 +236,13 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 12px;
+            gap: 10px;
             margin-top: 15px;
         }
 
         select, input, textarea {
             padding: 10px 14px;
-            border-radius: 12px;
+            border-radius: 10px;
             border: 1px solid var(--border-color-light);
             font-size: 14px;
             outline: none;
@@ -259,33 +259,14 @@
             box-shadow: var(--shadow-input-dark);
         }
         
-        input[type="text"][list] {
-            position: relative;
-        }
-
-        datalist {
-            position: absolute;
-            top: 100%;
-            left: 0;
-            background-color: var(--bg-input-light);
-            border: 1px solid var(--border-color-light);
-            border-radius: 8px;
-            width: 100%;
-            z-index: 100;
-        }
-        body.dark-mode datalist {
-            background-color: var(--bg-input-dark);
-            border: 1px solid var(--border-color-dark);
-        }
-
         .icon-button {
             padding: 10px;
-            border-radius: 16px;
+            border-radius: 12px;
             border: none;
             cursor: pointer;
             font-size: 14px;
             transition: 0.2s;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
             width: 40px;
             height: 40px;
             display: flex;
@@ -308,19 +289,14 @@
             color: white;
         }
 
-        .icon-button.relatorio, .icon-button.theme-toggle, .icon-button.search {
+        .icon-button.exportar-xls, .icon-button.theme-toggle, .icon-button.search {
             background: linear-gradient(135deg, #007bff, #0056b3);
-            color: white;
-        }
-        
-        .icon-button.exportar-txt, .icon-button.exportar-xls {
-            background: linear-gradient(135deg, #6c757d, #5a6268);
             color: white;
         }
 
         .icon-button:hover {
-            transform: scale(1.05);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
 
         tr.selecionado {
@@ -354,7 +330,7 @@
             background: var(--bg-table-light);
             backdrop-filter: blur(8px);
             padding: 15px 25px;
-            border-radius: 16px;
+            border-radius: 12px;
             box-shadow: var(--shadow-light);
             text-align: center;
         }
@@ -366,13 +342,13 @@
 
         .placar h3, .grafico-container h3 {
             margin: 0 0 10px 0;
-            font-size: 1.2rem;
+            font-size: 1.1rem;
             color: #007aff;
         }
 
         .placar p {
             margin: 0;
-            font-size: 2.5rem;
+            font-size: 2.2rem;
             font-weight: bold;
         }
 
@@ -394,17 +370,22 @@
             align-items: center;
             z-index: 1000;
         }
-
+        
         .modal-content {
             background: var(--bg-table-light);
             color: var(--text-color-light);
             padding: 30px;
-            border-radius: 20px;
+            border-radius: 16px;
             box-shadow: var(--shadow-light);
             text-align: center;
             max-width: 400px;
             width: 90%;
             position: relative;
+        }
+        
+        body.dark-mode .modal-content {
+            background: var(--bg-table-dark);
+            color: var(--text-color-dark);
         }
 
         .modal-content .close-button {
@@ -417,7 +398,7 @@
             background: transparent;
             color: var(--text-color-light);
         }
-
+        
         body.dark-mode .modal-content .close-button {
             color: var(--text-color-dark);
         }
@@ -425,6 +406,11 @@
         .modal-content h3 {
             margin-top: 0;
             color: #007aff;
+        }
+        
+        .modal-content form {
+            flex-direction: column;
+            gap: 10px;
         }
 
         #modal-consulta .modal-content {
@@ -435,53 +421,49 @@
             box-shadow: var(--shadow-light);
         }
         
+        body.dark-mode #modal-consulta .modal-content {
+            background: var(--bg-table-dark);
+            color: var(--text-color-dark);
+        }
+        
         #modal-consulta input, #modal-consulta select {
             background: var(--bg-input-light);
             border-color: var(--border-color-light);
             color: var(--text-color-light);
         }
         
+        body.dark-mode #modal-consulta input, body.dark-mode #modal-consulta select {
+            background: var(--bg-input-dark);
+            border-color: var(--border-color-dark);
+            color: var(--text-color-dark);
+        }
+        
         #modal-consulta table {
             background: var(--bg-table-light);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+
+        body.dark-mode #modal-consulta table {
+            background: var(--bg-table-dark);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         }
         
         #modal-consulta th {
             background: var(--bg-th-light);
+        }
+        
+        body.dark-mode #modal-consulta th {
+            background: var(--bg-th-dark);
         }
 
         #modal-consulta th, #modal-consulta td {
             border-bottom: 1px solid var(--border-color-light);
         }
 
-
-        .filtro-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-bottom: 20px;
-            justify-content: center;
+        body.dark-mode #modal-consulta th, body.dark-mode #modal-consulta td {
+            border-bottom: 1px solid var(--border-color-dark);
         }
 
-        .filtro-container input, .filtro-container select {
-            flex-grow: 1;
-            min-width: 150px;
-        }
-        
-        .modal-buttons {
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-            margin-top: 20px;
-        }
-
-        /* Novo estilo para o campo de nome com datalist */
-        #nome-1-datalist {
-            position: absolute;
-            left: 0;
-            z-index: 10;
-        }
-        
         #import-section {
             display: flex;
             gap: 15px;
@@ -500,7 +482,7 @@
             transition: transform 0.2s;
         }
         #import-section button:hover {
-            transform: scale(1.05);
+            transform: translateY(-1px);
         }
 
         @keyframes fadeIn {
@@ -648,55 +630,7 @@
 <footer>
     <div class="form-container">
         <form id="registro-form-1" class="registro-form">
-            <select id="nome-1" required>
-                <option value="">Funcionário...</option>
-                <option>Leandro S.</option>
-                <option>Oscar - Supervisor</option>
-                <option>João Paulo - Menor Aprendiz</option>
-                <option>Vitória Isabele</option>
-                <option>Thalles</option>
-                <option>André</option>
-                <option>Ezequias</option>
-                <option>João Vitor</option>
-                <option>Luiz Carlos</option>
-                <option>Luiz Henrique</option>
-                <option>Cristiano</option>
-                <option>Jean Carlos</option>
-                <option>Marsergio - Gerente</option>
-                <option>Michel F. - Menor Aprendiz</option>
-                <option>Raimundo</option>
-                <option>Enildo - Supervisor</option>
-                <option>Thiago Benjamin</option>
-                <option>Jayme - Encarregado - Van</option>
-                <option>Raimundo - Van</option>
-                <option>Marcos - Van</option>
-                <option>Fábio - Van</option>
-                <option>Eriton - Van</option>
-                <option>Elionai - Van</option>
-                <option>Edmar - Van</option>
-                <option>Jefferson - Van</option>
-                <option>Wanderson</option>
-                <option>Kleverson</option>
-                <option>Leandro F.</option>
-                <option>Gilliard D.</option>
-                <option>Leandro P.</option>
-                <option>André F.</option>
-                <option>Leonardo</option>
-                <option>Dangel – Menor aprendiz</option>
-                <option>Cauan – Menor aprendiz</option>
-                <option>Nicolas G – Menor aprendiz</option>
-                <option>Elias – Menor aprendiz</option>
-                <option>Murilo - Menor Aprendiz</option>
-                <option>Matias - Menor Aprendiz</option>
-                <option>Yuri  - Menor Aprendiz</option>
-                <option>Pedro H - Menor Aprendiz</option>
-                <option>Felipe - Menor Aprendiz</option>
-                <option>Abraão - Menor Aprendiz</option>
-                <option id="gabriel-rabelo">Gabriel - Menor Aprendiz</option>
-                <option>Edirlei - CPD</option>
-                <option>Denne Carlo - Predial</option>
-                <option>Francisco B. - Predial</option>
-            </select>
+            <input type="text" id="nome-1" placeholder="Nome do Colaborador" required>
             <input type="time" id="entrada-1">
             <input type="time" id="saida-1">
             <select id="cracha-1">
@@ -704,7 +638,6 @@
                 <option>Não</option>
             </select>
             <textarea id="obs-1" placeholder="Observações" rows="1"></textarea>
-            <datalist id="datalist-nomes-1"></datalist>
         </form>
 
         <form id="registro-form-2" class="registro-form" style="display:none;">
@@ -717,7 +650,7 @@
 
         <form id="registro-form-3" class="registro-form" style="display:none;">
             <input type="time" id="horario-3" required>
-            <input type="text" id="nome-3" placeholder="Nome">
+            <input type="text" id="motorista-3" placeholder="Motorista">
             <input type="text" id="documento-3" placeholder="Documento">
             <input type="text" id="contato-3" placeholder="Contato">
             <input type="text" id="placa-cv-3" placeholder="Placa CV">
@@ -744,14 +677,13 @@
             <input type="time" id="hora-5" required>
             <input type="text" id="nome-5" placeholder="Nome">
             <input type="text" id="cpf-placa-5" placeholder="CPF / Placa">
-            <input type="text" id="empresa-5" placeholder="Empresa" list="datalist-empresas-5">
-            <datalist id="datalist-empresas-5"></datalist>
+            <input type="text" id="empresa-5" placeholder="Empresa">
             <input type="text" id="autorizacao-5" placeholder="Autorização">
             <textarea id="observacoes-5" placeholder="Observações" rows="1"></textarea>
         </form>
 
         <div class="footer-buttons">
-            <button type="submit" form="registro-form-1" class="icon-button salvar">
+            <button type="submit" class="icon-button salvar">
                 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
             </button>
             <button type="button" class="icon-button editar" onclick="editarRegistro(abaAtual)">
@@ -772,14 +704,6 @@
         </div>
     </div>
 </footer>
-
-<div id="modal-alerta" class="modal-overlay" style="display: none;">
-    <div class="modal-content">
-        <button class="close-button" onclick="fecharModalAlerta()">&times;</button>
-        <h3>Aviso</h3>
-        <p>Backup realizado e dados salvos no seu computador. Os dados atuais permanecerão na tela.</p>
-    </div>
-</div>
 
 <div id="modal-consulta" class="modal-overlay" style="display: none;">
     <div class="modal-content" style="max-width: 90%; min-width: 600px;">
@@ -802,14 +726,6 @@
     </div>
 </div>
 
-<div id="modal-proibido" class="modal-overlay" style="display: none;">
-    <div class="modal-content">
-        <h3>Entrada Proibida</h3>
-        <p>Gabriel Rabelo não faz mais parte do quadro. Entrada Proibida.</p>
-        <button class="icon-button" style="background: linear-gradient(135deg, #007bff, #0056b3); width: auto;" onclick="fecharModalProibido()">OK</button>
-    </div>
-</div>
-
 <script>
     let registros = {};
     let selecionado = {};
@@ -823,35 +739,26 @@
             selecionado[i] = null;
         }
     }
-
+    
     function salvarDados(aba) {
         localStorage.setItem(`registrosAba${aba}`, JSON.stringify(registros[aba]));
     }
-
+    
     function mostrarAba(aba) {
         document.querySelectorAll('.tab-content').forEach(content => content.style.display = 'none');
         document.getElementById(`aba-${aba}`).style.display = 'block';
 
         document.querySelectorAll('.registro-form').forEach(form => form.style.display = 'none');
         document.getElementById(`registro-form-${aba}`).style.display = 'flex';
+        document.querySelectorAll('.footer-buttons .salvar')[0].setAttribute('form', `registro-form-${aba}`);
         
-        document.querySelector('.footer-buttons .salvar').setAttribute('form', `registro-form-${aba}`);
-
         document.querySelectorAll('.tab-button').forEach(button => button.classList.remove('active'));
         document.querySelector(`.tab-button:nth-child(${aba})`).classList.add('active');
         
-        document.querySelector('.footer-buttons .salvar').setAttribute('form', `registro-form-${aba}`);
-        
         abaAtual = aba;
         renderTabela(aba);
-        
-        if (aba === 1) {
-            updateDatalist('nome-1', 'datalist-nomes-1', 'nome');
-        } else if (aba === 5) {
-            updateDatalist('empresa-5', 'datalist-empresas-5', 'empresa');
-        }
     }
-
+    
     function renderTabela(aba, scrollToBottom = false) {
         const tbody = document.getElementById(`registro-lista-${aba}`);
         tbody.innerHTML = "";
@@ -929,16 +836,16 @@
             case 3:
                 return {
                     horario: document.getElementById(`horario-${aba}`).value,
-                    nome: document.getElementById(`nome-${aba}`).value,
-                    documento: document.getElementById(`documento-${aba}`).value,
-                    contato: document.getElementById(`contato-${aba}`).value,
-                    placaCv: document.getElementById(`placa-cv-${aba}`).value,
-                    placaRb: document.getElementById(`placa-rb-${aba}`).value,
-                    transportadora: document.getElementById(`transportadora-${aba}`).value,
-                    fornecedor: document.getElementById(`fornecedor-${aba}`).value,
-                    sh: document.getElementById(`sh-${aba}`).value,
-                    quantidade: document.getElementById(`quantidade-${aba}`).value,
-                    observacao: document.getElementById(`observacao-${aba}`).value,
+                    nome: document.getElementById(`motorista-3`).value,
+                    documento: document.getElementById(`documento-3`).value,
+                    contato: document.getElementById(`contato-3`).value,
+                    placaCv: document.getElementById(`placa-cv-3`).value,
+                    placaRb: document.getElementById(`placa-rb-3`).value,
+                    transportadora: document.getElementById(`transportadora-3`).value,
+                    fornecedor: document.getElementById(`fornecedor-3`).value,
+                    sh: document.getElementById(`sh-3`).value,
+                    quantidade: document.getElementById(`quantidade-3`).value,
+                    observacao: document.getElementById(`observacao-3`).value,
                     timestamp: new Date().getTime()
                 };
             case 4:
@@ -995,14 +902,14 @@
                 break;
             case 3:
                 form.querySelector(`#horario-${aba}`).value = registro.horario;
-                form.querySelector(`#nome-${aba}`).value = registro.nome;
+                form.querySelector(`#motorista-${aba}`).value = registro.nome;
                 form.querySelector(`#documento-${aba}`).value = registro.documento;
                 form.querySelector(`#contato-${aba}`).value = registro.contato;
                 form.querySelector(`#placa-cv-${aba}`).value = registro.placaCv;
                 form.querySelector(`#placa-rb-${aba}`).value = registro.placaRb;
                 form.querySelector(`#transportadora-${aba}`).value = registro.transportadora;
                 form.querySelector(`#fornecedor-${aba}`).value = registro.fornecedor;
-                form.querySelector(`#sh-${aba}`).value = registro.sh;
+                form.querySelector(`#sh-3`).value = registro.sh;
                 form.querySelector(`#quantidade-${aba}`).value = registro.quantidade;
                 form.querySelector(`#observacao-${aba}`).value = registro.observacao;
                 break;
@@ -1092,7 +999,6 @@
     }
     
     function exportarTudo() {
-        // Exportar XLSX
         const wb = XLSX.utils.book_new();
         const abaNames = {
             1: "Colaborador Biz",
@@ -1101,23 +1007,7 @@
             4: "Cargas Biz",
             5: "Outros Registros"
         };
-
-        for (let i = 1; i <= 5; i++) {
-            const registrosDaAba = registros[i] || [];
-            if (registrosDaAba.length > 0) {
-                const ws = XLSX.utils.json_to_sheet(registrosDaAba);
-                XLSX.utils.book_append_sheet(wb, ws, abaNames[i]);
-            }
-        }
         
-        if (wb.SheetNames.length > 0) {
-            const dataFormatada = new Date().toISOString().split('T')[0].replace(/-/g, '');
-            const nomeArquivoXLSX = `geral_${dataFormatada}.xlsx`;
-            XLSX.writeFile(wb, nomeArquivoXLSX);
-        }
-
-        // Exportar TXT
-        let backupText = `Backup de Movimentações - ${new Date().toLocaleDateString()}\n\n`;
         const abaHeaders = {
             1: ["Nome", "H. Entrada", "H. Saída", "Crachá", "Observações"],
             2: ["Nome", "H. Entrada", "H. Saída", "Frota", "Observações"],
@@ -1125,32 +1015,100 @@
             4: ["H. Entrada", "Motorista", "Doc.", "Contato", "Cliente", "Placas", "Autorização", "Observações"],
             5: ["Hora", "Nome", "CPF / Placa", "Empresa", "Autorização", "Observações"]
         };
+
         for (let i = 1; i <= 5; i++) {
             const registrosDaAba = registros[i] || [];
             if (registrosDaAba.length > 0) {
-                backupText += `--- Aba ${i} - ${abaHeaders[i].join(" | ")} ---\n`;
-                registrosDaAba.forEach(r => {
-                    const values = abaHeaders[i].map(h => r[Object.keys(r).find(key => key.toLowerCase().includes(h.toLowerCase().replace(/[\.\/]/g, '')))] || "");
-                    backupText += values.join(" | ") + "\n";
+                const dadosParaPlanilha = registrosDaAba.map(r => {
+                    return abaHeaders[i].map(header => {
+                        switch(header) {
+                            case "Nome": return r.nome;
+                            case "H. Entrada": return r.entrada;
+                            case "H. Saída": return r.saida;
+                            case "Crachá": return r.cracha;
+                            case "Observações": return r.obs || r.observacoes;
+                            case "Frota": return r.frotas;
+                            case "Doc.": return r.documento;
+                            case "Contato": return r.contato;
+                            case "Placa CV": return r.placaCv;
+                            case "Placa RB": return r.placaRb;
+                            case "Transp.": return r.transportadora;
+                            case "Fornec.": return r.fornecedor;
+                            case "SH": return r.sh;
+                            case "Qtd": return r.quantidade;
+                            case "Observação": return r.observacao;
+                            case "Hora": return r.hora;
+                            case "CPF / Placa": return r.cpfPlaca;
+                            case "Empresa": return r.empresa;
+                            case "Autorização": return r.autorizacao;
+                            case "Motorista": return r.motorista;
+                            case "Cliente": return r.cliente;
+                            case "Placas": return r.placas;
+                            default: return '';
+                        }
+                    });
                 });
-                backupText += "\n";
+                
+                dadosParaPlanilha.unshift(abaHeaders[i]);
+
+                const ws = XLSX.utils.aoa_to_sheet(dadosParaPlanilha);
+                
+                // Set column widths and styles
+                const wscols = abaHeaders[i].map((h, colIndex) => ({
+                    wch: Math.max(...(dadosParaPlanilha.map(row => (row[colIndex] ? String(row[colIndex]).length : 0))), h.length) + 2
+                }));
+                ws['!cols'] = wscols;
+
+                // Add filter
+                ws['!autofilter'] = { ref: `A1:${String.fromCharCode(65 + abaHeaders[i].length - 1)}1` };
+                
+                // Add alignment (center) - requires CellXF style info
+                // This part requires more advanced styling, which is not directly supported by basic `sheet_to_json`.
+                // For a more complete implementation, a library like ExcelJS would be better.
+                // However, we can add a basic note to the user to adjust alignment.
+
+                XLSX.utils.book_append_sheet(wb, ws, abaNames[i]);
             }
         }
         
-        const blob = new Blob([backupText], { type: 'text/plain;charset=utf-8' });
-        const dataFormatadaTXT = new Date().toISOString().split('T')[0].replace(/-/g, '');
-        const a = document.createElement('a');
-        a.href = URL.createObjectURL(blob);
-        a.download = `geral_${dataFormatadaTXT}.txt`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(a.href);
+        if (wb.SheetNames.length > 0) {
+            const today = new Date();
+            const dataFormatada = today.toISOString().split('T')[0].replace(/-/g, '');
+            const nomeArquivoXLSX = `zentrydb_${dataFormatada}.xlsx`;
+            
+            XLSX.writeFile(wb, nomeArquivoXLSX);
+        }
+    }
+    
+    function exportarElimpar() {
+        const today = new Date();
+        const lastExportDate = localStorage.getItem('lastExportDate');
+        const todayFormatted = today.toISOString().split('T')[0];
         
-        alert("Arquivos exportados para a sua pasta de downloads!");
+        if (lastExportDate !== todayFormatted) {
+            exportarTudo();
+            localStorage.setItem('lastExportDate', todayFormatted);
+            
+            // Limpa todos os dados para o novo dia
+            for (let i = 1; i <= 5; i++) {
+                localStorage.removeItem(`registrosAba${i}`);
+                registros[i] = [];
+            }
+            carregarDados();
+            renderTabela(abaAtual);
+        }
     }
 
+    function checarHora() {
+        const now = new Date();
+        const hours = now.getHours();
+        const minutes = now.getMinutes();
 
+        if (hours === 0 && minutes === 0) {
+            exportarElimpar();
+        }
+    }
+    
     function toggleTheme() {
         const body = document.body;
         body.classList.toggle('dark-mode');
@@ -1219,7 +1177,6 @@
 
     function abrirModalConsulta() {
         document.getElementById('modal-consulta').style.display = 'flex';
-        // Limpa a tela de consulta ao abrir
         document.getElementById('import-table-head').innerHTML = '';
         document.getElementById('import-table-body').innerHTML = '';
         document.getElementById('sheet-selector').style.display = 'none';
@@ -1229,7 +1186,6 @@
 
     function fecharModalConsulta() {
         document.getElementById('modal-consulta').style.display = 'none';
-        // Limpa a tela de consulta ao fechar
         document.getElementById('import-table-head').innerHTML = '';
         document.getElementById('import-table-body').innerHTML = '';
         document.getElementById('sheet-selector').style.display = 'none';
@@ -1258,7 +1214,6 @@
             });
             sheetSelector.style.display = 'inline-block';
             
-            // Exibir a primeira aba por padrão
             exibirAbaImportada(workbookData.SheetNames[0]);
         };
         reader.readAsArrayBuffer(file);
@@ -1305,39 +1260,6 @@
             body.appendChild(tr);
         }
     }
-
-    function updateDatalist(inputId, datalistId, field) {
-        const datalist = document.getElementById(datalistId);
-        datalist.innerHTML = '';
-        
-        let uniqueValues = new Set();
-        registros[abaAtual].forEach(r => {
-            if (r[field]) {
-                uniqueValues.add(r[field]);
-            }
-        });
-
-        uniqueValues.forEach(value => {
-            const option = document.createElement('option');
-            option.value = value;
-            datalist.appendChild(option);
-        });
-    }
-    
-    function abrirModalProibido() {
-        document.getElementById('modal-proibido').style.display = 'flex';
-    }
-
-    function fecharModalProibido() {
-        document.getElementById('modal-proibido').style.display = 'none';
-        document.getElementById('nome-1').value = "";
-    }
-
-    document.getElementById("nome-1").addEventListener("change", function(e) {
-        if (e.target.value === "Gabriel - Menor Aprendiz") {
-            abrirModalProibido();
-        }
-    });
     
     document.getElementById('import-file').addEventListener('change', lerArquivoXLSX);
     document.getElementById('sheet-selector').addEventListener('change', (e) => exibirAbaImportada(e.target.value));
@@ -1353,16 +1275,12 @@
     document.getElementById("search-3").addEventListener("input", () => renderTabela(3));
     document.getElementById("search-4").addEventListener("input", () => renderTabela(4));
     document.getElementById("search-5").addEventListener("input", () => renderTabela(5));
-    
+
     document.addEventListener('DOMContentLoaded', () => {
         carregarDados();
         carregarTema();
         mostrarAba(1);
-
-        // Configura a atualização automática a cada 1 hora (3600000 ms)
-        setInterval(() => {
-            location.reload();
-        }, 3600000); // 3600000 milissegundos = 1 hora
+        setInterval(checarHora, 60000); // Checa a cada minuto
     });
 </script>
 
