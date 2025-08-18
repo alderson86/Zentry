@@ -147,7 +147,7 @@
 <body>
     <nav class="navbar navbar-expand-lg navbar-light glassmorphism">
         <div class="container-fluid">
-            <a class="navbar-brand" href="#">Rede Biz - Zentry</a>
+            <a class="navbar-brand" href="#">Biz / Aliança / Pisa</a>
             <ul class="nav nav-tabs mx-auto" id="myTab" role="tablist">
                 <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#ponto">Ponto</a></li>
                 <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#entregas">Entregas</a></li>
@@ -168,7 +168,7 @@
                             <input type="text" id="ponto-search" class="search-input" placeholder="Pesquisar...">
                         </div>
                         <div class="info-container">
-                            <span id="ponto-total">Total: 0</span>
+                            <span id="ponto-total">Presentes: 0</span>
                             <span id="ponto-cracha-sim">Com Crachá: 0</span>
                             <span id="ponto-cracha-nao">Sem Crachá: 0</span>
                         </div>
@@ -546,15 +546,15 @@
 
         function atualizarContadores(aba, lista) {
             if (aba === 'ponto') {
-                const total = lista.length;
+                const presentes = lista.filter(item => item.entrada && !item.saida).length;
                 const crachaSim = lista.filter(item => item.cracha === 'Sim').length;
                 const crachaNao = lista.filter(item => item.cracha === 'Não').length;
-                document.getElementById('ponto-total').textContent = `Total: ${total}`;
+                document.getElementById('ponto-total').textContent = `Presentes: ${presentes}`;
                 document.getElementById('ponto-cracha-sim').textContent = `Com Crachá: ${crachaSim}`;
                 document.getElementById('ponto-cracha-nao').textContent = `Sem Crachá: ${crachaNao}`;
             } else if (aba === 'entregas') {
-                const total = lista.length;
-                document.getElementById('entregas-total').textContent = `Veículos no Pátio: ${total}`;
+                const noPatio = lista.filter(item => item.chegada && !item.saida).length;
+                document.getElementById('entregas-total').textContent = `Veículos no Pátio: ${noPatio}`;
             }
         }
 
