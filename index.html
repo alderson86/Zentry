@@ -34,6 +34,8 @@
             --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
             --toast-bg: rgba(0, 0, 0, 0.85);
             --toast-color: #fff;
+            --terminal-bg: #e6e6eb;
+            --terminal-text: #2c2c2e;
         }
         body.dark-mode {
             --bg-color: #121212;
@@ -62,6 +64,8 @@
             --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
             --toast-bg: rgba(255, 255, 255, 0.85);
             --toast-color: #000;
+            --terminal-bg: #2c2c2e;
+            --terminal-text: #00ff7f;
             color: var(--text-color) !important;
         }
         body { padding-top: 70px; background-color: var(--bg-color); color: var(--text-color); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; transition: background-color 0.3s ease; }
@@ -238,12 +242,46 @@
             background: #fff;
             color: #000;
         }
+
+        /* Estilo do bloco de terminal */
+        .dashboard-terminal-card {
+            background-color: var(--terminal-bg);
+            border: 1px solid var(--container-border);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: var(--card-shadow);
+            display: flex;
+            flex-direction: column;
+            text-align: left;
+        }
+        .dashboard-terminal-card .title {
+            color: var(--text-color);
+            font-weight: 500;
+            margin-bottom: 10px;
+        }
+        .terminal-log-list {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 0.9rem;
+            color: var(--terminal-text);
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        .terminal-log-list li {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            padding: 2px 0;
+        }
+
     </style>
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-light glassmorphism">
         <div class="container-fluid">
-            <a class="navbar-brand" href="#">Zentry</a>
+            <a class="navbar-brand" href="#">Zendry Biz</a>
             <ul class="nav nav-tabs mx-auto" id="myTab" role="tablist">
                 <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#dashboard">Dashboard</a></li>
                 <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#ponto">Ponto</a></li>
@@ -297,6 +335,34 @@
                         <i class="fa-solid fa-box-open icon"></i>
                         <div class="title">Volume de Cargas Hoje</div>
                         <div class="value" id="dashboard-cargas-hoje">0</div>
+                    </div>
+
+                    <div class="dashboard-card">
+                        <i class="fa-solid fa-user-clock icon"></i>
+                        <div class="title">Status do Ponto</div>
+                        <div class="sub-values">
+                            <div class="sub-value">
+                                <span class="value" id="dashboard-ponto-na-empresa">0</span>
+                                <span class="label">Na Empresa</span>
+                            </div>
+                            <div class="sub-value">
+                                <span class="value" id="dashboard-ponto-fora-empresa">0</span>
+                                <span class="label">Fora da Empresa</span>
+                            </div>
+                            <div class="sub-value">
+                                <span class="value" id="dashboard-ponto-cracha-sim">0</span>
+                                <span class="label">Com Crachá</span>
+                            </div>
+                            <div class="sub-value">
+                                <span class="value" id="dashboard-ponto-cracha-nao">0</span>
+                                <span class="label">Sem Crachá</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-terminal-card">
+                        <div class="title"><i class="fa-solid fa-terminal me-2"></i>Logs do Sistema</div>
+                        <ul id="recent-logs-list" class="terminal-log-list"></ul>
                     </div>
                 </div>
                 
@@ -685,8 +751,8 @@
                             <li>Registro de Cargas com informações de motorista e cliente.</li>
                             <li>Registro de Visitantes e Pessoas Autorizadas.</li>
                             <li>Exportação completa de todos os registros para uma única planilha Excel.</li>
-                            <li>**NOVO:** Exportação do Dashboard em PDF com gráficos.</li>
-                            <li>**NOVO:** Automação para exportação diária de relatórios (PDF e XLSX) à meia-noite.</li>
+                            <li>Exportação do Dashboard em PDF com gráficos.</li>
+                            <li>Automação para exportação diária de relatórios (PDF e XLSX) à meia-noite.</li>
                         </ul>
                     </div>
                     <div class="col-md-6">
@@ -700,7 +766,6 @@
                             <li><strong>SheetJS / XLSX:</strong> Para a exportação de dados para planilhas.</li>
                             <li><strong>jsPDF & html2canvas:</strong> Para a exportação do Dashboard em PDF.</li>
                             <li><strong>Font Awesome:</strong> Biblioteca de ícones.</li>
-                            <li><strong>Hospedagem:</strong> Git Hub Page.</li>
                         </ul>
                     </div>
                 </div>
@@ -774,7 +839,7 @@
             "Cauan – Menor aprendiz", "Nicolas G – Menor aprendiz", "Elias – Menor aprendiz", 
             "Outro - Menor Aprendiz", "Matias - Menor Aprendiz", "Yuri - Menor Aprendiz", 
             "Pedro H - Menor Aprendiz", "Felipe - Menor Aprendiz", "Abraão - Menor Aprendiz", 
-            "Gabriel - Menor Aprendiz", "Edirlei - CPD", "Moisés - CPD", "Lusiene - CPD", "Denner - Predial",
+            "Gabriel - Menor Aprendiz", "Edirlei - CPD", "Moisés - CPD", "Lusiene - TSB", "Denner - Predial",
             "Francisco - Predial", "Eder - ASI", "Gil - Ser Prime"
         ];
         
@@ -784,11 +849,15 @@
         document.addEventListener('DOMContentLoaded', () => {
             confirmModal = new bootstrap.Modal(document.getElementById('confirmModal'));
             myToast = new bootstrap.Toast(document.getElementById('myToast'));
+            
+            // Renderiza o dashboard e os outros dados quando a página carrega
+            renderDashboard(today);
             render('ponto');
             render('entregas');
             render('descargas');
             render('cargas');
             render('outros');
+            
             document.getElementById('darkModeToggle').addEventListener('click', toggleDarkMode);
             agendarTarefasDiarias();
         });
@@ -863,18 +932,20 @@
             const tbody = document.querySelector(`#lista-${aba} tbody`);
             if (!tbody) return;
             tbody.innerHTML = '';
-            let listaFiltrada = listaOriginal;
-            if (filtro) {
+            
+            const listaFiltrada = listaOriginal.filter(item => {
+                if (!filtro) return true;
                 const filtroLowerCase = filtro.toLowerCase();
-                listaFiltrada = listaOriginal.filter(item => {
-                    return Object.values(item).some(value => 
-                        value && value.toString().toLowerCase().includes(filtroLowerCase)
-                    );
-                });
-            }
-            listaFiltrada.forEach((item, i) => {
+                return Object.values(item).some(value => 
+                    value && value.toString().toLowerCase().includes(filtroLowerCase)
+                );
+            });
+            
+            listaFiltrada.forEach(item => {
                 const tr = document.createElement('tr');
-                tr.onclick = () => selecionarItem(tr, aba, i);
+                const originalIndex = listaOriginal.findIndex(origItem => JSON.stringify(origItem) === JSON.stringify(item));
+                tr.onclick = () => selecionarItem(tr, aba, originalIndex);
+                
                 const itemKeys = headersMap[aba];
                 itemKeys.forEach(key => {
                     const td = document.createElement('td');
@@ -906,8 +977,8 @@
                 const crachaNao = registrosDoDia.filter(item => item.cracha === 'Não').length;
                 const totalColaboradores = masterColaboradores.length;
 
-                document.getElementById('ponto-na-empresa').textContent = `Compareceram: ${presentes}`;
-                document.getElementById('ponto-fora-empresa').textContent = `Faltam comparecer: ${totalColaboradores - presentes}`;
+                document.getElementById('ponto-na-empresa').textContent = `Na Empresa: ${presentes}`;
+                document.getElementById('ponto-fora-empresa').textContent = `Fora da Empresa: ${totalColaboradores - presentes}`;
                 document.getElementById('ponto-cracha-sim').textContent = `Com Crachá: ${crachaSim}`;
                 document.getElementById('ponto-cracha-nao').textContent = `Sem Crachá: ${crachaNao}`;
 
@@ -1138,14 +1209,80 @@
             document.getElementById('dashboard-cargas-hoje').textContent = cargasHoje;
         }
 
+        function updateDashboardPontoCounters(dataPonto) {
+            const registrosDoDia = dataPonto.filter(item => item.data === today);
+            const presentes = registrosDoDia.filter(item => item.entrada && !item.saida).length;
+            const crachaSim = registrosDoDia.filter(item => item.cracha === 'Sim').length;
+            const crachaNao = registrosDoDia.filter(item => item.cracha === 'Não').length;
+            const totalColaboradores = masterColaboradores.length;
+
+            document.getElementById('dashboard-ponto-na-empresa').textContent = presentes;
+            document.getElementById('dashboard-ponto-fora-empresa').textContent = totalColaboradores - presentes;
+            document.getElementById('dashboard-ponto-cracha-sim').textContent = crachaSim;
+            document.getElementById('dashboard-ponto-cracha-nao').textContent = crachaNao;
+        }
+
+        function renderRecentActivity() {
+            const allLogs = [];
+            const abas = ['ponto', 'entregas', 'descargas', 'cargas', 'outros'];
+            
+            abas.forEach(aba => {
+                const data = getDadosAba(aba);
+                data.forEach(item => {
+                    let logText = '';
+                    let timestamp = new Date();
+                    
+                    if (aba === 'ponto') {
+                        const action = item.entrada && item.saida ? 'Entrada e Saída' : item.entrada ? 'Entrada' : 'Saída';
+                        logText = `[Ponto] ${item.colaborador}: ${action}`;
+                        timestamp = new Date(`${item.data}T${item.entrada || item.saida}`);
+                    } else if (aba === 'entregas') {
+                        const action = item.chegada && item.saida ? 'Chegada e Saída' : item.chegada ? 'Chegada' : 'Saída';
+                        logText = `[Entrega] Frota ${item.frota}: ${action}`;
+                        timestamp = new Date(`${item.data}T${item.chegada || item.saida}`);
+                    } else if (aba === 'descargas') {
+                        logText = `[Descarga] ${item.nome} (${item.placacv})`;
+                        timestamp = new Date(`${item.data}T${item.hora}`);
+                    } else if (aba === 'cargas') {
+                        logText = `[Carga] Frota ${item.placas} - Cliente: ${item.cliente}`;
+                        timestamp = new Date(`${item.data}T${item.entrada}`);
+                    } else if (aba === 'outros') {
+                        logText = `[Outros] ${item.nome} (${item.empresa})`;
+                        timestamp = new Date(`${item.data}T${item.hora}`);
+                    }
+                    
+                    allLogs.push({ text: logText, timestamp: timestamp });
+                });
+            });
+
+            allLogs.sort((a, b) => b.timestamp - a.timestamp);
+            const recentLogs = allLogs.slice(0, 5);
+
+            const listElement = document.getElementById('recent-logs-list');
+            listElement.innerHTML = '';
+            
+            if (recentLogs.length === 0) {
+                const li = document.createElement('li');
+                li.textContent = 'Nenhum registro recente.';
+                listElement.appendChild(li);
+                return;
+            }
+
+            recentLogs.forEach(log => {
+                const li = document.createElement('li');
+                li.textContent = `${log.timestamp.toLocaleDateString('pt-BR')} ${log.timestamp.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })} > ${log.text}`;
+                listElement.appendChild(li);
+            });
+        }
+
         function renderDailyMovementChart(dataEntregas, dataCargas, dataDescargas, dataHoje, container) {
-            destroyChart(`${container.id}-daily`);
+            destroyChart('dailyMovementChart');
             const entregasData = [dataEntregas.filter(item => item.data === dataHoje).length];
             const cargasData = [dataCargas.filter(item => item.data === dataHoje).length];
             const descargasData = [dataDescargas.filter(item => item.data === dataHoje).length];
             
             const ctx = container.querySelector('#dailyMovementChart').getContext('2d');
-            chartInstances[`${container.id}-daily`] = new Chart(ctx, {
+            chartInstances.dailyMovementChart = new Chart(ctx, {
                 type: 'bar',
                 data: {
                     labels: [dataHoje.split('-').reverse().join('/')],
@@ -1164,7 +1301,7 @@
         }
 
         function renderTempoPermanenciaChart(dataEntregas, dataHoje, container) {
-            destroyChart(`${container.id}-permanencia`);
+            destroyChart('tempoPermanenciaChart');
             const temposPorFrota = {};
             dataEntregas.filter(item => item.data === dataHoje && item.chegada && item.saida).forEach(item => {
                 const frota = item.frota;
@@ -1184,7 +1321,7 @@
             });
             
             const ctx = container.querySelector('#tempoPermanenciaChart').getContext('2d');
-            chartInstances[`${container.id}-permanencia`] = new Chart(ctx, {
+            chartInstances.tempoPermanenciaChart = new Chart(ctx, {
                 type: 'bar',
                 data: {
                     labels: labels,
@@ -1206,8 +1343,11 @@
             const dataEntregas = getDadosAba('entregas');
             const dataDescargas = getDadosAba('descargas');
             const dataCargas = getDadosAba('cargas');
+            const dataPonto = getDadosAba('ponto');
 
             updateDashboardCards(dataEntregas, dataDescargas, dataCargas, dataTarget);
+            updateDashboardPontoCounters(dataPonto);
+            renderRecentActivity();
             
             const mainDashboard = document.getElementById('dashboard');
             renderDailyMovementChart(dataEntregas, dataCargas, dataDescargas, dataTarget, mainDashboard);
@@ -1276,7 +1416,10 @@
             const dataEntregas = getDadosAba('entregas');
             const dataDescargas = getDadosAba('descargas');
             const dataCargas = getDadosAba('cargas');
+            const dataPonto = getDadosAba('ponto');
             updateDashboardCards(dataEntregas, dataDescargas, dataCargas, dataFormatada);
+            updateDashboardPontoCounters(dataPonto);
+            renderRecentActivity(); // A renderização dos logs é independente da data, então o comportamento é aceitável.
             renderDailyMovementChart(dataEntregas, dataCargas, dataDescargas, dataFormatada, hiddenContainer);
             renderTempoPermanenciaChart(dataEntregas, dataFormatada, hiddenContainer);
             
