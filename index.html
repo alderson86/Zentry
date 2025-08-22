@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Registro</title>
+    <title>Zentry Biz</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <style>
@@ -230,15 +230,23 @@
             right: 1rem;
             z-index: 1050;
         }
+        #hidden-pdf-container {
+            position: absolute;
+            left: -9999px;
+            width: 800px;
+            height: auto;
+            background: #fff;
+            color: #000;
+        }
     </style>
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-light glassmorphism">
         <div class="container-fluid">
-            <a class="navbar-brand" href="#">Registros</a>
+            <a class="navbar-brand" href="#">Zentry</a>
             <ul class="nav nav-tabs mx-auto" id="myTab" role="tablist">
-                <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#dashboard">Dashboard</a></li>
-                <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#ponto">Ponto</a></li>
+                <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#dashboard">Dashboard</a></li>
+                <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#ponto">Ponto</a></li>
                 <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#entregas">Entregas</a></li>
                 <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#descargas">Descargas</a></li>
                 <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#cargas">Cargas</a></li>
@@ -250,9 +258,12 @@
     </nav>
 
     <div class="tab-content container mt-3 mb-5">
-        <div class="tab-pane fade" id="dashboard">
+        <div class="tab-pane fade show active" id="dashboard">
             <div class="container p-3 mt-3">
-                <h3 class="mb-4 text-center">Painel de Monitoramento</h3>
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h3 class="mb-0">Painel de Monitoramento</h3>
+                    <button class="btn btn-primary" onclick="exportarDashboardPDF()"><i class="fa-solid fa-file-pdf me-2"></i>Exportar PDF</button>
+                </div>
                 <div class="dashboard-grid">
                     <div class="dashboard-card">
                         <i class="fa-solid fa-truck-ramp-box icon"></i>
@@ -279,29 +290,29 @@
                     </div>
                     <div class="dashboard-card">
                         <i class="fa-solid fa-boxes-stacked icon"></i>
-                        <div class="title">Quant. descarga Hoje</div>
+                        <div class="title">Volume de Descargas Hoje</div>
                         <div class="value" id="dashboard-descargas-hoje">0</div>
                     </div>
                     <div class="dashboard-card">
                         <i class="fa-solid fa-box-open icon"></i>
-                        <div class="title">Quant. de Cargas Hoje</div>
+                        <div class="title">Volume de Cargas Hoje</div>
                         <div class="value" id="dashboard-cargas-hoje">0</div>
                     </div>
                 </div>
                 
                 <div class="dashboard-chart-container mt-4">
-                    <h5 class="text-center mb-3">Movimentação Diária (Últimos 7 Dias)</h5>
+                    <h5 class="text-center mb-3">Movimentação Diária (Hoje)</h5>
                     <div class="chart-container"><canvas id="dailyMovementChart"></canvas></div>
                 </div>
 
                 <div class="dashboard-chart-container mt-4">
-                    <h5 class="text-center mb-3">Tempo de Permanência de Frotas (Em Horas)</h5>
+                    <h5 class="text-center mb-3">Tempo de Permanência (Frota)</h5>
                     <div class="chart-container"><canvas id="tempoPermanenciaChart"></canvas></div>
                 </div>
             </div>
         </div>
 
-        <div class="tab-pane fade show active" id="ponto">
+        <div class="tab-pane fade" id="ponto">
             <div class="table-container glassmorphism">
                 <div class="table-header-sticky glassmorphism">
                     <div class="search-row">
@@ -674,6 +685,8 @@
                             <li>Registro de Cargas com informações de motorista e cliente.</li>
                             <li>Registro de Visitantes e Pessoas Autorizadas.</li>
                             <li>Exportação completa de todos os registros para uma única planilha Excel.</li>
+                            <li>**NOVO:** Exportação do Dashboard em PDF com gráficos.</li>
+                            <li>**NOVO:** Automação para exportação diária de relatórios (PDF e XLSX) à meia-noite.</li>
                         </ul>
                     </div>
                     <div class="col-md-6">
@@ -685,7 +698,9 @@
                             <li><strong>Bootstrap 5:</strong> Componentes e layout responsivo.</li>
                             <li><strong>Chart.js:</strong> Para a criação dos gráficos do dashboard.</li>
                             <li><strong>SheetJS / XLSX:</strong> Para a exportação de dados para planilhas.</li>
+                            <li><strong>jsPDF & html2canvas:</strong> Para a exportação do Dashboard em PDF.</li>
                             <li><strong>Font Awesome:</strong> Biblioteca de ícones.</li>
+                            <li><strong>Hospedagem:</strong> Git Hub Page.</li>
                         </ul>
                     </div>
                 </div>
@@ -693,13 +708,12 @@
                 <div class="row">
                     <div class="col-md-6">
                         <h5><i class="fa-solid fa-code-branch me-2"></i> Versão e Desenvolvimento</h5>
-                        <p><strong>Versão:</strong> 1.3.0</p>
-                        <p><strong>Desenvolvedor:</strong> Eder Prioli - AllSec TI</p>
-                        <p><strong>Contato:</strong> 34 9 9110 6738</p>
+                        <p><strong>Versão: Zentry</strong> 1.5.0</p>
+                        <p><strong>Desenvolvedor:</strong> Eder P - AllSec TI - 34 9 9110 6738</p>
                     </div>
                     <div class="col-md-6">
                         <h5><i class="fa-solid fa-exclamation-triangle me-2"></i> Observações</h5>
-                        <p>Este sistema foi desenvolvido como uma aplicação web simples, focada em praticidade e uso local. Todos os dados são salvos diretamente no navegador (LocalStorage), sem a necessidade de banco de dados ou conexão com a internet. Porém pode funcionar perfeitamente com backend. Por isso, a exportação regular dos dados é recomendada para fins de backup.</p>
+                        <p>Este sistema foi desenvolvido como uma aplicação web, focada em praticidade e uso local. Todos os dados são salvos diretamente no navegador (LocalStorage), sem a necessidade de banco de dados ou conexão com a internet. Por isso, a exportação regular dos dados é recomendada para fins de backup. O agendamento de tarefas diárias depende que o navegador esteja aberto. Ele também pode ser usado com backend (é o recomendado)</p>
                     </div>
                 </div>
             </div>
@@ -728,10 +742,14 @@
         </div>
     </div>
 
+    <div id="hidden-pdf-container"></div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script>
         let itemSelecionado = null;
         let confirmModal = null;
@@ -750,13 +768,14 @@
             "João Vitor", "Luiz Henrique", "Cristiano", "Marsergio-Gerente", "André - ADM", 
             "Jean Carlos", "Enildo -Supervisor", "Thiago Benjamin", "Jayme - Encarregado - Van", 
             "Raimundo - Van", "Marcos - Van", "Fábio - Van", "Eriton - Van", "Elionai - Van",
-            "Edmar - Van", "Jefferson - Van", "Wanderson", "Kleverson", "Leandro F.", 
+            "Murilo - Van",
+            "Edmar - Van", "Jefferson - Van", "Wanderson", "Kleverson", "Leandro F.", "Nailton", 
             "Gilliard D.", "Leandro P.", "André F.", "Leonardo", "Dangel – Menor aprendiz", 
             "Cauan – Menor aprendiz", "Nicolas G – Menor aprendiz", "Elias – Menor aprendiz", 
-            "Murilo - Menor Aprendiz", "Matias - Menor Aprendiz", "Yuri - Menor Aprendiz", 
+            "Outro - Menor Aprendiz", "Matias - Menor Aprendiz", "Yuri - Menor Aprendiz", 
             "Pedro H - Menor Aprendiz", "Felipe - Menor Aprendiz", "Abraão - Menor Aprendiz", 
-            "Gabriel - Menor Aprendiz", "Edirlei - CPD", "Moisés - CPD", "Eder - ASI", "Gil - Ser Prime",
-            "Lusiene - TSB"
+            "Gabriel - Menor Aprendiz", "Edirlei - CPD", "Moisés - CPD", "Lusiene - CPD", "Denner - Predial",
+            "Francisco - Predial", "Eder - ASI", "Gil - Ser Prime"
         ];
         
         const today = new Date().toISOString().split('T')[0];
@@ -771,7 +790,7 @@
             render('cargas');
             render('outros');
             document.getElementById('darkModeToggle').addEventListener('click', toggleDarkMode);
-            agendarExportacaoAutomatica();
+            agendarTarefasDiarias();
         });
 
         document.querySelectorAll('.nav-link').forEach(link => {
@@ -780,7 +799,7 @@
                 if (abaId === 'ponto') {
                     renderColaboradoresPonto();
                 } else if (abaId === 'dashboard') {
-                    renderDashboard();
+                    renderDashboard(today);
                 }
                 reiniciarBotoes(abaId);
                 limparCampos(abaId);
@@ -833,7 +852,7 @@
             limparCampos(aba);
             const tableContainer = document.querySelector(`#${aba} .table-container`);
             tableContainer.scrollTo({ top: tableContainer.scrollHeight, behavior: 'smooth' });
-            renderDashboard();
+            renderDashboard(today);
             if (aba === 'ponto') {
                  renderColaboradoresPonto();
             }
@@ -877,7 +896,6 @@
             });
             atualizarContadores(aba, listaOriginal);
             reiniciarBotoes(aba);
-            updateLocalStorageSize();
         }
         
         function atualizarContadores(aba, lista) {
@@ -888,8 +906,8 @@
                 const crachaNao = registrosDoDia.filter(item => item.cracha === 'Não').length;
                 const totalColaboradores = masterColaboradores.length;
 
-                document.getElementById('ponto-na-empresa').textContent = `Na Empresa: ${presentes}`;
-                document.getElementById('ponto-fora-empresa').textContent = `Sem registros: ${totalColaboradores - presentes}`;
+                document.getElementById('ponto-na-empresa').textContent = `Compareceram: ${presentes}`;
+                document.getElementById('ponto-fora-empresa').textContent = `Faltam comparecer: ${totalColaboradores - presentes}`;
                 document.getElementById('ponto-cracha-sim').textContent = `Com Crachá: ${crachaSim}`;
                 document.getElementById('ponto-cracha-nao').textContent = `Sem Crachá: ${crachaNao}`;
 
@@ -980,7 +998,7 @@
             localStorage.setItem(aba, JSON.stringify(lista));
             render(aba);
             limparCampos(aba);
-            renderDashboard();
+            renderDashboard(today);
             showToast("Item excluído com sucesso!");
         }
 
@@ -1053,17 +1071,22 @@
             saveAs(new Blob([wbout], { type: 'application/octet-stream' }), filename);
         }
 
-        function agendarExportacaoAutomatica() {
+        function agendarTarefasDiarias() {
             const agora = new Date();
             const meiaNoite = new Date(agora);
             meiaNoite.setDate(agora.getDate() + 1);
             meiaNoite.setHours(0, 0, 0, 0);
             const tempoParaMeiaNoite = meiaNoite.getTime() - agora.getTime();
             setTimeout(() => {
-                exportarRelatorioCompleto();
-                render('ponto');
-                agendarExportacaoAutomatica();
+                executarTarefasDiarias();
+                agendarTarefasDiarias();
             }, tempoParaMeiaNoite);
+        }
+
+        function executarTarefasDiarias() {
+            showToast("Iniciando a emissão automática de relatórios...");
+            exportarRelatorioCompleto();
+            gerarRelatorioPDFDiario();
         }
 
         function toggleDarkMode() {
@@ -1074,114 +1097,58 @@
             } else {
                 icon.className = 'fa-solid fa-moon';
             }
-            renderDashboard();
+            renderDashboard(today);
         }
 
-        function updateLocalStorageSize() {
-            let size = 0;
-            for (let key in localStorage) {
-                if (localStorage.hasOwnProperty(key)) {
-                    size += localStorage[key].length * 2;
-                }
-            }
-            const sizeKB = (size / 1024).toFixed(2);
-        }
-
-        // --- Funções do Dashboard ---
-        function renderDashboard() {
-            updateDashboardCards();
-            renderDailyMovementChart();
-            renderTempoPermanenciaChart();
-        }
-
-        function processarDadosPorDia(data) {
-            const dadosPorDia = {};
-            data.forEach(item => {
-                const dia = item.data;
-                if (dia) {
-                    if (!dadosPorDia[dia]) {
-                        dadosPorDia[dia] = [];
-                    }
-                    dadosPorDia[dia].push(item);
-                }
-            });
-            return dadosPorDia;
-        }
-
-        function destroyChart(chartId) {
-            if (chartInstances[chartId]) {
-                chartInstances[chartId].destroy();
-                delete chartInstances[chartId];
-            }
-        }
-
-        function updateDashboardCards() {
-            const hoje = new Date().toISOString().split('T')[0];
-
+        function updateDashboardCards(dataEntregas, dataDescargas, dataCargas, dataHoje) {
             // Frotas Biz/Aliança
-            const dadosEntregas = getDadosAba('entregas');
-            const frotasEntraram = dadosEntregas.filter(item => item.data === hoje && item.chegada).length;
-            const frotasSairam = dadosEntregas.filter(item => item.data === hoje && item.saida).length;
-            const frotasPatio = dadosEntregas.filter(item => item.chegada && !item.saida).length;
+            const frotasEntraram = dataEntregas.filter(item => item.data === dataHoje && item.chegada).length;
+            const frotasSairam = dataEntregas.filter(item => item.data === dataHoje && item.saida).length;
+            const frotasPatio = dataEntregas.filter(item => item.chegada && !item.saida).length;
 
             document.getElementById('dashboard-frotas-entraram').textContent = frotasEntraram;
             document.getElementById('dashboard-frotas-sairam').textContent = frotasSairam;
             document.getElementById('dashboard-frotas-patio').textContent = frotasPatio;
 
             // Média de Permanência
-            const permanencias = dadosEntregas.filter(item => item.chegada && item.saida).map(item => {
-                const chegada = new Date(`2000-01-01T${item.chegada}`);
-                const saida = new Date(`2000-01-01T${item.saida}`);
-                let diffMs = saida - chegada;
-                if (diffMs < 0) diffMs += 24 * 60 * 60 * 1000;
+            const permanencias = dataEntregas.filter(item => item.data === dataHoje && item.chegada && item.saida).map(item => {
+                const chegada = new Date(`${item.data}T${item.chegada}`);
+                const saida = new Date(`${item.data}T${item.saida}`);
+                const diffMs = saida - chegada;
                 return diffMs / (1000 * 60); // Retorna em minutos
             });
             const mediaPermanenciaMin = permanencias.length > 0 ? permanencias.reduce((sum, val) => sum + val, 0) / permanencias.length : 0;
             const mediaHoras = Math.floor(mediaPermanenciaMin / 60);
             const mediaMinutos = Math.round(mediaPermanenciaMin % 60);
-            document.getElementById('dashboard-media-permanencia').textContent = `${mediaHoras}h ${mediaMinutos}m`;
-            if (mediaHoras > 2) { // Exemplo de regra visual para alerta
-                document.getElementById('dashboard-media-permanencia').classList.add('warning');
+            const mediaPermanenciaElement = document.getElementById('dashboard-media-permanencia');
+            mediaPermanenciaElement.textContent = `${mediaHoras}h ${mediaMinutos}m`;
+            
+            if (mediaHoras > 2) {
+                mediaPermanenciaElement.classList.add('warning');
             } else {
-                document.getElementById('dashboard-media-permanencia').classList.remove('warning');
+                mediaPermanenciaElement.classList.remove('warning');
             }
 
             // Descargas
-            const dadosDescargas = getDadosAba('descargas');
-            const descargasHoje = dadosDescargas.filter(item => item.data === hoje).length;
+            const descargasHoje = dataDescargas.filter(item => item.data === dataHoje).length;
             document.getElementById('dashboard-descargas-hoje').textContent = descargasHoje;
 
             // Cargas
-            const dadosCargas = getDadosAba('cargas');
-            const cargasHoje = dadosCargas.filter(item => item.data === hoje).length;
+            const cargasHoje = dataCargas.filter(item => item.data === dataHoje).length;
             document.getElementById('dashboard-cargas-hoje').textContent = cargasHoje;
         }
 
-        function renderDailyMovementChart() {
-            destroyChart('dailyMovementChart');
-            const dadosEntregas = getDadosAba('entregas');
-            const dadosCargas = getDadosAba('cargas');
-            const dadosDescargas = getDadosAba('descargas');
-            const hoje = new Date();
-            const datas = [];
-            for (let i = 6; i >= 0; i--) {
-                const d = new Date(hoje);
-                d.setDate(hoje.getDate() - i);
-                datas.push(d.toISOString().split('T')[0]);
-            }
+        function renderDailyMovementChart(dataEntregas, dataCargas, dataDescargas, dataHoje, container) {
+            destroyChart(`${container.id}-daily`);
+            const entregasData = [dataEntregas.filter(item => item.data === dataHoje).length];
+            const cargasData = [dataCargas.filter(item => item.data === dataHoje).length];
+            const descargasData = [dataDescargas.filter(item => item.data === dataHoje).length];
             
-            const entregasData = datas.map(dia => dadosEntregas.filter(item => item.data === dia).length);
-            const cargasData = datas.map(dia => dadosCargas.filter(item => item.data === dia).length);
-            const descargasData = datas.map(dia => dadosDescargas.filter(item => item.data === dia).length);
-            
-            const ctx = document.getElementById('dailyMovementChart').getContext('2d');
-            chartInstances.dailyMovementChart = new Chart(ctx, {
+            const ctx = container.querySelector('#dailyMovementChart').getContext('2d');
+            chartInstances[`${container.id}-daily`] = new Chart(ctx, {
                 type: 'bar',
                 data: {
-                    labels: datas.map(d => {
-                        const [year, month, day] = d.split('-');
-                        return `${day}/${month}`;
-                    }),
+                    labels: [dataHoje.split('-').reverse().join('/')],
                     datasets: [
                         { label: 'Entregas', data: entregasData, backgroundColor: 'rgba(54, 162, 235, 0.8)' },
                         { label: 'Cargas', data: cargasData, backgroundColor: 'rgba(153, 102, 255, 0.8)' },
@@ -1196,16 +1163,14 @@
             });
         }
 
-        function renderTempoPermanenciaChart() {
-            destroyChart('tempoPermanenciaChart');
-            const dadosEntregas = getDadosAba('entregas');
+        function renderTempoPermanenciaChart(dataEntregas, dataHoje, container) {
+            destroyChart(`${container.id}-permanencia`);
             const temposPorFrota = {};
-            dadosEntregas.filter(item => item.chegada && item.saida).forEach(item => {
+            dataEntregas.filter(item => item.data === dataHoje && item.chegada && item.saida).forEach(item => {
                 const frota = item.frota;
-                const chegada = new Date(`2000-01-01T${item.chegada}`);
-                const saida = new Date(`2000-01-01T${item.saida}`);
-                let diffMs = saida - chegada;
-                if (diffMs < 0) diffMs += 24 * 60 * 60 * 1000;
+                const chegada = new Date(`${item.data}T${item.chegada}`);
+                const saida = new Date(`${item.data}T${item.saida}`);
+                const diffMs = saida - chegada;
                 const diffHoras = (diffMs / (1000 * 60 * 60)).toFixed(2);
                 if (!temposPorFrota[frota]) {
                     temposPorFrota[frota] = [];
@@ -1217,8 +1182,9 @@
                 const tempos = temposPorFrota[frota];
                 return (tempos.reduce((sum, val) => sum + val, 0) / tempos.length).toFixed(2);
             });
-            const ctx = document.getElementById('tempoPermanenciaChart').getContext('2d');
-            chartInstances.tempoPermanenciaChart = new Chart(ctx, {
+            
+            const ctx = container.querySelector('#tempoPermanenciaChart').getContext('2d');
+            chartInstances[`${container.id}-permanencia`] = new Chart(ctx, {
                 type: 'bar',
                 data: {
                     labels: labels,
@@ -1234,6 +1200,93 @@
                     scales: { y: { beginAtZero: true } }
                 }
             });
+        }
+
+        function renderDashboard(dataTarget) {
+            const dataEntregas = getDadosAba('entregas');
+            const dataDescargas = getDadosAba('descargas');
+            const dataCargas = getDadosAba('cargas');
+
+            updateDashboardCards(dataEntregas, dataDescargas, dataCargas, dataTarget);
+            
+            const mainDashboard = document.getElementById('dashboard');
+            renderDailyMovementChart(dataEntregas, dataCargas, dataDescargas, dataTarget, mainDashboard);
+            renderTempoPermanenciaChart(dataEntregas, dataTarget, mainDashboard);
+        }
+
+        function destroyChart(chartId) {
+            if (chartInstances[chartId]) {
+                chartInstances[chartId].destroy();
+                delete chartInstances[chartId];
+            }
+        }
+
+        // Nova função para gerar o PDF a partir de um contêiner específico
+        async function gerarPDFDoContainer(container, filename) {
+            const nav = document.querySelector('.navbar');
+            const navDisplay = nav.style.display;
+            nav.style.display = 'none';
+
+            const canvas = await html2canvas(container, { scale: 2, logging: false, useCORS: true });
+            nav.style.display = navDisplay;
+            
+            const imgData = canvas.toDataURL('image/png');
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF('p', 'mm', 'a4');
+            const imgWidth = 210;
+            const pageHeight = 297;
+            const imgHeight = canvas.height * imgWidth / canvas.width;
+            let heightLeft = imgHeight;
+            let position = 0;
+
+            pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+            heightLeft -= pageHeight;
+            while (heightLeft >= 0) {
+                position = heightLeft - imgHeight;
+                pdf.addPage();
+                pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+                heightLeft -= pageHeight;
+            }
+            pdf.save(filename);
+        }
+
+        // Função para exportação manual
+        function exportarDashboardPDF() {
+            const dashboardElement = document.getElementById('dashboard');
+            const today = new Date();
+            const filename = `bizdiario_${today.getFullYear()}-${(today.getMonth() + 1).toString().padStart(2, '0')}-${today.getDate().toString().padStart(2, '0')}_${today.getHours().toString().padStart(2, '0')}-${today.getMinutes().toString().padStart(2, '0')}.pdf`;
+            gerarPDFDoContainer(dashboardElement, filename).then(() => {
+                showToast("Relatório PDF exportado com sucesso!");
+            });
+        }
+
+        // Função para exportação automática à meia-noite
+        async function gerarRelatorioPDFDiario() {
+            const dataParaRelatorio = new Date();
+            dataParaRelatorio.setDate(dataParaRelatorio.getDate() - 1);
+            const dataFormatada = dataParaRelatorio.toISOString().split('T')[0];
+            
+            const hiddenContainer = document.getElementById('hidden-pdf-container');
+            hiddenContainer.innerHTML = document.getElementById('dashboard').innerHTML;
+            
+            const tituloRelatorio = hiddenContainer.querySelector('h3');
+            tituloRelatorio.textContent = `Painel de Monitoramento - Relatório Diário (${dataFormatada.split('-').reverse().join('/')})`;
+            
+            // Recalcula os dados para o dia anterior no contêiner escondido
+            const dataEntregas = getDadosAba('entregas');
+            const dataDescargas = getDadosAba('descargas');
+            const dataCargas = getDadosAba('cargas');
+            updateDashboardCards(dataEntregas, dataDescargas, dataCargas, dataFormatada);
+            renderDailyMovementChart(dataEntregas, dataCargas, dataDescargas, dataFormatada, hiddenContainer);
+            renderTempoPermanenciaChart(dataEntregas, dataFormatada, hiddenContainer);
+            
+            const filename = `bizdiario_${dataFormatada.replace(/-/g, '')}_0000.pdf`;
+            await gerarPDFDoContainer(hiddenContainer, filename);
+            hiddenContainer.innerHTML = '';
+            showToast("Relatório diário em PDF emitido automaticamente!");
+            
+            // Re-renderiza o dashboard principal para o dia atual após a geração do relatório
+            renderDashboard(today);
         }
     </script>
 </body>
