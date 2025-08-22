@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zentry Biz</title>
+    <title>Sistema de Registro</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <style>
@@ -54,6 +54,7 @@
             --modal-btn-secondary-hover: #444;
             --modal-btn-danger-bg: #cc3333;
             --modal-btn-danger-hover: #a02a2a;
+            color: var(--text-color) !important;
         }
         body { padding-top: 70px; background-color: var(--bg-color); color: var(--text-color); font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; transition: background-color 0.3s ease; }
         .glassmorphism {
@@ -142,13 +143,20 @@
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
+        .chart-container {
+            width: 100%;
+            height: 400px;
+            margin-bottom: 20px;
+            position: relative;
+        }
     </style>
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-light glassmorphism">
         <div class="container-fluid">
-            <a class="navbar-brand" href="#">Biz / Aliança / Pisa</a>
+            <a class="navbar-brand" href="#">Registros</a>
             <ul class="nav nav-tabs mx-auto" id="myTab" role="tablist">
+                <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#dashboard">Dashboard</a></li>
                 <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#ponto">Ponto</a></li>
                 <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#entregas">Entregas</a></li>
                 <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#descargas">Descargas</a></li>
@@ -160,6 +168,48 @@
     </nav>
 
     <div class="tab-content container mt-3 mb-5">
+        <div class="tab-pane fade" id="dashboard">
+            <div class="container glassmorphism p-3 mt-3">
+                <div class="row">
+                    <div class="col-md-6 mb-4">
+                        <h4 class="text-center">Frequência de Colaboradores</h4>
+                        <div class="chart-container"><canvas id="pontoFrequenciaChart"></canvas></div>
+                    </div>
+                    <div class="col-md-6 mb-4">
+                        <h4 class="text-center">Horas Trabalhadas por Colaborador</h4>
+                        <div class="chart-container"><canvas id="pontoHorasChart"></canvas></div>
+                    </div>
+                    <div class="col-md-6 mb-4">
+                        <h4 class="text-center">Movimentação de Frotas (Entregas)</h4>
+                        <div class="chart-container"><canvas id="entregasChart"></canvas></div>
+                    </div>
+                    <div class="col-md-6 mb-4">
+                        <h4 class="text-center">Volume Diário (Cargas vs Descargas)</h4>
+                        <div class="chart-container"><canvas id="cargasDescargasChart"></canvas></div>
+                    </div>
+                    <div class="col-md-6 mb-4">
+                        <h4 class="text-center">Quantidade de Paletes por Fornecedor</h4>
+                        <div class="chart-container"><canvas id="descargasPaletesChart"></canvas></div>
+                    </div>
+                    <div class="col-md-6 mb-4">
+                        <h4 class="text-center">Média de Horários de Entrada (Outros)</h4>
+                        <div class="chart-container"><canvas id="outrosHorariosChart"></canvas></div>
+                    </div>
+                    <div class="col-md-12 mb-4">
+                        <h4 class="text-center">Status do Sistema</h4>
+                        <div class="row text-center">
+                            <div class="col-md-6">
+                                <p>Tamanho do LocalStorage: <span id="localStorageSize">0 KB</span></p>
+                            </div>
+                            <div class="col-md-6">
+                                <p>Relatório de Erros: <br><i>(Recurso de sistema online. Sem registros de erros.)</i></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <div class="tab-pane fade show active" id="ponto">
             <div class="table-container glassmorphism">
                 <div class="table-header-sticky glassmorphism">
@@ -183,30 +233,7 @@
                 <div class="row g-1 align-items-center justify-content-center">
                     <div class="col-md-auto"><input type="date" id="ponto-data" class="form-control"></div>
                     <div class="col-md-auto">
-                        <select id="ponto-colaborador" class="form-select">
-                            <option value="">Selecione</option>
-                            <option>Leandro S.</option><option>Oscar -Supervisor</option><option>João Paulo - Menor Aprendiz</option>
-                            <option>Vitória Isabele</option><option>Thalles</option><option>André</option><option>Ezequias</option>
-                            <option>Luiz Carlos</option><option>Raimundo</option><option>Michel F. - Menor Aprendiz</option>
-                            <option>João Vitor</option><option>Luiz Henrique</option><option>Cristiano</option><option>Marsergio-Gerente</option>
-                            <option>André - ADM</option><option>Jean Carlos</option><option>Enildo -Supervisor</option>
-                            <option>Thiago Benjamin</option><option>Jayme - Encarregado - Van</option><option>Raimundo - Van</option>
-                            <option>Nailton</option>
-                            <option>Marcos - Van</option><option>Fábio - Van</option><option>Eriton - Van</option><option>Elionai - Van</option>
-                            <option>Edmar - Van</option><option>Jefferson - Van</option><option>Wanderson</option><option>Kleverson</option>
-                            <option>Leandro F.</option><option>Gilliard D.</option><option>Leandro P.</option><option>André F.</option>
-                            <option>Leonardo</option><option>Dangel – Menor aprendiz</option><option>Cauan – Menor aprendiz</option>
-                            <option>Nicolas G – Menor aprendiz</option><option>Elias – Menor aprendiz</option><option>Murilo - Menor Aprendiz</option>
-                            <option>Matias - Menor Aprendiz</option><option>Yuri - Menor Aprendiz</option><option>Pedro H - Menor Aprendiz</option>
-                            <option>Felipe - Menor Aprendiz</option><option>Abraão - Menor Aprendiz</option><option>Gabriel - Menor Aprendiz</option>
-                            <option>Edirlei - CPD</option>
-                            <option>Moisés - CPD</option>
-                            <option>Francisco B.- Predial</option>
-                            <option>Denner-Predial</option>
-                            <option>Lusiene - TSB</option>
-                            <option>Washington - Tráfego</option>
-                            <option>Eder Prioli - ASI</option>
-                        </select>
+                        <select id="ponto-colaborador" class="form-select"></select>
                     </div>
                     <div class="col-md-auto"><input type="time" id="ponto-entrada" class="form-control" placeholder="Hora Entrada"></div>
                     <div class="col-md-auto"><input type="time" id="ponto-saida" class="form-control" placeholder="Hora Saída"></div>
@@ -226,7 +253,7 @@
                         <button class="btn btn-icon" id="excluir-btn-ponto" disabled onclick="confirmarExclusao('ponto')"><i class="fa-solid fa-trash"></i></button>
                     </div>
                     <div class="col-md-auto">
-                        <button class="btn btn-icon" onclick="exportarRelatorioCompleto('ponto')"><i class="fa-solid fa-download"></i></button>
+                        <button class="btn btn-icon" onclick="exportarRelatorioCompleto()"><i class="fa-solid fa-download"></i></button>
                     </div>
                 </div>
             </div>
@@ -245,7 +272,7 @@
                     </div>
                 </div>
                 <table class="list-table" id="lista-entregas">
-                    <thead><tr><th>Data</th><th>Motorista</th><th>Frota</th><th>Saída</th><th>Chegada</th><th>Observações</th></tr></thead>
+                    <thead><tr><th>Data</th><th>Motorista</th><th>Frota</th><th>Chegada</th><th>Saída</th><th>Observações</th></tr></thead>
                     <tbody></tbody>
                 </table>
             </div>
@@ -254,8 +281,8 @@
                     <div class="col-md-auto"><input type="date" id="entregas-data" class="form-control"></div>
                     <div class="col-md-auto"><input type="text" id="entregas-motorista" class="form-control" placeholder="Motorista"></div>
                     <div class="col-md-auto"><input type="text" id="entregas-frota" class="form-control" placeholder="Frota"></div>
-                    <div class="col-md-auto"><input type="time" id="entregas-saida" class="form-control"></div>
-                    <div class="col-md-auto"><input type="time" id="entregas-chegada" class="form-control"></div>
+                    <div class="col-md-auto"><input type="time" id="entregas-chegada" class="form-control" placeholder="Chegada"></div>
+                    <div class="col-md-auto"><input type="time" id="entregas-saida" class="form-control" placeholder="Saída"></div>
                     <div class="col-md-auto"><input type="text" id="entregas-obs" class="form-control" placeholder="Observações"></div>
                     <div class="col-md-auto">
                         <button class="btn btn-icon" id="salvar-btn-entregas" onclick="salvar('entregas')"><i class="fa-solid fa-floppy-disk"></i></button>
@@ -267,7 +294,7 @@
                         <button class="btn btn-icon" id="excluir-btn-entregas" disabled onclick="confirmarExclusao('entregas')"><i class="fa-solid fa-trash"></i></button>
                     </div>
                     <div class="col-md-auto">
-                        <button class="btn btn-icon" onclick="exportarRelatorioCompleto('entregas')"><i class="fa-solid fa-download"></i></button>
+                        <button class="btn btn-icon" onclick="exportarRelatorioCompleto()"><i class="fa-solid fa-download"></i></button>
                     </div>
                 </div>
             </div>
@@ -320,7 +347,7 @@
                         <button class="btn btn-icon" id="excluir-btn-descargas" disabled onclick="confirmarExclusao('descargas')"><i class="fa-solid fa-trash"></i></button>
                     </div>
                     <div class="col-md-auto">
-                        <button class="btn btn-icon" onclick="exportarRelatorioCompleto('descargas')"><i class="fa-solid fa-download"></i></button>
+                        <button class="btn btn-icon" onclick="exportarRelatorioCompleto()"><i class="fa-solid fa-download"></i></button>
                     </div>
                 </div>
             </div>
@@ -362,7 +389,7 @@
                         <button class="btn btn-icon" id="excluir-btn-cargas" disabled onclick="confirmarExclusao('cargas')"><i class="fa-solid fa-trash"></i></button>
                     </div>
                     <div class="col-md-auto">
-                        <button class="btn btn-icon" onclick="exportarRelatorioCompleto('cargas')"><i class="fa-solid fa-download"></i></button>
+                        <button class="btn btn-icon" onclick="exportarRelatorioCompleto()"><i class="fa-solid fa-download"></i></button>
                     </div>
                 </div>
             </div>
@@ -402,7 +429,7 @@
                         <button class="btn btn-icon" id="excluir-btn-outros" disabled onclick="confirmarExclusao('outros')"><i class="fa-solid fa-trash"></i></button>
                     </div>
                     <div class="col-md-auto">
-                        <button class="btn btn-icon" onclick="exportarRelatorioCompleto('outros')"><i class="fa-solid fa-download"></i></button>
+                        <button class="btn btn-icon" onclick="exportarRelatorioCompleto()"><i class="fa-solid fa-download"></i></button>
                     </div>
                 </div>
             </div>
@@ -425,33 +452,51 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         let itemSelecionado = null;
         let confirmModal = null;
+        const masterColaboradores = [
+            "Leandro S.", "Oscar -Supervisor", "João Paulo - Menor Aprendiz", "Vitória Isabele", 
+            "Thalles", "André", "Ezequias", "Luiz Carlos", "Raimundo", "Michel F. - Menor Aprendiz",
+            "João Vitor", "Luiz Henrique", "Cristiano", "Marsergio-Gerente", "André - ADM", 
+            "Jean Carlos", "Enildo -Supervisor", "Thiago Benjamin", "Jayme - Encarregado - Van", 
+            "Raimundo - Van", "Marcos - Van", "Fábio - Van", "Eriton - Van", "Elionai - Van",
+            "Edmar - Van", "Jefferson - Van", "Wanderson", "Kleverson", "Leandro F.", 
+            "Gilliard D.", "Leandro P.", "André F.", "Leonardo", "Dangel – Menor aprendiz", 
+            "Cauan – Menor aprendiz", "Nicolas G – Menor aprendiz", "Elias – Menor aprendiz", 
+            "Sem nome - Menor Aprendiz", "Matias - Menor Aprendiz", "Yuri - Menor Aprendiz", 
+            "Pedro H - Menor Aprendiz", "Felipe - Menor Aprendiz", "Abraão - Menor Aprendiz", 
+            "Gabriel - Menor Aprendiz", "Edirlei - CPD","Eder - ASI","Lusiene - TSB","Denner - Predial"
+            ,"Francisco - Predial","Nailton","Murilo - Van"
+        ];
         let headersMap = {
             'ponto': ['data', 'colaborador', 'entrada', 'saida', 'cracha', 'obs'],
-            'entregas': ['data', 'motorista', 'frota', 'saida', 'chegada', 'obs'],
+            'entregas': ['data', 'motorista', 'frota', 'chegada', 'saida', 'obs'],
             'descargas': ['data', 'hora', 'nome', 'cpf', 'celular', 'placacv', 'placarb', 'transp', 'fornecedor', 'nfsh', 'quantidade', 'tipo', 'obs'],
             'cargas': ['data', 'entrada', 'motorista', 'doc', 'contato', 'cliente', 'placas', 'autorizacao', 'obs'],
             'outros': ['data', 'hora', 'nome', 'doc', 'empresa', 'autorizacao', 'obs']
         };
 
+        const today = new Date().toISOString().split('T')[0];
+        const chartInstances = {};
+
         document.addEventListener('DOMContentLoaded', () => {
             confirmModal = new bootstrap.Modal(document.getElementById('confirmModal'));
-
-            const abas = ['ponto', 'entregas', 'descargas', 'cargas', 'outros'];
+            const abas = ['dashboard', 'ponto', 'entregas', 'descargas', 'cargas', 'outros'];
             abas.forEach(aba => {
-                render(aba);
-                const searchInput = document.getElementById(`${aba}-search`);
-                if (searchInput) {
-                    searchInput.addEventListener('input', (e) => {
-                        render(aba, e.target.value);
-                    });
+                if (aba !== 'dashboard') {
+                    render(aba);
+                    const searchInput = document.getElementById(`${aba}-search`);
+                    if (searchInput) {
+                        searchInput.addEventListener('input', (e) => render(aba, e.target.value));
+                    }
                 }
             });
-
             document.getElementById('darkModeToggle').addEventListener('click', toggleDarkMode);
             agendarExportacaoAutomatica();
+            renderColaboradoresPonto();
+            renderDashboard();
         });
 
         document.querySelectorAll('.nav-link').forEach(link => {
@@ -459,11 +504,16 @@
                 const aba = getAbaAtiva();
                 reiniciarBotoes(aba);
                 limparCampos(aba);
+                if (aba === 'ponto') {
+                    renderColaboradoresPonto();
+                } else if (aba === 'dashboard') {
+                    renderDashboard();
+                }
             });
         });
 
         function getAbaAtiva() {
-            const abas = ['ponto', 'entregas', 'descargas', 'cargas', 'outros'];
+            const abas = ['dashboard', 'ponto', 'entregas', 'descargas', 'cargas', 'outros'];
             return abas.find(aba => document.getElementById(aba).classList.contains('show'));
         }
 
@@ -472,7 +522,7 @@
                 'ponto': 'data', 'entregas': 'data', 'descargas': 'data', 'cargas': 'data', 'outros': 'data'
             };
             const camposDeHora = {
-                'ponto': 'entrada', 'entregas': 'saida', 'descargas': 'hora', 'cargas': 'entrada', 'outros': 'hora'
+                'ponto': 'entrada', 'entregas': 'chegada', 'descargas': 'hora', 'cargas': 'entrada', 'outros': 'hora'
             };
             const campoData = camposDeData[aba];
             const campoHora = camposDeHora[aba];
@@ -495,36 +545,30 @@
                 const key = inp.id.split('-')[1];
                 dados[key] = inp.value;
             });
-
             if (!dados.data) {
                 alert("Por favor, preencha o campo de data.");
                 return;
             }
-
             let lista = JSON.parse(localStorage.getItem(aba) || '[]');
-            
             if (itemSelecionado && itemSelecionado.aba === aba && itemSelecionado.index !== null) {
                 lista[itemSelecionado.index] = dados;
                 itemSelecionado = null;
             } else {
                 lista.push(dados);
             }
-            
             lista = ordenarDadosPorDataEHora(lista, aba);
             localStorage.setItem(aba, JSON.stringify(lista));
             render(aba);
             limparCampos(aba);
-            
-            // Nova funcionalidade: Rolar para o final da tabela após salvar
             const tableContainer = document.querySelector(`#${aba} .table-container`);
             tableContainer.scrollTo({ top: tableContainer.scrollHeight, behavior: 'smooth' });
+            renderDashboard();
         }
 
         function render(aba, filtro = '') {
             const listaOriginal = JSON.parse(localStorage.getItem(aba) || '[]');
             const tbody = document.querySelector(`#lista-${aba} tbody`);
             tbody.innerHTML = '';
-            
             let listaFiltrada = listaOriginal;
             if (filtro) {
                 const filtroLowerCase = filtro.toLowerCase();
@@ -534,7 +578,6 @@
                     );
                 });
             }
-
             listaFiltrada.forEach((item, i) => {
                 const tr = document.createElement('tr');
                 tr.onclick = () => selecionarItem(tr, aba, i);
@@ -546,23 +589,44 @@
                 });
                 tbody.appendChild(tr);
             });
-            
             atualizarContadores(aba, listaOriginal);
             reiniciarBotoes(aba);
+            updateLocalStorageSize();
         }
 
         function atualizarContadores(aba, lista) {
             if (aba === 'ponto') {
-                const presentes = lista.filter(item => item.entrada && !item.saida).length;
-                const crachaSim = lista.filter(item => item.cracha === 'Sim').length;
-                const crachaNao = lista.filter(item => item.cracha === 'Não').length;
+                const registrosDoDia = lista.filter(item => item.data === today);
+                const presentes = registrosDoDia.filter(item => item.entrada && !item.saida).length;
+                const crachaSim = registrosDoDia.filter(item => item.cracha === 'Sim').length;
+                const crachaNao = registrosDoDia.filter(item => item.cracha === 'Não').length;
                 document.getElementById('ponto-total').textContent = `Presentes: ${presentes}`;
                 document.getElementById('ponto-cracha-sim').textContent = `Com Crachá: ${crachaSim}`;
                 document.getElementById('ponto-cracha-nao').textContent = `Sem Crachá: ${crachaNao}`;
+                renderColaboradoresPonto();
             } else if (aba === 'entregas') {
                 const noPatio = lista.filter(item => item.chegada && !item.saida).length;
                 document.getElementById('entregas-total').textContent = `Veículos no Pátio: ${noPatio}`;
             }
+        }
+        
+        function renderColaboradoresPonto() {
+            const select = document.getElementById('ponto-colaborador');
+            const listaPonto = JSON.parse(localStorage.getItem('ponto') || '[]');
+            const ativos = listaPonto.filter(item => item.entrada && !item.saida).map(item => item.colaborador);
+            select.innerHTML = '';
+            const defaultOption = document.createElement('option');
+            defaultOption.value = '';
+            defaultOption.textContent = 'Selecione';
+            select.appendChild(defaultOption);
+            masterColaboradores.forEach(nome => {
+                const option = document.createElement('option');
+                option.textContent = nome;
+                if (ativos.includes(nome)) {
+                    option.disabled = true;
+                }
+                select.appendChild(option);
+            });
         }
 
         function selecionarItem(tr, aba, index) {
@@ -570,12 +634,10 @@
             const todasTr = tabela.querySelectorAll('tr');
             todasTr.forEach(row => row.classList.remove('selected'));
             tr.classList.add('selected');
-
             itemSelecionado = { aba, index };
             const lista = JSON.parse(localStorage.getItem(aba) || '[]');
             const item = lista[index];
             preencherCampos(aba, item);
-
             const editarBtn = document.getElementById(`editar-btn-${aba}`);
             const excluirBtn = document.getElementById(`excluir-btn-${aba}`);
             editarBtn.disabled = false;
@@ -624,6 +686,7 @@
             localStorage.setItem(aba, JSON.stringify(lista));
             render(aba);
             limparCampos(aba);
+            renderDashboard();
         }
 
         function reiniciarBotoes(aba) {
@@ -645,32 +708,33 @@
             });
         }
 
-        function exportarParaXLSX(data, filename) {
-            const ws = XLSX.utils.json_to_sheet(data);
+        function exportarRelatorioCompleto() {
             const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "Registros");
-            const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
-            saveAs(new Blob([wbout], { type: 'application/octet-stream' }), filename);
-        }
-
-        function exportarParaJSON(data, filename) {
-            const jsonStr = JSON.stringify(data, null, 2);
-            const blob = new Blob([jsonStr], { type: "application/json" });
-            saveAs(blob, filename);
-        }
-
-        function exportarRelatorioCompleto(aba, dataParaNome) {
-            const lista = JSON.parse(localStorage.getItem(aba) || '[]');
-            if (lista.length === 0) {
-                alert("Não há dados para exportar nesta seção.");
+            const abas = ['ponto', 'entregas', 'descargas', 'cargas', 'outros'];
+            abas.forEach(aba => {
+                const data = JSON.parse(localStorage.getItem(aba) || '[]');
+                const headers = headersMap[aba];
+                const dataWithHeaders = data.map(item => {
+                    const newObject = {};
+                    for (const key of headers) {
+                        newObject[key] = item[key];
+                    }
+                    return newObject;
+                });
+                if (dataWithHeaders.length > 0) {
+                    const ws = XLSX.utils.json_to_sheet(dataWithHeaders);
+                    XLSX.utils.book_append_sheet(wb, ws, aba);
+                }
+            });
+            if (wb.SheetNames.length === 0) {
+                alert("Não há dados em nenhuma seção para exportar.");
                 return;
             }
-            const dataHora = dataParaNome || new Date();
+            const dataHora = new Date();
             const dataFormatada = `${dataHora.getFullYear()}-${(dataHora.getMonth() + 1).toString().padStart(2, '0')}-${dataHora.getDate().toString().padStart(2, '0')}_${dataHora.getHours().toString().padStart(2, '0')}-${dataHora.getMinutes().toString().padStart(2, '0')}`;
-            const filenameBase = `biz_${aba}_${dataFormatada}`;
-
-            exportarParaXLSX(lista, `${filenameBase}.xlsx`);
-            exportarParaJSON(lista, `${filenameBase}.json`);
+            const filename = `biz_movimentacao_${dataFormatada}.xlsx`;
+            const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+            saveAs(new Blob([wbout], { type: 'application/octet-stream' }), filename);
         }
 
         function agendarExportacaoAutomatica() {
@@ -680,16 +744,8 @@
             meiaNoite.setHours(0, 0, 0, 0);
             const tempoParaMeiaNoite = meiaNoite.getTime() - agora.getTime();
             setTimeout(() => {
-                const abas = ['ponto', 'entregas', 'descargas', 'cargas', 'outros'];
-                const dataExportacao = new Date();
-                abas.forEach(aba => {
-                    const lista = JSON.parse(localStorage.getItem(aba) || '[]');
-                    if (lista.length > 0) {
-                        exportarRelatorioCompleto(aba, dataExportacao);
-                        localStorage.removeItem(aba);
-                        render(aba);
-                    }
-                });
+                exportarRelatorioCompleto();
+                render('ponto');
                 agendarExportacaoAutomatica();
             }, tempoParaMeiaNoite);
         }
@@ -702,6 +758,245 @@
             } else {
                 icon.className = 'fa-solid fa-moon';
             }
+            renderDashboard();
+        }
+
+        // --- Funções do Dashboard ---
+        function renderDashboard() {
+            updateLocalStorageSize();
+            renderPontoFrequenciaChart();
+            renderPontoHorasChart();
+            renderEntregasChart();
+            renderCargasDescargasChart();
+            renderDescargasPaletesChart();
+            renderOutrosHorariosChart();
+        }
+
+        function updateLocalStorageSize() {
+            let size = 0;
+            for (let key in localStorage) {
+                if (localStorage.hasOwnProperty(key)) {
+                    size += localStorage[key].length * 2;
+                }
+            }
+            const sizeKB = (size / 1024).toFixed(2);
+            document.getElementById('localStorageSize').textContent = `${sizeKB} KB`;
+        }
+        
+        function processarDadosPorDia(data) {
+            const dadosPorDia = {};
+            data.forEach(item => {
+                const dia = item.data;
+                if (dia) {
+                    if (!dadosPorDia[dia]) {
+                        dadosPorDia[dia] = [];
+                    }
+                    dadosPorDia[dia].push(item);
+                }
+            });
+            return dadosPorDia;
+        }
+
+        function destroyChart(chartId) {
+            if (chartInstances[chartId]) {
+                chartInstances[chartId].destroy();
+                delete chartInstances[chartId];
+            }
+        }
+
+        function renderPontoFrequenciaChart() {
+            destroyChart('pontoFrequenciaChart');
+            const data = JSON.parse(localStorage.getItem('ponto') || '[]');
+            const dadosPorDia = processarDadosPorDia(data);
+            const presentes = new Set(data.filter(item => item.entrada && !item.saida).map(item => item.colaborador));
+            const ausentes = masterColaboradores.filter(colab => !presentes.has(colab));
+            const labels = ['Presentes', 'Ausentes'];
+            const counts = [presentes.size, ausentes.length];
+            const ctx = document.getElementById('pontoFrequenciaChart').getContext('2d');
+            chartInstances.pontoFrequenciaChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Colaboradores',
+                        data: counts,
+                        backgroundColor: ['rgba(54, 162, 235, 0.8)', 'rgba(255, 99, 132, 0.8)']
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+        }
+
+        function renderPontoHorasChart() {
+            destroyChart('pontoHorasChart');
+            const data = JSON.parse(localStorage.getItem('ponto') || '[]');
+            const horasPorColaborador = {};
+            data.forEach(item => {
+                if (item.entrada && item.saida) {
+                    const inicio = new Date(`2000-01-01T${item.entrada}`);
+                    const fim = new Date(`2000-01-01T${item.saida}`);
+                    let duracaoMs = fim - inicio;
+                    if (duracaoMs < 0) duracaoMs += 24 * 60 * 60 * 1000;
+                    const duracaoHoras = duracaoMs / (1000 * 60 * 60);
+                    if (!horasPorColaborador[item.colaborador]) {
+                        horasPorColaborador[item.colaborador] = 0;
+                    }
+                    horasPorColaborador[item.colaborador] += duracaoHoras;
+                }
+            });
+            const labels = Object.keys(horasPorColaborador);
+            const horas = Object.values(horasPorColaborador).map(h => h.toFixed(2));
+            const ctx = document.getElementById('pontoHorasChart').getContext('2d');
+            chartInstances.pontoHorasChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Total de Horas Trabalhadas',
+                        data: horas,
+                        backgroundColor: 'rgba(75, 192, 192, 0.8)'
+                    }]
+                },
+                options: { 
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            ticks: {
+                                maxRotation: 90,
+                                minRotation: 90
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function renderEntregasChart() {
+            destroyChart('entregasChart');
+            const data = JSON.parse(localStorage.getItem('entregas') || '[]');
+            const chegadas = data.filter(item => item.chegada).length;
+            const saidas = data.filter(item => item.saida).length;
+            const labels = ['Chegadas', 'Saídas'];
+            const counts = [chegadas, saidas];
+            const ctx = document.getElementById('entregasChart').getContext('2d');
+            chartInstances.entregasChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Movimentação de Frotas',
+                        data: counts,
+                        backgroundColor: ['rgba(255, 99, 132, 0.8)', 'rgba(54, 162, 235, 0.8)']
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+        }
+        
+        function renderCargasDescargasChart() {
+            destroyChart('cargasDescargasChart');
+            const dadosDescargas = JSON.parse(localStorage.getItem('descargas') || '[]');
+            const dadosCargas = JSON.parse(localStorage.getItem('cargas') || '[]');
+            const dadosDescargasPorDia = processarDadosPorDia(dadosDescargas);
+            const dadosCargasPorDia = processarDadosPorDia(dadosCargas);
+            const labelsDescargas = Object.keys(dadosDescargasPorDia);
+            const labelsCargas = Object.keys(dadosCargasPorDia);
+            const allLabels = [...new Set([...labelsDescargas, ...labelsCargas])].sort();
+            const descargasCount = allLabels.map(dia => dadosDescargasPorDia[dia] ? dadosDescargasPorDia[dia].length : 0);
+            const cargasCount = allLabels.map(dia => dadosCargasPorDia[dia] ? dadosCargasPorDia[dia].length : 0);
+            const ctx = document.getElementById('cargasDescargasChart').getContext('2d');
+            chartInstances.cargasDescargasChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: allLabels,
+                    datasets: [
+                        { label: 'Descargas', data: descargasCount, borderColor: 'rgba(255, 159, 64, 1)', tension: 0.1 },
+                        { label: 'Cargas', data: cargasCount, borderColor: 'rgba(153, 102, 255, 1)', tension: 0.1 }
+                    ]
+                },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+        }
+
+        function renderDescargasPaletesChart() {
+            destroyChart('descargasPaletesChart');
+            const data = JSON.parse(localStorage.getItem('descargas') || '[]');
+            const paletesPorFornecedor = {};
+            data.forEach(item => {
+                if (item.fornecedor && item.quantidade) {
+                    if (!paletesPorFornecedor[item.fornecedor]) {
+                        paletesPorFornecedor[item.fornecedor] = 0;
+                    }
+                    paletesPorFornecedor[item.fornecedor] += parseInt(item.quantidade, 10);
+                }
+            });
+            const labels = Object.keys(paletesPorFornecedor);
+            const quantidades = Object.values(paletesPorFornecedor);
+            const ctx = document.getElementById('descargasPaletesChart').getContext('2d');
+            chartInstances.descargasPaletesChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: quantidades,
+                        backgroundColor: [
+                            'rgba(255, 99, 132, 0.8)', 'rgba(54, 162, 235, 0.8)', 'rgba(255, 206, 86, 0.8)',
+                            'rgba(75, 192, 192, 0.8)', 'rgba(153, 102, 255, 0.8)', 'rgba(255, 159, 64, 0.8)'
+                        ]
+                    }]
+                },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+        }
+
+        function renderOutrosHorariosChart() {
+            destroyChart('outrosHorariosChart');
+            const data = JSON.parse(localStorage.getItem('outros') || '[]');
+            const dadosPorDia = processarDadosPorDia(data);
+            const labels = Object.keys(dadosPorDia).sort();
+            const medias = labels.map(dia => {
+                const horarios = dadosPorDia[dia]
+                    .map(item => {
+                        const [h, m] = item.hora.split(':').map(Number);
+                        return h * 60 + m; // Converte para minutos
+                    })
+                    .filter(minutos => !isNaN(minutos)); // Filtra horários inválidos
+                
+                if (horarios.length === 0) {
+                    return null; // Retorna null para pular este ponto no gráfico
+                }
+                const mediaMinutos = horarios.reduce((a, b) => a + b, 0) / horarios.length;
+                return mediaMinutos / 60; // Converte para horas decimais
+            });
+            const ctx = document.getElementById('outrosHorariosChart').getContext('2d');
+            chartInstances.outrosHorariosChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Média de Horários de Entrada',
+                        data: medias,
+                        borderColor: 'rgba(201, 203, 207, 1)',
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            ticks: {
+                                callback: function(value) {
+                                    const h = Math.floor(value);
+                                    const m = Math.round((value - h) * 60);
+                                    return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
         }
     </script>
 </body>
