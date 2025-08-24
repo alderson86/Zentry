@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Zentry Biz</title>
+    <title>Sistema de Registro</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <style>
@@ -272,8 +272,8 @@
             text-overflow: ellipsis;
             padding: 2px 0;
         }
-        /* Estilos da tela de login */
-        .login-modal-container {
+        /* Estilos da tela de login e primeiro acesso */
+        .modal-container {
             position: fixed;
             top: 0;
             left: 0;
@@ -287,7 +287,7 @@
             align-items: center;
             z-index: 2000;
         }
-        .login-modal-content {
+        .modal-content-custom {
             background-color: var(--modal-bg);
             padding: 30px;
             border-radius: 10px;
@@ -297,18 +297,18 @@
             text-align: center;
             border: 1px solid var(--modal-border);
         }
-        .login-modal-content h3 {
+        .modal-content-custom h3 {
             margin-bottom: 20px;
             color: var(--text-color);
         }
-        .login-modal-content .form-label {
+        .modal-content-custom .form-label {
             text-align: left;
             display: block;
         }
-        .login-modal-content .form-control {
+        .modal-content-custom .form-control {
             margin-bottom: 15px;
         }
-        .login-modal-content .btn-login {
+        .modal-content-custom .btn-custom {
             width: 100%;
             padding: 10px;
             background-color: var(--button-bg);
@@ -318,10 +318,10 @@
             font-size: 1rem;
             transition: background-color 0.2s;
         }
-        .login-modal-content .btn-login:hover {
+        .modal-content-custom .btn-custom:hover {
             background-color: var(--button-hover);
         }
-        .login-modal-content .btn-link {
+        .modal-content-custom .btn-link {
             font-size: 0.9rem;
             color: var(--button-bg);
             text-decoration: none;
@@ -336,9 +336,38 @@
     </style>
 </head>
 <body>
-    <div class="login-modal-container" id="loginModal">
-        <div class="login-modal-content">
-            <h3 class="mb-4">Zentry</h3>
+    <div class="modal-container" id="firstAccessModal" style="display: none;">
+        <div class="modal-content-custom">
+            <h3 class="mb-4">Primeiro Acesso - Cadastro de Administrador</h3>
+            <div class="alert alert-info" role="alert">
+                Não há usuários cadastrados. Crie o primeiro usuário administrador para prosseguir.
+            </div>
+            <form id="firstAccessForm">
+                <div class="mb-3">
+                    <label for="adminName" class="form-label">Nome Completo</label>
+                    <input type="text" class="form-control" id="adminName" required>
+                </div>
+                <div class="mb-3">
+                    <label for="adminUsername" class="form-label">Usuário</label>
+                    <input type="text" class="form-control" id="adminUsername" required>
+                </div>
+                <div class="mb-3">
+                    <label for="adminPassword" class="form-label">Senha</label>
+                    <input type="password" class="form-control" id="adminPassword" required>
+                </div>
+                <div class="mb-3">
+                    <label for="adminConfirmPassword" class="form-label">Confirmar Senha</label>
+                    <input type="password" class="form-control" id="adminConfirmPassword" required>
+                </div>
+                <button type="submit" class="btn btn-primary btn-custom">Cadastrar Administrador</button>
+                <div id="firstAccessFeedback" class="mt-3 text-danger"></div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal-container" id="loginModal" style="display: none;">
+        <div class="modal-content-custom">
+            <h3 class="mb-4">Login no Sistema</h3>
             <form id="loginForm">
                 <div class="mb-3">
                     <label for="loginUsername" class="form-label">Usuário</label>
@@ -348,15 +377,15 @@
                     <label for="loginPassword" class="form-label">Senha</label>
                     <input type="password" class="form-control" id="loginPassword" required>
                 </div>
-                <button type="submit" class="btn btn-primary btn-login">Logar</button>
+                <button type="submit" class="btn btn-primary btn-custom">Logar</button>
             </form>
             <button class="btn btn-link mt-2" onclick="showRecoverPasswordModal()">Recuperar Senha</button>
             <div id="loginFeedback" class="mt-3 text-danger"></div>
         </div>
     </div>
     
-    <div class="login-modal-container" id="recoverPasswordModal" style="display: none;">
-        <div class="login-modal-content">
+    <div class="modal-container" id="recoverPasswordModal" style="display: none;">
+        <div class="modal-content-custom">
             <h3 class="mb-4">Recuperar Senha</h3>
             <form id="recoverForm">
                 <div class="mb-3">
@@ -367,7 +396,7 @@
                     <label for="recoverEmail" class="form-label">E-mail</label>
                     <input type="email" class="form-control" id="recoverEmail" required>
                 </div>
-                <button type="submit" class="btn btn-primary btn-login">Recuperar</button>
+                <button type="submit" class="btn btn-primary btn-custom">Recuperar</button>
             </form>
             <button class="btn btn-link mt-2" onclick="showLoginModal()">Voltar para o Login</button>
             <div id="recoverFeedback" class="mt-3"></div>
@@ -890,12 +919,12 @@
                                 <li>Gerenciamento de usuários com senha de administrador.</li>
                                 <li>Sistema de login com validação de credenciais.</li>
                                 <li>Sistema de recuperação de senha por CPF e e-mail.</li>
-                                <li>Login persistente (não precisa logar toda vez).</li>
-                                <li>Botão de deslogar.</li>
-                                <li>*Exibe o usuário logado no cabeçalho.</li>
-                                <li>Sistema de logs com exportação por senha mestra.</li>
-                                <li>Logs de Login e Logout.</li>
-                                <li>Criação automática de usuário administrador padrão para o primeiro acesso.</li>
+                                <li>**NOVO:** Login persistente (não precisa logar toda vez).</li>
+                                <li>**NOVO:** Botão de deslogar.</li>
+                                <li>**NOVO:** Exibe o usuário logado no cabeçalho.</li>
+                                <li>**NOVO:** Sistema de logs com exportação por senha mestra.</li>
+                                <li>**NOVO:** Logs de Login e Logout.</li>
+                                <li>**NOVO:** Tela de Primeiro Acesso para criar o usuário administrador.</li>
                             </ul>
                         </div>
                         <div class="col-md-6">
@@ -916,12 +945,12 @@
                     <div class="row">
                         <div class="col-md-6">
                             <h5><i class="fa-solid fa-code-branch me-2"></i> Versão e Desenvolvimento</h5>
-                            <p><strong>Zentry Versão:</strong> 1.9.3 teste</p>
-                            <p><strong>Desenvolvedor:</strong> Eder P - AllSec TI - 34 9 9110 6738</p>
+                            <p><strong>Versão:</strong> 1.9.4</p>
+                            <p><strong>Desenvolvedor:</strong> Gemini - Assistente de IA do Google</p>
                         </div>
                         <div class="col-md-6">
                             <h5><i class="fa-solid fa-exclamation-triangle me-2"></i> Observações</h5>
-                           <p>Este sistema foi desenvolvido como uma aplicação web, focada em praticidade e uso local. Todos os dados são salvos diretamente no navegador (LocalStorage), sem a necessidade de banco de dados ou conexão com a internet. Por isso, a exportação regular dos dados é recomendada para fins de backup. O agendamento de tarefas diárias depende que o navegador esteja aberto. Ele também pode ser usado com backend (é o recomendado)</p>
+                            <p>Este sistema foi desenvolvido como uma aplicação web simples, focada em praticidade e uso local. Todos os dados são salvos diretamente no navegador (LocalStorage), sem a necessidade de banco de dados ou conexão com a internet. Por isso, a exportação regular dos dados é recomendada para fins de backup. O agendamento de tarefas diárias depende que o navegador esteja aberto.</p>
                         </div>
                     </div>
                 </div>
@@ -967,8 +996,8 @@
                             <input type="password" class="form-control" id="userConfirmPassword" required>
                         </div>
                         <div class="mb-3">
-                            <label for="adminPassword" class="form-label">Senha do Administrador</label>
-                            <input type="password" class="form-control" id="adminPassword" required>
+                            <label for="adminPasswordUserModal" class="form-label">Senha do Administrador</label>
+                            <input type="password" class="form-control" id="adminPasswordUserModal" required>
                             <div class="invalid-feedback" id="adminPasswordFeedback"></div>
                         </div>
                         <div class="d-grid gap-2">
@@ -1034,14 +1063,12 @@
             "João Vitor", "Luiz Henrique", "Cristiano", "Marsergio-Gerente", "André - ADM", 
             "Jean Carlos", "Enildo -Supervisor", "Thiago Benjamin", "Jayme - Encarregado - Van", 
             "Raimundo - Van", "Marcos - Van", "Fábio - Van", "Eriton - Van", "Elionai - Van",
-            "Murilo - Van",
-            "Edmar - Van", "Jefferson - Van", "Wanderson", "Kleverson", "Leandro F.", "Nailton", 
+            "Edmar - Van", "Jefferson - Van", "Wanderson", "Kleverson", "Leandro F.", 
             "Gilliard D.", "Leandro P.", "André F.", "Leonardo", "Dangel – Menor aprendiz", 
             "Cauan – Menor aprendiz", "Nicolas G – Menor aprendiz", "Elias – Menor aprendiz", 
-            "Outro - Menor Aprendiz", "Matias - Menor Aprendiz", "Yuri - Menor Aprendiz", 
+            "Murilo - Menor Aprendiz", "Matias - Menor Aprendiz", "Yuri - Menor Aprendiz", 
             "Pedro H - Menor Aprendiz", "Felipe - Menor Aprendiz", "Abraão - Menor Aprendiz", 
-            "Gabriel - Menor Aprendiz", "Edirlei - CPD", "Moisés - CPD", "Lusiene - TSB", "Denner - Predial",
-            "Francisco - Predial", "Eder - ASI", "Gil - Ser Prime"
+            "Gabriel - Menor Aprendiz", "Edirlei - CPD"
         ];
         
         const today = new Date().toISOString().split('T')[0];
@@ -1053,13 +1080,14 @@
             masterPasswordModal = new bootstrap.Modal(document.getElementById('masterPasswordModal'));
             myToast = new bootstrap.Toast(document.getElementById('myToast'));
 
-            checkSession();
+            checkFirstAccess();
             
             document.getElementById('darkModeToggle').addEventListener('click', toggleDarkMode);
             agendarTarefasDiarias();
             document.getElementById('userForm').addEventListener('submit', salvarUsuario);
             document.getElementById('loginForm').addEventListener('submit', login);
             document.getElementById('recoverForm').addEventListener('submit', recuperarSenha);
+            document.getElementById('firstAccessForm').addEventListener('submit', cadastrarPrimeiroUsuario);
 
             document.querySelectorAll('.nav-link').forEach(link => {
                 link.addEventListener('shown.bs.tab', (e) => {
@@ -1079,19 +1107,75 @@
             document.getElementById('cargas-search').addEventListener('input', (e) => render('cargas', e.target.value));
             document.getElementById('outros-search').addEventListener('input', (e) => render('outros', e.target.value));
         });
-
+        
         function showToast(message) {
             document.getElementById('toast-message').textContent = message;
             myToast.show();
         }
 
+        function checkFirstAccess() {
+            const usuarios = getUsuarios();
+            if (usuarios.length === 0) {
+                document.getElementById('firstAccessModal').style.display = 'flex';
+                document.getElementById('loginModal').style.display = 'none';
+                document.getElementById('systemContent').style.display = 'none';
+            } else {
+                checkSession();
+            }
+        }
+        
+        function cadastrarPrimeiroUsuario(event) {
+            event.preventDefault();
+            const form = event.target;
+            const nome = form.adminName.value;
+            const usuario = form.adminUsername.value;
+            const senha = form.adminPassword.value;
+            const confirmarSenha = form.adminConfirmPassword.value;
+            const feedback = document.getElementById('firstAccessFeedback');
+
+            if (senha !== confirmarSenha) {
+                feedback.textContent = "As senhas não coincidem.";
+                return;
+            }
+            if (senha.length < 6) {
+                feedback.textContent = "A senha deve ter no mínimo 6 caracteres.";
+                return;
+            }
+
+            const novoUsuario = {
+                nome,
+                usuario,
+                senha: btoa(senha),
+                is_admin: true,
+                cpf: null,
+                cel: null,
+                email: null
+            };
+            
+            localStorage.setItem('usuarios', JSON.stringify([novoUsuario]));
+            showToast("Usuário administrador criado com sucesso! Por favor, faça o login.");
+            addLog('Criação do Primeiro Usuário', { usuario: novoUsuario.usuario });
+            
+            document.getElementById('firstAccessModal').style.display = 'none';
+            showLoginModal();
+        }
+
+        function getUsuarios() {
+            try {
+                return JSON.parse(localStorage.getItem('usuarios') || '[]');
+            } catch (e) {
+                console.error('Erro ao carregar usuários:', e);
+                return [];
+            }
+        }
+        
         function checkSession() {
             const loggedInUser = localStorage.getItem('loggedInUser');
             if (loggedInUser) {
                 currentUser = JSON.parse(loggedInUser);
                 startSession();
             } else {
-                checkFirstUser();
+                showLoginModal();
             }
         }
         
@@ -1106,23 +1190,6 @@
             render('cargas');
             render('outros');
             renderDashboard(today);
-        }
-
-        function checkFirstUser() {
-            const usuarios = JSON.parse(localStorage.getItem('usuarios') || '[]');
-            if (usuarios.length === 0) {
-                const adminUser = {
-                    nome: "Administrador Padrão",
-                    cpf: "000.000.000-00",
-                    cel: "",
-                    email: "admin@sistema.com",
-                    usuario: "admin",
-                    senha: btoa(MASTER_PASSWORD) 
-                };
-                localStorage.setItem('usuarios', JSON.stringify([adminUser]));
-                showToast("Primeiro acesso: use 'admin' e a senha padrão para logar.");
-            }
-            showLoginModal();
         }
 
         function showLoginModal() {
@@ -1141,7 +1208,7 @@
             const senha = document.getElementById('loginPassword').value;
             const feedback = document.getElementById('loginFeedback');
             
-            const usuarios = JSON.parse(localStorage.getItem('usuarios') || '[]');
+            const usuarios = getUsuarios();
             const usuarioEncontrado = usuarios.find(u => u.usuario === usuario && atob(u.senha) === senha);
             
             if (usuarioEncontrado) {
@@ -1176,7 +1243,7 @@
             const email = document.getElementById('recoverEmail').value;
             const feedback = document.getElementById('recoverFeedback');
             
-            const usuarios = JSON.parse(localStorage.getItem('usuarios') || '[]');
+            const usuarios = getUsuarios();
             const usuarioEncontrado = usuarios.find(u => u.cpf === cpf && u.email === email);
             
             if (usuarioEncontrado) {
@@ -1740,7 +1807,7 @@
             const usuario = form.userUsername.value;
             const senha = form.userPassword.value;
             const confirmarSenha = form.userConfirmPassword.value;
-            const senhaAdmin = form.adminPassword.value;
+            const senhaAdmin = form.adminPasswordUserModal.value;
             const feedbackElement = document.getElementById('adminPasswordFeedback');
         
             if (senha !== confirmarSenha) {
@@ -1757,7 +1824,7 @@
                 feedbackElement.style.display = 'none';
             }
         
-            const usuarios = JSON.parse(localStorage.getItem('usuarios') || '[]');
+            const usuarios = getUsuarios();
             
             const novoUsuario = {
                 nome,
