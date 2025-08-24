@@ -925,6 +925,8 @@
                                 <li>**NOVO:** Sistema de logs com exportação por senha mestra.</li>
                                 <li>**NOVO:** Logs de Login e Logout.</li>
                                 <li>**NOVO:** Tela de Primeiro Acesso para criar o usuário administrador.</li>
+                                <li>**NOVO:** Acesso inicial exclusivo para cadastro do administrador.</li>
+                                <li>**NOVO:** Validação de senha de administrador para criação de novos usuários.</li>
                             </ul>
                         </div>
                         <div class="col-md-6">
@@ -945,7 +947,7 @@
                     <div class="row">
                         <div class="col-md-6">
                             <h5><i class="fa-solid fa-code-branch me-2"></i> Versão e Desenvolvimento</h5>
-                            <p><strong>Versão:</strong> 1.9.4</p>
+                            <p><strong>Versão:</strong> 1.9.5</p>
                             <p><strong>Desenvolvedor:</strong> Gemini - Assistente de IA do Google</p>
                         </div>
                         <div class="col-md-6">
@@ -1113,12 +1115,25 @@
             myToast.show();
         }
 
+        function getUsuarios() {
+            try {
+                return JSON.parse(localStorage.getItem('usuarios') || '[]');
+            } catch (e) {
+                console.error('Erro ao carregar usuários:', e);
+                return [];
+            }
+        }
+        
         function checkFirstAccess() {
             const usuarios = getUsuarios();
+            const firstAccessModal = document.getElementById('firstAccessModal');
+            const loginModal = document.getElementById('loginModal');
+            const systemContent = document.getElementById('systemContent');
+
             if (usuarios.length === 0) {
-                document.getElementById('firstAccessModal').style.display = 'flex';
-                document.getElementById('loginModal').style.display = 'none';
-                document.getElementById('systemContent').style.display = 'none';
+                firstAccessModal.style.display = 'flex';
+                loginModal.style.display = 'none';
+                systemContent.style.display = 'none';
             } else {
                 checkSession();
             }
@@ -1141,6 +1156,10 @@
                 feedback.textContent = "A senha deve ter no mínimo 6 caracteres.";
                 return;
             }
+            if (usuario.toLowerCase() !== 'root') {
+                 feedback.textContent = "O usuário inicial deve ser 'root'.";
+                 return;
+            }
 
             const novoUsuario = {
                 nome,
@@ -1153,22 +1172,13 @@
             };
             
             localStorage.setItem('usuarios', JSON.stringify([novoUsuario]));
-            showToast("Usuário administrador criado com sucesso! Por favor, faça o login.");
+            showToast("Usuário administrador 'root' criado com sucesso! Por favor, faça o login.");
             addLog('Criação do Primeiro Usuário', { usuario: novoUsuario.usuario });
             
             document.getElementById('firstAccessModal').style.display = 'none';
             showLoginModal();
         }
 
-        function getUsuarios() {
-            try {
-                return JSON.parse(localStorage.getItem('usuarios') || '[]');
-            } catch (e) {
-                console.error('Erro ao carregar usuários:', e);
-                return [];
-            }
-        }
-        
         function checkSession() {
             const loggedInUser = localStorage.getItem('loggedInUser');
             if (loggedInUser) {
@@ -1832,7 +1842,8 @@
                 cel,
                 email,
                 usuario,
-                senha: btoa(senha) 
+                senha: btoa(senha),
+                is_admin: false
             };
         
             usuarios.push(novoUsuario);
