@@ -340,44 +340,6 @@
     </style>
 </head>
 <body>
-    <div class="modal-container" id="loginModal" style="display: none;">
-        <div class="modal-content-custom">
-            <h3 class="mb-4">Login no Sistema</h3>
-            <form id="loginForm">
-                <div class="mb-3">
-                    <label for="loginUsername" class="form-label">Usuário</label>
-                    <input type="text" class="form-control" id="loginUsername" required>
-                </div>
-                <div class="mb-3">
-                    <label for="loginPassword" class="form-label">Senha</label>
-                    <input type="password" class="form-control" id="loginPassword" required>
-                </div>
-                <button type="submit" class="btn btn-primary btn-custom">Logar</button>
-            </form>
-            <button class="btn btn-link mt-2" onclick="showRecoverPasswordModal()">Recuperar Senha</button>
-            <div id="loginFeedback" class="mt-3 text-danger"></div>
-        </div>
-    </div>
-    
-    <div class="modal-container" id="recoverPasswordModal" style="display: none;">
-        <div class="modal-content-custom">
-            <h3 class="mb-4">Recuperar Senha</h3>
-            <form id="recoverForm">
-                <div class="mb-3">
-                    <label for="recoverCpf" class="form-label">CPF</label>
-                    <input type="text" class="form-control" id="recoverCpf" required>
-                </div>
-                <div class="mb-3">
-                    <label for="recoverEmail" class="form-label">E-mail</label>
-                    <input type="email" class="form-control" id="recoverEmail" required>
-                </div>
-                <button type="submit" class="btn btn-primary btn-custom">Recuperar</button>
-            </form>
-            <button class="btn btn-link mt-2" onclick="showLoginModal()">Voltar para o Login</button>
-            <div id="recoverFeedback" class="mt-3"></div>
-        </div>
-    </div>
-
     <div class="modal fade" id="masterPasswordModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
@@ -397,7 +359,7 @@
         </div>
     </div>
 
-    <div id="systemContent" style="display: none;">
+    <div id="systemContent">
         <nav class="navbar navbar-expand-lg navbar-light glassmorphism">
             <div class="container-fluid">
                 <a class="navbar-brand" href="#">Registros</a>
@@ -412,9 +374,9 @@
                     <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#sobre">Sobre</a></li>
                 </ul>
                 <div class="d-flex align-items-center">
-                    <span id="userNameDisplay" class="me-2 text-truncate" style="max-width: 120px;"></span>
+                    <span class="me-2 text-truncate" style="max-width: 120px;">Bem-vindo!</span>
                     <button class="btn btn-icon" id="darkModeToggle"><i class="fa-solid fa-moon"></i></button>
-                    <button class="btn btn-icon" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i></button>
+                    <button class="btn btn-icon" onclick="showToast('O botão de logout foi desativado nesta versão do código.')"><i class="fa-solid fa-right-from-bracket"></i></button>
                 </div>
             </div>
         </nav>
@@ -906,15 +868,8 @@
                                 <li>Blocos de informações da aba Ponto e logs do sistema no Dashboard.</li>
                                 <li>Bloco de logs com estilo de terminal.</li>
                                 <li>Gerenciamento de usuários.</li>
-                                <li>Sistema de login com validação de credenciais.</li>
-                                <li>Sistema de recuperação de senha por CPF e e-mail.</li>
-                                <li>Login persistente (não precisa logar toda vez).</li>
-                                <li>Botão de deslogar.</li>
-                                <li>Exibe o usuário logado no cabeçalho.</li>
                                 <li>Sistema de logs com exportação por senha mestra.</li>
-                                <li>Logs de Login e Logout.</li>
-                                <li>**NOVO:** Usuário padrão de administrador para o primeiro acesso.</li>
-                                <li>**NOVO:** Opção de editar e excluir usuários na aba Sistema.</li>
+                                <li>**IMPORTANTE:** Nesta versão, o sistema não possui tela de login para simplificar o primeiro acesso.</li>
                             </ul>
                         </div>
                         <div class="col-md-6">
@@ -935,7 +890,7 @@
                     <div class="row">
                         <div class="col-md-6">
                             <h5><i class="fa-solid fa-code-branch me-2"></i> Versão e Desenvolvimento</h5>
-                            <p><strong>Versão:</strong> 2.0.0</p>
+                            <p><strong>Versão:</strong> 2.0.1</p>
                             <p><strong>Desenvolvedor:</strong> Gemini - Assistente de IA do Google</p>
                         </div>
                         <div class="col-md-6">
@@ -1033,7 +988,10 @@
         let myToast = null;
         let masterPasswordModal = null;
         const MASTER_PASSWORD = "8080Ipmask@root";
-        let currentUser = null;
+        let currentUser = {
+            usuario: 'admin', 
+            nome: 'Admin'
+        }; // Usuário padrão para logs
         let userToEditIndex = -1;
 
         const headersMap = {
@@ -1067,13 +1025,15 @@
             masterPasswordModal = new bootstrap.Modal(document.getElementById('masterPasswordModal'));
             myToast = new bootstrap.Toast(document.getElementById('myToast'));
 
-            checkInitialSetup();
-            
-            document.getElementById('darkModeToggle').addEventListener('click', toggleDarkMode);
+            render('ponto');
+            render('entregas');
+            render('descargas');
+            render('cargas');
+            render('outros');
+            renderDashboard(today);
             agendarTarefasDiarias();
+            document.getElementById('darkModeToggle').addEventListener('click', toggleDarkMode);
             document.getElementById('userForm').addEventListener('submit', salvarUsuario);
-            document.getElementById('loginForm').addEventListener('submit', login);
-            document.getElementById('recoverForm').addEventListener('submit', recuperarSenha);
 
             document.querySelectorAll('.nav-link').forEach(link => {
                 link.addEventListener('shown.bs.tab', (e) => {
@@ -1110,116 +1070,6 @@
             }
         }
 
-        function checkInitialSetup() {
-            const usuarios = getUsuarios();
-            if (usuarios.length === 0) {
-                const defaultAdmin = {
-                    nome: 'Admin',
-                    usuario: 'admin',
-                    senha: btoa('admin'),
-                    is_admin: true,
-                    cpf: null,
-                    cel: null,
-                    email: null
-                };
-                localStorage.setItem('usuarios', JSON.stringify([defaultAdmin]));
-            }
-            checkSession();
-        }
-        
-        function checkSession() {
-            const loggedInUser = localStorage.getItem('loggedInUser');
-            const loginModal = document.getElementById('loginModal');
-            const systemContent = document.getElementById('systemContent');
-            if (loggedInUser) {
-                currentUser = JSON.parse(loggedInUser);
-                startSession();
-            } else {
-                loginModal.style.display = 'flex';
-                systemContent.style.display = 'none';
-            }
-        }
-        
-        function startSession() {
-            document.getElementById('loginModal').style.display = 'none';
-            document.getElementById('systemContent').style.display = 'block';
-            document.getElementById('userNameDisplay').textContent = `Bem-vindo, ${currentUser.nome.split(' ')[0]}`;
-            
-            render('ponto');
-            render('entregas');
-            render('descargas');
-            render('cargas');
-            render('outros');
-            renderDashboard(today);
-        }
-
-        function showLoginModal() {
-            document.getElementById('loginModal').style.display = 'flex';
-            document.getElementById('recoverPasswordModal').style.display = 'none';
-        }
-
-        function showRecoverPasswordModal() {
-            document.getElementById('loginModal').style.display = 'none';
-            document.getElementById('recoverPasswordModal').style.display = 'flex';
-        }
-
-        function login(event) {
-            event.preventDefault();
-            const usuario = document.getElementById('loginUsername').value;
-            const senha = document.getElementById('loginPassword').value;
-            const feedback = document.getElementById('loginFeedback');
-            
-            const usuarios = getUsuarios();
-            const usuarioEncontrado = usuarios.find(u => u.usuario === usuario && atob(u.senha) === senha);
-            
-            if (usuarioEncontrado) {
-                currentUser = usuarioEncontrado;
-                localStorage.setItem('loggedInUser', JSON.stringify(currentUser));
-                addLog('Login', { usuario: currentUser.usuario, nome: currentUser.nome });
-                showToast("Login bem-sucedido!");
-                startSession();
-            } else {
-                feedback.textContent = 'Usuário ou senha incorretos.';
-                feedback.style.color = 'red';
-            }
-        }
-        
-        function logout() {
-            if (currentUser) {
-                addLog('Logout', { usuario: currentUser.usuario, nome: currentUser.nome });
-            }
-            localStorage.removeItem('loggedInUser');
-            currentUser = null;
-            document.getElementById('systemContent').style.display = 'none';
-            document.getElementById('loginUsername').value = '';
-            document.getElementById('loginPassword').value = '';
-            document.getElementById('loginFeedback').textContent = '';
-            showLoginModal();
-            showToast("Você foi desconectado.");
-        }
-        
-        function recuperarSenha(event) {
-            event.preventDefault();
-            const cpf = document.getElementById('recoverCpf').value;
-            const email = document.getElementById('recoverEmail').value;
-            const feedback = document.getElementById('recoverFeedback');
-            
-            const usuarios = getUsuarios();
-            const usuarioEncontrado = usuarios.find(u => u.cpf === cpf && u.email === email);
-            
-            if (usuarioEncontrado) {
-                const novaSenha = Math.random().toString(36).substring(2, 10);
-                usuarioEncontrado.senha = btoa(novaSenha);
-                localStorage.setItem('usuarios', JSON.stringify(usuarios));
-                addLog('Recuperação de Senha', { usuario: usuarioEncontrado.usuario, nome: usuarioEncontrado.nome });
-                feedback.innerHTML = `Sua nova senha é: <br><strong>${novaSenha}</strong>. Anote e volte para a tela de login.`;
-                feedback.style.color = 'green';
-            } else {
-                feedback.textContent = 'CPF e/ou e-mail não encontrados.';
-                feedback.style.color = 'red';
-            }
-        }
-
         function getDadosAba(aba) {
             try {
                 return JSON.parse(localStorage.getItem(aba) || '[]');
@@ -1243,7 +1093,7 @@
             const now = new Date();
             const logEntry = {
                 timestamp: now.toISOString(),
-                user: currentUser ? currentUser.usuario : 'Desconhecido',
+                user: 'Acesso Direto',
                 action,
                 details
             };
@@ -1599,7 +1449,7 @@
                 const logTime = `${logDate.toLocaleDateString('pt-BR')} ${logDate.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`;
                 let details = log.details.aba ? `Aba: ${log.details.aba}` : 'N/A';
                 if (log.action === 'Login' || log.action === 'Logout' || log.action === 'Criação de Usuário' || log.action === 'Exclusão de Usuário' || log.action === 'Edição de Usuário') {
-                    details = `Usuário: ${log.details.usuario || log.details.novoUsuario || log.details.deletedUsuario || log.details.editedUsuario}`;
+                    details = `Usuário: ${log.details.novoUsuario || log.details.deletedUsuario || log.details.editedUsuario}`;
                 }
                 li.textContent = `${logTime} - Usuário: ${log.user} - Ação: ${log.action} - Detalhes: ${details}`;
                 listElement.appendChild(li);
@@ -1849,10 +1699,6 @@
         function deleteUser(index) {
             const users = getUsuarios();
             const user = users[index];
-            if (user.usuario === currentUser.usuario) {
-                showToast("Você não pode excluir sua própria conta.");
-                return;
-            }
 
             document.getElementById('confirmModalBody').textContent = `Deseja excluir o usuário '${user.usuario}'?`;
             document.getElementById('confirmAction').className = 'btn btn-danger';
