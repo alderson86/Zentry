@@ -140,7 +140,6 @@
         .list-table thead th {
             position: sticky; top: 50px; background: var(--header-bg); border-bottom: 1px solid var(--header-border); z-index: 1010;
         }
-        /* Animação de entrada da página */
         .tab-pane.fade {
             transition: opacity 0.5s ease-in-out;
             opacity: 0;
@@ -242,8 +241,6 @@
             background: #fff;
             color: #000;
         }
-
-        /* Estilo do bloco de terminal */
         .dashboard-terminal-card {
             background-color: var(--terminal-bg);
             border: 1px solid var(--container-border);
@@ -275,515 +272,714 @@
             text-overflow: ellipsis;
             padding: 2px 0;
         }
-
+        /* Estilos da tela de login */
+        .login-modal-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+        .login-modal-content {
+            background-color: var(--modal-bg);
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.3);
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+            border: 1px solid var(--modal-border);
+        }
+        .login-modal-content h3 {
+            margin-bottom: 20px;
+            color: var(--text-color);
+        }
+        .login-modal-content .form-label {
+            text-align: left;
+            display: block;
+        }
+        .login-modal-content .form-control {
+            margin-bottom: 15px;
+        }
+        .login-modal-content .btn-login {
+            width: 100%;
+            padding: 10px;
+            background-color: var(--button-bg);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: background-color 0.2s;
+        }
+        .login-modal-content .btn-login:hover {
+            background-color: var(--button-hover);
+        }
+        .login-modal-content .btn-link {
+            font-size: 0.9rem;
+            color: var(--button-bg);
+            text-decoration: none;
+            margin-top: 10px;
+            display: block;
+        }
+        /* Estilos da aba Sistema */
+        .sistema-container .btn {
+            padding: 12px 20px;
+            font-size: 1.1rem;
+        }
     </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-light glassmorphism">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="#">Zendry Biz</a>
-            <ul class="nav nav-tabs mx-auto" id="myTab" role="tablist">
-                <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#dashboard">Dashboard</a></li>
-                <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#ponto">Ponto</a></li>
-                <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#entregas">Entregas</a></li>
-                <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#descargas">Descargas</a></li>
-                <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#cargas">Cargas</a></li>
-                <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#outros">Outros</a></li>
-                <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#sobre">Sobre</a></li>
-            </ul>
-            <button class="btn btn-icon" id="darkModeToggle"><i class="fa-solid fa-moon"></i></button>
+    <div class="login-modal-container" id="loginModal">
+        <div class="login-modal-content">
+            <h3 class="mb-4">Zentry</h3>
+            <form id="loginForm">
+                <div class="mb-3">
+                    <label for="loginUsername" class="form-label">Usuário</label>
+                    <input type="text" class="form-control" id="loginUsername" required>
+                </div>
+                <div class="mb-3">
+                    <label for="loginPassword" class="form-label">Senha</label>
+                    <input type="password" class="form-control" id="loginPassword" required>
+                </div>
+                <button type="submit" class="btn btn-primary btn-login">Logar</button>
+            </form>
+            <button class="btn btn-link mt-2" onclick="showRecoverPasswordModal()">Recuperar Senha</button>
+            <div id="loginFeedback" class="mt-3 text-danger"></div>
         </div>
-    </nav>
-
-    <div class="tab-content container mt-3 mb-5">
-        <div class="tab-pane fade show active" id="dashboard">
-            <div class="container p-3 mt-3">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h3 class="mb-0">Painel de Monitoramento</h3>
-                    <button class="btn btn-primary" onclick="exportarDashboardPDF()"><i class="fa-solid fa-file-pdf me-2"></i>Exportar PDF</button>
+    </div>
+    
+    <div class="login-modal-container" id="recoverPasswordModal" style="display: none;">
+        <div class="login-modal-content">
+            <h3 class="mb-4">Recuperar Senha</h3>
+            <form id="recoverForm">
+                <div class="mb-3">
+                    <label for="recoverCpf" class="form-label">CPF</label>
+                    <input type="text" class="form-control" id="recoverCpf" required>
                 </div>
-                <div class="dashboard-grid">
-                    <div class="dashboard-card">
-                        <i class="fa-solid fa-truck-ramp-box icon"></i>
-                        <div class="title">Movimentação Frotas Biz/Aliança</div>
-                        <div class="sub-values">
-                            <div class="sub-value">
-                                <span class="value" id="dashboard-frotas-entraram">0</span>
-                                <span class="label">Entraram</span>
-                            </div>
-                            <div class="sub-value">
-                                <span class="value" id="dashboard-frotas-sairam">0</span>
-                                <span class="label">Saíram</span>
-                            </div>
-                            <div class="sub-value">
-                                <span class="value" id="dashboard-frotas-patio">0</span>
-                                <span class="label">No Pátio</span>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="dashboard-card">
-                        <i class="fa-solid fa-handshake icon"></i>
-                        <div class="title">Média de Permanência (Frota)</div>
-                        <div class="value" id="dashboard-media-permanencia">0h 0m</div>
-                    </div>
-                    <div class="dashboard-card">
-                        <i class="fa-solid fa-boxes-stacked icon"></i>
-                        <div class="title">Volume de Descargas Hoje</div>
-                        <div class="value" id="dashboard-descargas-hoje">0</div>
-                    </div>
-                    <div class="dashboard-card">
-                        <i class="fa-solid fa-box-open icon"></i>
-                        <div class="title">Volume de Cargas Hoje</div>
-                        <div class="value" id="dashboard-cargas-hoje">0</div>
-                    </div>
-
-                    <div class="dashboard-card">
-                        <i class="fa-solid fa-user-clock icon"></i>
-                        <div class="title">Status do Ponto</div>
-                        <div class="sub-values">
-                            <div class="sub-value">
-                                <span class="value" id="dashboard-ponto-na-empresa">0</span>
-                                <span class="label">Na Empresa</span>
-                            </div>
-                            <div class="sub-value">
-                                <span class="value" id="dashboard-ponto-fora-empresa">0</span>
-                                <span class="label">Fora da Empresa</span>
-                            </div>
-                            <div class="sub-value">
-                                <span class="value" id="dashboard-ponto-cracha-sim">0</span>
-                                <span class="label">Com Crachá</span>
-                            </div>
-                            <div class="sub-value">
-                                <span class="value" id="dashboard-ponto-cracha-nao">0</span>
-                                <span class="label">Sem Crachá</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="dashboard-terminal-card">
-                        <div class="title"><i class="fa-solid fa-terminal me-2"></i>Logs do Sistema</div>
-                        <ul id="recent-logs-list" class="terminal-log-list"></ul>
-                    </div>
+                <div class="mb-3">
+                    <label for="recoverEmail" class="form-label">E-mail</label>
+                    <input type="email" class="form-control" id="recoverEmail" required>
                 </div>
-                
-                <div class="dashboard-chart-container mt-4">
-                    <h5 class="text-center mb-3">Movimentação Diária (Hoje)</h5>
-                    <div class="chart-container"><canvas id="dailyMovementChart"></canvas></div>
-                </div>
+                <button type="submit" class="btn btn-primary btn-login">Recuperar</button>
+            </form>
+            <button class="btn btn-link mt-2" onclick="showLoginModal()">Voltar para o Login</button>
+            <div id="recoverFeedback" class="mt-3"></div>
+        </div>
+    </div>
 
-                <div class="dashboard-chart-container mt-4">
-                    <h5 class="text-center mb-3">Tempo de Permanência (Frota)</h5>
-                    <div class="chart-container"><canvas id="tempoPermanenciaChart"></canvas></div>
+    <div class="modal fade" id="masterPasswordModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Acesso Restrito</h5>
+                </div>
+                <div class="modal-body">
+                    <p>Por favor, insira a senha mestra para exportar os logs.</p>
+                    <input type="password" class="form-control" id="masterPasswordInput" placeholder="Senha Mestra">
+                    <div id="masterPasswordFeedback" class="mt-2 text-danger"></div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" onclick="confirmExportLogs()">Exportar</button>
                 </div>
             </div>
         </div>
+    </div>
 
-        <div class="tab-pane fade" id="ponto">
-            <div class="table-container glassmorphism">
-                <div class="table-header-sticky glassmorphism">
-                    <div class="search-row">
-                        <div class="search-container">
-                            <input type="text" id="ponto-search" class="search-input" placeholder="Pesquisar...">
-                        </div>
-                        <div class="info-container">
-                            <span id="ponto-na-empresa">Na Empresa: 0</span>
-                            <span id="ponto-fora-empresa">Fora da Empresa: 0</span>
-                            <span id="ponto-cracha-sim">Com Crachá: 0</span>
-                            <span id="ponto-cracha-nao">Sem Crachá: 0</span>
-                        </div>
-                    </div>
-                </div>
-                <table class="list-table" id="lista-ponto">
-                    <thead>
-                        <tr>
-                            <th>Data</th>
-                            <th>Colaborador</th>
-                            <th>Entrada</th>
-                            <th>Saída</th>
-                            <th>Crachá</th>
-                            <th>Obs</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-            </div>
-            <div class="fixed-bottom-form glassmorphism">
-                <div class="row g-1 align-items-center justify-content-center" id="form-ponto">
-                    <div class="col-md-auto">
-                        <input type="date" id="ponto-data" class="form-control" placeholder="Data">
-                    </div>
-                    <div class="col-md-auto">
-                        <select id="ponto-colaborador" class="form-select"></select>
-                    </div>
-                    <div class="col-md-auto">
-                        <input type="time" id="ponto-entrada" class="form-control" placeholder="Entrada">
-                    </div>
-                    <div class="col-md-auto">
-                        <input type="time" id="ponto-saida" class="form-control" placeholder="Saída">
-                    </div>
-                    <div class="col-md-auto">
-                        <select id="ponto-cracha" class="form-select">
-                            <option>Sim</option>
-                            <option>Não</option>
-                        </select>
-                    </div>
-                    <div class="col-md-auto">
-                        <input type="text" id="ponto-obs" class="form-control" placeholder="Obs">
-                    </div>
-                    <div class="col-md-auto">
-                        <button class="btn btn-icon" onclick="salvar('ponto')"><i class="fa-solid fa-floppy-disk"></i></button>
-                    </div>
-                    <div class="col-md-auto">
-                        <button class="btn btn-icon" id="editar-btn-ponto" disabled onclick="confirmarEdicao('ponto')"><i class="fa-solid fa-pencil"></i></button>
-                    </div>
-                    <div class="col-md-auto">
-                        <button class="btn btn-icon" id="excluir-btn-ponto" disabled onclick="confirmarExclusao('ponto')"><i class="fa-solid fa-trash"></i></button>
-                    </div>
-                    <div class="col-md-auto">
-                        <button class="btn btn-icon" onclick="exportarRelatorioCompleto()"><i class="fa-solid fa-download"></i></button>
-                    </div>
+    <div id="systemContent" style="display: none;">
+        <nav class="navbar navbar-expand-lg navbar-light glassmorphism">
+            <div class="container-fluid">
+                <a class="navbar-brand" href="#">Registros</a>
+                <ul class="nav nav-tabs mx-auto" id="myTab" role="tablist">
+                    <li class="nav-item"><a class="nav-link active" data-bs-toggle="tab" href="#dashboard">Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#ponto">Ponto</a></li>
+                    <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#entregas">Entregas</a></li>
+                    <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#descargas">Descargas</a></li>
+                    <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#cargas">Cargas</a></li>
+                    <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#outros">Outros</a></li>
+                    <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#sistema">Sistema</a></li>
+                    <li class="nav-item"><a class="nav-link" data-bs-toggle="tab" href="#sobre">Sobre</a></li>
+                </ul>
+                <div class="d-flex align-items-center">
+                    <span id="userNameDisplay" class="me-2 text-truncate" style="max-width: 120px;"></span>
+                    <button class="btn btn-icon" id="darkModeToggle"><i class="fa-solid fa-moon"></i></button>
+                    <button class="btn btn-icon" onclick="logout()"><i class="fa-solid fa-right-from-bracket"></i></button>
                 </div>
             </div>
-        </div>
+        </nav>
 
-        <div class="tab-pane fade" id="entregas">
-            <div class="table-container glassmorphism">
-                <div class="table-header-sticky glassmorphism">
-                    <div class="search-row">
-                        <div class="search-container">
-                            <input type="text" id="entregas-search" class="search-input" placeholder="Pesquisar...">
+        <div class="tab-content container mt-3 mb-5">
+            <div class="tab-pane fade show active" id="dashboard">
+                <div class="container p-3 mt-3">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h3 class="mb-0">Painel de Monitoramento</h3>
+                        <button class="btn btn-primary" onclick="exportarDashboardPDF()"><i class="fa-solid fa-file-pdf me-2"></i>Exportar PDF</button>
+                    </div>
+                    <div class="dashboard-grid">
+                        <div class="dashboard-card">
+                            <i class="fa-solid fa-truck-ramp-box icon"></i>
+                            <div class="title">Movimentação Frotas Biz/Aliança</div>
+                            <div class="sub-values">
+                                <div class="sub-value">
+                                    <span class="value" id="dashboard-frotas-entraram">0</span>
+                                    <span class="label">Entraram</span>
+                                </div>
+                                <div class="sub-value">
+                                    <span class="value" id="dashboard-frotas-sairam">0</span>
+                                    <span class="label">Saíram</span>
+                                </div>
+                                <div class="sub-value">
+                                    <span class="value" id="dashboard-frotas-patio">0</span>
+                                    <span class="label">No Pátio</span>
+                                </div>
+                            </div>
                         </div>
-                        <div class="info-container">
-                            <span id="entregas-total">Veículos no Pátio: 0</span>
+                        <div class="dashboard-card">
+                            <i class="fa-solid fa-handshake icon"></i>
+                            <div class="title">Média de Permanência (Frota)</div>
+                            <div class="value" id="dashboard-media-permanencia">0h 0m</div>
+                        </div>
+                        <div class="dashboard-card">
+                            <i class="fa-solid fa-boxes-stacked icon"></i>
+                            <div class="title">Volume de Descargas Hoje</div>
+                            <div class="value" id="dashboard-descargas-hoje">0</div>
+                        </div>
+                        <div class="dashboard-card">
+                            <i class="fa-solid fa-box-open icon"></i>
+                            <div class="title">Volume de Cargas Hoje</div>
+                            <div class="value" id="dashboard-cargas-hoje">0</div>
+                        </div>
+
+                        <div class="dashboard-card">
+                            <i class="fa-solid fa-user-clock icon"></i>
+                            <div class="title">Status do Ponto</div>
+                            <div class="sub-values">
+                                <div class="sub-value">
+                                    <span class="value" id="dashboard-ponto-na-empresa">0</span>
+                                    <span class="label">Na Empresa</span>
+                                </div>
+                                <div class="sub-value">
+                                    <span class="value" id="dashboard-ponto-fora-empresa">0</span>
+                                    <span class="label">Fora da Empresa</span>
+                                </div>
+                                <div class="sub-value">
+                                    <span class="value" id="dashboard-ponto-cracha-sim">0</span>
+                                    <span class="label">Com Crachá</span>
+                                </div>
+                                <div class="sub-value">
+                                    <span class="value" id="dashboard-ponto-cracha-nao">0</span>
+                                    <span class="label">Sem Crachá</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="dashboard-terminal-card">
+                            <div class="title"><i class="fa-solid fa-terminal me-2"></i>Logs do Sistema</div>
+                            <ul id="recent-logs-list" class="terminal-log-list"></ul>
+                            <div class="d-flex justify-content-end mt-2">
+                                <button class="btn btn-sm btn-outline-secondary" onclick="exportarLogs()">Exportar Logs</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="dashboard-chart-container mt-4">
+                        <h5 class="text-center mb-3">Movimentação Diária (Hoje)</h5>
+                        <div class="chart-container"><canvas id="dailyMovementChart"></canvas></div>
+                    </div>
+
+                    <div class="dashboard-chart-container mt-4">
+                        <h5 class="text-center mb-3">Tempo de Permanência (Frota)</h5>
+                        <div class="chart-container"><canvas id="tempoPermanenciaChart"></canvas></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-pane fade" id="ponto">
+                <div class="table-container glassmorphism">
+                    <div class="table-header-sticky glassmorphism">
+                        <div class="search-row">
+                            <div class="search-container">
+                                <input type="text" id="ponto-search" class="search-input" placeholder="Pesquisar...">
+                            </div>
+                            <div class="info-container">
+                                <span id="ponto-na-empresa">Na Empresa: 0</span>
+                                <span id="ponto-fora-empresa">Fora da Empresa: 0</span>
+                                <span id="ponto-cracha-sim">Com Crachá: 0</span>
+                                <span id="ponto-cracha-nao">Sem Crachá: 0</span>
+                            </div>
+                        </div>
+                    </div>
+                    <table class="list-table" id="lista-ponto">
+                        <thead>
+                            <tr>
+                                <th>Data</th>
+                                <th>Colaborador</th>
+                                <th>Entrada</th>
+                                <th>Saída</th>
+                                <th>Crachá</th>
+                                <th>Obs</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+                <div class="fixed-bottom-form glassmorphism">
+                    <div class="row g-1 align-items-center justify-content-center" id="form-ponto">
+                        <div class="col-md-auto">
+                            <input type="date" id="ponto-data" class="form-control" placeholder="Data">
+                        </div>
+                        <div class="col-md-auto">
+                            <select id="ponto-colaborador" class="form-select"></select>
+                        </div>
+                        <div class="col-md-auto">
+                            <input type="time" id="ponto-entrada" class="form-control" placeholder="Entrada">
+                        </div>
+                        <div class="col-md-auto">
+                            <input type="time" id="ponto-saida" class="form-control" placeholder="Saída">
+                        </div>
+                        <div class="col-md-auto">
+                            <select id="ponto-cracha" class="form-select">
+                                <option>Sim</option>
+                                <option>Não</option>
+                            </select>
+                        </div>
+                        <div class="col-md-auto">
+                            <input type="text" id="ponto-obs" class="form-control" placeholder="Obs">
+                        </div>
+                        <div class="col-md-auto">
+                            <button class="btn btn-icon" onclick="salvar('ponto')"><i class="fa-solid fa-floppy-disk"></i></button>
+                        </div>
+                        <div class="col-md-auto">
+                            <button class="btn btn-icon" id="editar-btn-ponto" disabled onclick="confirmarEdicao('ponto')"><i class="fa-solid fa-pencil"></i></button>
+                        </div>
+                        <div class="col-md-auto">
+                            <button class="btn btn-icon" id="excluir-btn-ponto" disabled onclick="confirmarExclusao('ponto')"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                        <div class="col-md-auto">
+                            <button class="btn btn-icon" onclick="exportarRelatorioCompleto()"><i class="fa-solid fa-download"></i></button>
                         </div>
                     </div>
                 </div>
-                <table class="list-table" id="lista-entregas">
-                    <thead>
-                        <tr>
-                            <th>Data</th>
-                            <th>Motorista</th>
-                            <th>Frota</th>
-                            <th>Chegada</th>
-                            <th>Saída</th>
-                            <th>Obs</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
             </div>
-            <div class="fixed-bottom-form glassmorphism">
-                <div class="row g-1 align-items-center justify-content-center" id="form-entregas">
-                    <div class="col-md-auto">
-                        <input type="date" id="entregas-data" class="form-control" placeholder="Data">
-                    </div>
-                    <div class="col-md-auto">
-                        <input type="text" id="entregas-motorista" class="form-control" placeholder="Motorista">
-                    </div>
-                    <div class="col-md-auto">
-                        <input type="text" id="entregas-frota" class="form-control" placeholder="Frota">
-                    </div>
-                    <div class="col-md-auto">
-                        <input type="time" id="entregas-chegada" class="form-control" placeholder="Chegada">
-                    </div>
-                    <div class="col-md-auto">
-                        <input type="time" id="entregas-saida" class="form-control" placeholder="Saída">
-                    </div>
-                    <div class="col-md-auto">
-                        <input type="text" id="entregas-obs" class="form-control" placeholder="Obs">
-                    </div>
-                    <div class="col-md-auto">
-                        <button class="btn btn-icon" onclick="salvar('entregas')"><i class="fa-solid fa-floppy-disk"></i></button>
-                    </div>
-                    <div class="col-md-auto">
-                        <button class="btn btn-icon" id="editar-btn-entregas" disabled onclick="confirmarEdicao('entregas')"><i class="fa-solid fa-pencil"></i></button>
-                    </div>
-                    <div class="col-md-auto">
-                        <button class="btn btn-icon" id="excluir-btn-entregas" disabled onclick="confirmarExclusao('entregas')"><i class="fa-solid fa-trash"></i></button>
-                    </div>
-                    <div class="col-md-auto">
-                        <button class="btn btn-icon" onclick="exportarRelatorioCompleto()"><i class="fa-solid fa-download"></i></button>
-                    </div>
-                </div>
-            </div>
-        </div>
 
-        <div class="tab-pane fade" id="descargas">
-            <div class="table-container glassmorphism">
-                <div class="table-header-sticky glassmorphism">
-                    <div class="search-row">
-                        <div class="search-container">
-                            <input type="text" id="descargas-search" class="search-input" placeholder="Pesquisar...">
+            <div class="tab-pane fade" id="entregas">
+                <div class="table-container glassmorphism">
+                    <div class="table-header-sticky glassmorphism">
+                        <div class="search-row">
+                            <div class="search-container">
+                                <input type="text" id="entregas-search" class="search-input" placeholder="Pesquisar...">
+                            </div>
+                            <div class="info-container">
+                                <span id="entregas-total">Veículos no Pátio: 0</span>
+                            </div>
                         </div>
-                        <div></div>
                     </div>
+                    <table class="list-table" id="lista-entregas">
+                        <thead>
+                            <tr>
+                                <th>Data</th>
+                                <th>Motorista</th>
+                                <th>Frota</th>
+                                <th>Chegada</th>
+                                <th>Saída</th>
+                                <th>Obs</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
                 </div>
-                <table class="list-table" id="lista-descargas">
-                    <thead>
-                        <tr>
-                            <th>Data</th>
-                            <th>Hora</th>
-                            <th>Nome</th>
-                            <th>CPF</th>
-                            <th>Celular</th>
-                            <th>Placa CV</th>
-                            <th>Placa RB</th>
-                            <th>Transp.</th>
-                            <th>Fornecedor</th>
-                            <th>NF / SH</th>
-                            <th>Quantidade</th>
-                            <th>Tipo</th>
-                            <th>Obs</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-            </div>
-            <div class="fixed-bottom-form glassmorphism">
-                <div class="row g-1 align-items-center justify-content-center" id="form-descargas">
-                    <div class="col-md-auto">
-                        <input type="date" id="descargas-data" class="form-control" placeholder="Data">
-                    </div>
-                    <div class="col-md-auto">
-                        <input type="time" id="descargas-hora" class="form-control" placeholder="Hora">
-                    </div>
-                    <div class="col-md-auto">
-                        <input type="text" id="descargas-nome" class="form-control" placeholder="Nome">
-                    </div>
-                    <div class="col-md-auto">
-                        <input type="text" id="descargas-cpf" class="form-control" placeholder="CPF">
-                    </div>
-                    <div class="col-md-auto">
-                        <input type="text" id="descargas-celular" class="form-control" placeholder="Celular">
-                    </div>
-                    <div class="col-md-auto">
-                        <input type="text" id="descargas-placacv" class="form-control" placeholder="Placa CV">
-                    </div>
-                    <div class="col-md-auto">
-                        <input type="text" id="descargas-placarb" class="form-control" placeholder="Placa RB">
-                    </div>
-                    <div class="col-md-auto">
-                        <input type="text" id="descargas-transp" class="form-control" placeholder="Transp.">
-                    </div>
-                    <div class="col-md-auto">
-                        <input type="text" id="descargas-fornecedor" class="form-control" placeholder="Fornecedor">
-                    </div>
-                    <div class="col-md-auto">
-                        <input type="text" id="descargas-nfsh" class="form-control" placeholder="NF / SH">
-                    </div>
-                    <div class="col-md-auto">
-                        <input type="number" id="descargas-quantidade" class="form-control" placeholder="Quantidade">
-                    </div>
-                    <div class="col-md-auto">
-                        <select id="descargas-tipo" class="form-select">
-                            <option value="">Tipo</option>
-                            <option>Paletizada</option>
-                            <option>Batida</option>
-                            <option>Volumosa</option>
-                        </select>
-                    </div>
-                    <div class="col-md-auto">
-                        <input type="text" id="descargas-obs" class="form-control" placeholder="Obs">
-                    </div>
-                    <div class="col-md-auto">
-                        <button class="btn btn-icon" onclick="salvar('descargas')"><i class="fa-solid fa-floppy-disk"></i></button>
-                    </div>
-                    <div class="col-md-auto">
-                        <button class="btn btn-icon" id="editar-btn-descargas" disabled onclick="confirmarEdicao('descargas')"><i class="fa-solid fa-pencil"></i></button>
-                    </div>
-                    <div class="col-md-auto">
-                        <button class="btn btn-icon" id="excluir-btn-descargas" disabled onclick="confirmarExclusao('descargas')"><i class="fa-solid fa-trash"></i></button>
-                    </div>
-                    <div class="col-md-auto">
-                        <button class="btn btn-icon" onclick="exportarRelatorioCompleto()"><i class="fa-solid fa-download"></i></button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="tab-pane fade" id="cargas">
-            <div class="table-container glassmorphism">
-                <div class="table-header-sticky glassmorphism">
-                    <div class="search-row">
-                        <div class="search-container">
-                            <input type="text" id="cargas-search" class="search-input" placeholder="Pesquisar...">
+                <div class="fixed-bottom-form glassmorphism">
+                    <div class="row g-1 align-items-center justify-content-center" id="form-entregas">
+                        <div class="col-md-auto">
+                            <input type="date" id="entregas-data" class="form-control" placeholder="Data">
                         </div>
-                        <div></div>
-                    </div>
-                </div>
-                <table class="list-table" id="lista-cargas">
-                    <thead>
-                        <tr>
-                            <th>Data</th>
-                            <th>Entrada</th>
-                            <th>Motorista</th>
-                            <th>Doc</th>
-                            <th>Contato</th>
-                            <th>Cliente</th>
-                            <th>Placas</th>
-                            <th>Autorização</th>
-                            <th>Obs</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-            </div>
-            <div class="fixed-bottom-form glassmorphism">
-                <div class="row g-1 align-items-center justify-content-center" id="form-cargas">
-                    <div class="col-md-auto">
-                        <input type="date" id="cargas-data" class="form-control" placeholder="Data">
-                    </div>
-                    <div class="col-md-auto">
-                        <input type="time" id="cargas-entrada" class="form-control" placeholder="Entrada">
-                    </div>
-                    <div class="col-md-auto">
-                        <input type="text" id="cargas-motorista" class="form-control" placeholder="Motorista">
-                    </div>
-                    <div class="col-md-auto">
-                        <input type="text" id="cargas-doc" class="form-control" placeholder="Doc">
-                    </div>
-                    <div class="col-md-auto">
-                        <input type="text" id="cargas-contato" class="form-control" placeholder="Contato">
-                    </div>
-                    <div class="col-md-auto">
-                        <input type="text" id="cargas-cliente" class="form-control" placeholder="Cliente">
-                    </div>
-                    <div class="col-md-auto">
-                        <input type="text" id="cargas-placas" class="form-control" placeholder="Placas">
-                    </div>
-                    <div class="col-md-auto">
-                        <input type="text" id="cargas-autorizacao" class="form-control" placeholder="Autorização">
-                    </div>
-                    <div class="col-md-auto">
-                        <input type="text" id="cargas-obs" class="form-control" placeholder="Obs">
-                    </div>
-                    <div class="col-md-auto">
-                        <button class="btn btn-icon" onclick="salvar('cargas')"><i class="fa-solid fa-floppy-disk"></i></button>
-                    </div>
-                    <div class="col-md-auto">
-                        <button class="btn btn-icon" id="editar-btn-cargas" disabled onclick="confirmarEdicao('cargas')"><i class="fa-solid fa-pencil"></i></button>
-                    </div>
-                    <div class="col-md-auto">
-                        <button class="btn btn-icon" id="excluir-btn-cargas" disabled onclick="confirmarExclusao('cargas')"><i class="fa-solid fa-trash"></i></button>
-                    </div>
-                    <div class="col-md-auto">
-                        <button class="btn btn-icon" onclick="exportarRelatorioCompleto()"><i class="fa-solid fa-download"></i></button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="tab-pane fade" id="outros">
-            <div class="table-container glassmorphism">
-                <div class="table-header-sticky glassmorphism">
-                    <div class="search-row">
-                        <div class="search-container">
-                            <input type="text" id="outros-search" class="search-input" placeholder="Pesquisar...">
+                        <div class="col-md-auto">
+                            <input type="text" id="entregas-motorista" class="form-control" placeholder="Motorista">
                         </div>
-                        <div></div>
-                    </div>
-                </div>
-                <table class="list-table" id="lista-outros">
-                    <thead>
-                        <tr>
-                            <th>Data</th>
-                            <th>Hora</th>
-                            <th>Nome</th>
-                            <th>Doc</th>
-                            <th>Empresa</th>
-                            <th>Autorização</th>
-                            <th>Obs</th>
-                        </tr>
-                    </thead>
-                    <tbody></tbody>
-                </table>
-            </div>
-            <div class="fixed-bottom-form glassmorphism">
-                <div class="row g-1 align-items-center justify-content-center" id="form-outros">
-                    <div class="col-md-auto">
-                        <input type="date" id="outros-data" class="form-control" placeholder="Data">
-                    </div>
-                    <div class="col-md-auto">
-                        <input type="time" id="outros-hora" class="form-control" placeholder="Hora">
-                    </div>
-                    <div class="col-md-auto">
-                        <input type="text" id="outros-nome" class="form-control" placeholder="Nome">
-                    </div>
-                    <div class="col-md-auto">
-                        <input type="text" id="outros-doc" class="form-control" placeholder="Doc">
-                    </div>
-                    <div class="col-md-auto">
-                        <input type="text" id="outros-empresa" class="form-control" placeholder="Empresa">
-                    </div>
-                    <div class="col-md-auto">
-                        <input type="text" id="outros-autorizacao" class="form-control" placeholder="Autorização">
-                    </div>
-                    <div class="col-md-auto">
-                        <input type="text" id="outros-obs" class="form-control" placeholder="Obs">
-                    </div>
-                    <div class="col-md-auto">
-                        <button class="btn btn-icon" onclick="salvar('outros')"><i class="fa-solid fa-floppy-disk"></i></button>
-                    </div>
-                    <div class="col-md-auto">
-                        <button class="btn btn-icon" id="editar-btn-outros" disabled onclick="confirmarEdicao('outros')"><i class="fa-solid fa-pencil"></i></button>
-                    </div>
-                    <div class="col-md-auto">
-                        <button class="btn btn-icon" id="excluir-btn-outros" disabled onclick="confirmarExclusao('outros')"><i class="fa-solid fa-trash"></i></button>
-                    </div>
-                    <div class="col-md-auto">
-                        <button class="btn btn-icon" onclick="exportarRelatorioCompleto()"><i class="fa-solid fa-download"></i></button>
+                        <div class="col-md-auto">
+                            <input type="text" id="entregas-frota" class="form-control" placeholder="Frota">
+                        </div>
+                        <div class="col-md-auto">
+                            <input type="time" id="entregas-chegada" class="form-control" placeholder="Chegada">
+                        </div>
+                        <div class="col-md-auto">
+                            <input type="time" id="entregas-saida" class="form-control" placeholder="Saída">
+                        </div>
+                        <div class="col-md-auto">
+                            <input type="text" id="entregas-obs" class="form-control" placeholder="Obs">
+                        </div>
+                        <div class="col-md-auto">
+                            <button class="btn btn-icon" onclick="salvar('entregas')"><i class="fa-solid fa-floppy-disk"></i></button>
+                        </div>
+                        <div class="col-md-auto">
+                            <button class="btn btn-icon" id="editar-btn-entregas" disabled onclick="confirmarEdicao('entregas')"><i class="fa-solid fa-pencil"></i></button>
+                        </div>
+                        <div class="col-md-auto">
+                            <button class="btn btn-icon" id="excluir-btn-entregas" disabled onclick="confirmarExclusao('entregas')"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                        <div class="col-md-auto">
+                            <button class="btn btn-icon" onclick="exportarRelatorioCompleto()"><i class="fa-solid fa-download"></i></button>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div class="tab-pane fade" id="sobre">
-            <div class="container glassmorphism p-4 mt-3">
-                <h3 class="text-center mb-4">Sobre o Sistema</h3>
-                
-                <div class="row mb-4">
-                    <div class="col-md-6">
-                        <h5><i class="fa-solid fa-circle-info me-2"></i> Funcionalidades</h5>
-                        <ul>
-                            <li>Registro de Ponto de Colaboradores (Com filtro de "presentes").</li>
-                            <li>Registro de Entrada e Saída de Frotas (Placar em tempo real).</li>
-                            <li>Registro de Descargas com informações de motorista, placa e volume.</li>
-                            <li>Registro de Cargas com informações de motorista e cliente.</li>
-                            <li>Registro de Visitantes e Pessoas Autorizadas.</li>
-                            <li>Exportação completa de todos os registros para uma única planilha Excel.</li>
-                            <li>Exportação do Dashboard em PDF com gráficos.</li>
-                            <li>Automação para exportação diária de relatórios (PDF e XLSX) à meia-noite.</li>
-                        </ul>
+            <div class="tab-pane fade" id="descargas">
+                <div class="table-container glassmorphism">
+                    <div class="table-header-sticky glassmorphism">
+                        <div class="search-row">
+                            <div class="search-container">
+                                <input type="text" id="descargas-search" class="search-input" placeholder="Pesquisar...">
+                            </div>
+                            <div></div>
+                        </div>
                     </div>
-                    <div class="col-md-6">
-                        <h5><i class="fa-solid fa-laptop-code me-2"></i> Tecnologias Utilizadas</h5>
-                        <ul>
-                            <li><strong>HTML5:</strong> Estrutura da página.</li>
-                            <li><strong>CSS3:</strong> Estilização, incluindo modo escuro e efeito glassmorphism.</li>
-                            <li><strong>JavaScript (ES6+):</strong> Lógica de programação e manipulação do DOM.</li>
-                            <li><strong>Bootstrap 5:</strong> Componentes e layout responsivo.</li>
-                            <li><strong>Chart.js:</strong> Para a criação dos gráficos do dashboard.</li>
-                            <li><strong>SheetJS / XLSX:</strong> Para a exportação de dados para planilhas.</li>
-                            <li><strong>jsPDF & html2canvas:</strong> Para a exportação do Dashboard em PDF.</li>
-                            <li><strong>Font Awesome:</strong> Biblioteca de ícones.</li>
-                        </ul>
+                    <table class="list-table" id="lista-descargas">
+                        <thead>
+                            <tr>
+                                <th>Data</th>
+                                <th>Hora</th>
+                                <th>Nome</th>
+                                <th>CPF</th>
+                                <th>Celular</th>
+                                <th>Placa CV</th>
+                                <th>Placa RB</th>
+                                <th>Transp.</th>
+                                <th>Fornecedor</th>
+                                <th>NF / SH</th>
+                                <th>Quantidade</th>
+                                <th>Tipo</th>
+                                <th>Obs</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+                <div class="fixed-bottom-form glassmorphism">
+                    <div class="row g-1 align-items-center justify-content-center" id="form-descargas">
+                        <div class="col-md-auto">
+                            <input type="date" id="descargas-data" class="form-control" placeholder="Data">
+                        </div>
+                        <div class="col-md-auto">
+                            <input type="time" id="descargas-hora" class="form-control" placeholder="Hora">
+                        </div>
+                        <div class="col-md-auto">
+                            <input type="text" id="descargas-nome" class="form-control" placeholder="Nome">
+                        </div>
+                        <div class="col-md-auto">
+                            <input type="text" id="descargas-cpf" class="form-control" placeholder="CPF">
+                        </div>
+                        <div class="col-md-auto">
+                            <input type="text" id="descargas-celular" class="form-control" placeholder="Celular">
+                        </div>
+                        <div class="col-md-auto">
+                            <input type="text" id="descargas-placacv" class="form-control" placeholder="Placa CV">
+                        </div>
+                        <div class="col-md-auto">
+                            <input type="text" id="descargas-placarb" class="form-control" placeholder="Placa RB">
+                        </div>
+                        <div class="col-md-auto">
+                            <input type="text" id="descargas-transp" class="form-control" placeholder="Transp.">
+                        </div>
+                        <div class="col-md-auto">
+                            <input type="text" id="descargas-fornecedor" class="form-control" placeholder="Fornecedor">
+                        </div>
+                        <div class="col-md-auto">
+                            <input type="text" id="descargas-nfsh" class="form-control" placeholder="NF / SH">
+                        </div>
+                        <div class="col-md-auto">
+                            <input type="number" id="descargas-quantidade" class="form-control" placeholder="Quantidade">
+                        </div>
+                        <div class="col-md-auto">
+                            <select id="descargas-tipo" class="form-select">
+                                <option value="">Tipo</option>
+                                <option>Paletizada</option>
+                                <option>Batida</option>
+                                <option>Volumosa</option>
+                            </select>
+                        </div>
+                        <div class="col-md-auto">
+                            <input type="text" id="descargas-obs" class="form-control" placeholder="Obs">
+                        </div>
+                        <div class="col-md-auto">
+                            <button class="btn btn-icon" onclick="salvar('descargas')"><i class="fa-solid fa-floppy-disk"></i></button>
+                        </div>
+                        <div class="col-md-auto">
+                            <button class="btn btn-icon" id="editar-btn-descargas" disabled onclick="confirmarEdicao('descargas')"><i class="fa-solid fa-pencil"></i></button>
+                        </div>
+                        <div class="col-md-auto">
+                            <button class="btn btn-icon" id="excluir-btn-descargas" disabled onclick="confirmarExclusao('descargas')"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                        <div class="col-md-auto">
+                            <button class="btn btn-icon" onclick="exportarRelatorioCompleto()"><i class="fa-solid fa-download"></i></button>
+                        </div>
                     </div>
                 </div>
+            </div>
 
-                <div class="row">
-                    <div class="col-md-6">
-                        <h5><i class="fa-solid fa-code-branch me-2"></i> Versão e Desenvolvimento</h5>
-                        <p><strong>Versão: Zentry</strong> 1.5.0</p>
-                        <p><strong>Desenvolvedor:</strong> Eder P - AllSec TI - 34 9 9110 6738</p>
+            <div class="tab-pane fade" id="cargas">
+                <div class="table-container glassmorphism">
+                    <div class="table-header-sticky glassmorphism">
+                        <div class="search-row">
+                            <div class="search-container">
+                                <input type="text" id="cargas-search" class="search-input" placeholder="Pesquisar...">
+                            </div>
+                            <div></div>
+                        </div>
                     </div>
-                    <div class="col-md-6">
-                        <h5><i class="fa-solid fa-exclamation-triangle me-2"></i> Observações</h5>
-                        <p>Este sistema foi desenvolvido como uma aplicação web, focada em praticidade e uso local. Todos os dados são salvos diretamente no navegador (LocalStorage), sem a necessidade de banco de dados ou conexão com a internet. Por isso, a exportação regular dos dados é recomendada para fins de backup. O agendamento de tarefas diárias depende que o navegador esteja aberto. Ele também pode ser usado com backend (é o recomendado)</p>
+                    <table class="list-table" id="lista-cargas">
+                        <thead>
+                            <tr>
+                                <th>Data</th>
+                                <th>Entrada</th>
+                                <th>Motorista</th>
+                                <th>Doc</th>
+                                <th>Contato</th>
+                                <th>Cliente</th>
+                                <th>Placas</th>
+                                <th>Autorização</th>
+                                <th>Obs</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+                <div class="fixed-bottom-form glassmorphism">
+                    <div class="row g-1 align-items-center justify-content-center" id="form-cargas">
+                        <div class="col-md-auto">
+                            <input type="date" id="cargas-data" class="form-control" placeholder="Data">
+                        </div>
+                        <div class="col-md-auto">
+                            <input type="time" id="cargas-entrada" class="form-control" placeholder="Entrada">
+                        </div>
+                        <div class="col-md-auto">
+                            <input type="text" id="cargas-motorista" class="form-control" placeholder="Motorista">
+                        </div>
+                        <div class="col-md-auto">
+                            <input type="text" id="cargas-doc" class="form-control" placeholder="Doc">
+                        </div>
+                        <div class="col-md-auto">
+                            <input type="text" id="cargas-contato" class="form-control" placeholder="Contato">
+                        </div>
+                        <div class="col-md-auto">
+                            <input type="text" id="cargas-cliente" class="form-control" placeholder="Cliente">
+                        </div>
+                        <div class="col-md-auto">
+                            <input type="text" id="cargas-placas" class="form-control" placeholder="Placas">
+                        </div>
+                        <div class="col-md-auto">
+                            <input type="text" id="cargas-autorizacao" class="form-control" placeholder="Autorização">
+                        </div>
+                        <div class="col-md-auto">
+                            <input type="text" id="cargas-obs" class="form-control" placeholder="Obs">
+                        </div>
+                        <div class="col-md-auto">
+                            <button class="btn btn-icon" onclick="salvar('cargas')"><i class="fa-solid fa-floppy-disk"></i></button>
+                        </div>
+                        <div class="col-md-auto">
+                            <button class="btn btn-icon" id="editar-btn-cargas" disabled onclick="confirmarEdicao('cargas')"><i class="fa-solid fa-pencil"></i></button>
+                        </div>
+                        <div class="col-md-auto">
+                            <button class="btn btn-icon" id="excluir-btn-cargas" disabled onclick="confirmarExclusao('cargas')"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                        <div class="col-md-auto">
+                            <button class="btn btn-icon" onclick="exportarRelatorioCompleto()"><i class="fa-solid fa-download"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-pane fade" id="outros">
+                <div class="table-container glassmorphism">
+                    <div class="table-header-sticky glassmorphism">
+                        <div class="search-row">
+                            <div class="search-container">
+                                <input type="text" id="outros-search" class="search-input" placeholder="Pesquisar...">
+                            </div>
+                            <div></div>
+                        </div>
+                    </div>
+                    <table class="list-table" id="lista-outros">
+                        <thead>
+                            <tr>
+                                <th>Data</th>
+                                <th>Hora</th>
+                                <th>Nome</th>
+                                <th>Doc</th>
+                                <th>Empresa</th>
+                                <th>Autorização</th>
+                                <th>Obs</th>
+                            </tr>
+                        </thead>
+                        <tbody></tbody>
+                    </table>
+                </div>
+                <div class="fixed-bottom-form glassmorphism">
+                    <div class="row g-1 align-items-center justify-content-center" id="form-outros">
+                        <div class="col-md-auto">
+                            <input type="date" id="outros-data" class="form-control" placeholder="Data">
+                        </div>
+                        <div class="col-md-auto">
+                            <input type="time" id="outros-hora" class="form-control" placeholder="Hora">
+                        </div>
+                        <div class="col-md-auto">
+                            <input type="text" id="outros-nome" class="form-control" placeholder="Nome">
+                        </div>
+                        <div class="col-md-auto">
+                            <input type="text" id="outros-doc" class="form-control" placeholder="Doc">
+                        </div>
+                        <div class="col-md-auto">
+                            <input type="text" id="outros-empresa" class="form-control" placeholder="Empresa">
+                        </div>
+                        <div class="col-md-auto">
+                            <input type="text" id="outros-autorizacao" class="form-control" placeholder="Autorização">
+                        </div>
+                        <div class="col-md-auto">
+                            <input type="text" id="outros-obs" class="form-control" placeholder="Obs">
+                        </div>
+                        <div class="col-md-auto">
+                            <button class="btn btn-icon" onclick="salvar('outros')"><i class="fa-solid fa-floppy-disk"></i></button>
+                        </div>
+                        <div class="col-md-auto">
+                            <button class="btn btn-icon" id="editar-btn-outros" disabled onclick="confirmarEdicao('outros')"><i class="fa-solid fa-pencil"></i></button>
+                        </div>
+                        <div class="col-md-auto">
+                            <button class="btn btn-icon" id="excluir-btn-outros" disabled onclick="confirmarExclusao('outros')"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                        <div class="col-md-auto">
+                            <button class="btn btn-icon" onclick="exportarRelatorioCompleto()"><i class="fa-solid fa-download"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-pane fade" id="sistema">
+                <div class="container glassmorphism p-4 mt-3 sistema-container">
+                    <h3 class="mb-4 text-center">Gerenciamento de Sistema</h3>
+                    <div class="d-grid gap-2 col-6 mx-auto">
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#userModal"><i class="fa-solid fa-user-plus me-2"></i> Novo Usuário</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-pane fade" id="sobre">
+                <div class="container glassmorphism p-4 mt-3">
+                    <h3 class="text-center mb-4">Sobre o Sistema</h3>
+                    
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h5><i class="fa-solid fa-circle-info me-2"></i> Funcionalidades</h5>
+                            <ul>
+                                <li>Registro de Ponto de Colaboradores (Com filtro de "presentes").</li>
+                                <li>Registro de Entrada e Saída de Frotas (Placar em tempo real).</li>
+                                <li>Registro de Descargas com informações de motorista, placa e volume.</li>
+                                <li>Registro de Cargas com informações de motorista e cliente.</li>
+                                <li>Registro de Visitantes e Pessoas Autorizadas.</li>
+                                <li>Exportação completa de todos os registros para uma única planilha Excel.</li>
+                                <li>Exportação do Dashboard em PDF com gráficos.</li>
+                                <li>Automação para exportação diária de relatórios (PDF e XLSX) à meia-noite.</li>
+                                <li>Blocos de informações da aba Ponto e logs do sistema no Dashboard.</li>
+                                <li>Bloco de logs com estilo de terminal.</li>
+                                <li>Gerenciamento de usuários com senha de administrador.</li>
+                                <li>Sistema de login com validação de credenciais.</li>
+                                <li>Sistema de recuperação de senha por CPF e e-mail.</li>
+                                <li>Login persistente (não precisa logar toda vez).</li>
+                                <li>Botão de deslogar.</li>
+                                <li>*Exibe o usuário logado no cabeçalho.</li>
+                                <li>Sistema de logs com exportação por senha mestra.</li>
+                                <li>Logs de Login e Logout.</li>
+                                <li>Criação automática de usuário administrador padrão para o primeiro acesso.</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h5><i class="fa-solid fa-laptop-code me-2"></i> Tecnologias Utilizadas</h5>
+                            <ul>
+                                <li><strong>HTML5:</strong> Estrutura da página.</li>
+                                <li><strong>CSS3:</strong> Estilização, incluindo modo escuro e efeito glassmorphism.</li>
+                                <li><strong>JavaScript (ES6+):</strong> Lógica de programação e manipulação do DOM.</li>
+                                <li><strong>Bootstrap 5:</strong> Componentes e layout responsivo.</li>
+                                <li><strong>Chart.js:</strong> Para a criação dos gráficos do dashboard.</li>
+                                <li><strong>SheetJS / XLSX:</strong> Para a exportação de dados para planilhas.</li>
+                                <li><strong>jsPDF & html2canvas:</strong> Para a exportação do Dashboard em PDF.</li>
+                                <li><strong>Font Awesome:</strong> Biblioteca de ícones.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5><i class="fa-solid fa-code-branch me-2"></i> Versão e Desenvolvimento</h5>
+                            <p><strong>Zentry Versão:</strong> 1.9.3 teste</p>
+                            <p><strong>Desenvolvedor:</strong> Eder P - AllSec TI - 34 9 9110 6738</p>
+                        </div>
+                        <div class="col-md-6">
+                            <h5><i class="fa-solid fa-exclamation-triangle me-2"></i> Observações</h5>
+                           <p>Este sistema foi desenvolvido como uma aplicação web, focada em praticidade e uso local. Todos os dados são salvos diretamente no navegador (LocalStorage), sem a necessidade de banco de dados ou conexão com a internet. Por isso, a exportação regular dos dados é recomendada para fins de backup. O agendamento de tarefas diárias depende que o navegador esteja aberto. Ele também pode ser usado com backend (é o recomendado)</p>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+    
+    <div class="modal fade" id="userModal" tabindex="-1" aria-labelledby="userModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="userModalLabel">Cadastrar Novo Usuário</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="userForm">
+                        <div class="mb-3">
+                            <label for="userName" class="form-label">Nome Completo</label>
+                            <input type="text" class="form-control" id="userName" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="userCpf" class="form-label">CPF</label>
+                            <input type="text" class="form-control" id="userCpf" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="userCel" class="form-label">Celular</label>
+                            <input type="text" class="form-control" id="userCel">
+                        </div>
+                        <div class="mb-3">
+                            <label for="userEmail" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="userEmail">
+                        </div>
+                        <div class="mb-3">
+                            <label for="userUsername" class="form-label">Usuário</label>
+                            <input type="text" class="form-control" id="userUsername" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="userPassword" class="form-label">Senha</label>
+                            <input type="password" class="form-control" id="userPassword" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="userConfirmPassword" class="form-label">Confirmar Senha</label>
+                            <input type="password" class="form-control" id="userConfirmPassword" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="adminPassword" class="form-label">Senha do Administrador</label>
+                            <input type="password" class="form-control" id="adminPassword" required>
+                            <div class="invalid-feedback" id="adminPasswordFeedback"></div>
+                        </div>
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">Salvar Usuário</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
 
     <div class="modal fade" id="confirmModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
@@ -818,7 +1014,12 @@
     <script>
         let itemSelecionado = null;
         let confirmModal = null;
+        let userModal = null;
         let myToast = null;
+        let masterPasswordModal = null;
+        const MASTER_PASSWORD = "8080Ipmask@root";
+        let currentUser = null;
+
         const headersMap = {
             'ponto': ['data', 'colaborador', 'entrada', 'saida', 'cracha', 'obs'],
             'entregas': ['data', 'motorista', 'frota', 'chegada', 'saida', 'obs'],
@@ -848,42 +1049,147 @@
 
         document.addEventListener('DOMContentLoaded', () => {
             confirmModal = new bootstrap.Modal(document.getElementById('confirmModal'));
+            userModal = new bootstrap.Modal(document.getElementById('userModal'));
+            masterPasswordModal = new bootstrap.Modal(document.getElementById('masterPasswordModal'));
             myToast = new bootstrap.Toast(document.getElementById('myToast'));
+
+            checkSession();
             
-            // Renderiza o dashboard e os outros dados quando a página carrega
-            renderDashboard(today);
+            document.getElementById('darkModeToggle').addEventListener('click', toggleDarkMode);
+            agendarTarefasDiarias();
+            document.getElementById('userForm').addEventListener('submit', salvarUsuario);
+            document.getElementById('loginForm').addEventListener('submit', login);
+            document.getElementById('recoverForm').addEventListener('submit', recuperarSenha);
+
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.addEventListener('shown.bs.tab', (e) => {
+                    const abaId = e.target.getAttribute('href').substring(1);
+                    if (abaId === 'ponto') {
+                        renderColaboradoresPonto();
+                    } else if (abaId === 'dashboard') {
+                        renderDashboard(today);
+                    }
+                    reiniciarBotoes(abaId);
+                    limparCampos(abaId);
+                });
+            });
+            document.getElementById('ponto-search').addEventListener('input', (e) => render('ponto', e.target.value));
+            document.getElementById('entregas-search').addEventListener('input', (e) => render('entregas', e.target.value));
+            document.getElementById('descargas-search').addEventListener('input', (e) => render('descargas', e.target.value));
+            document.getElementById('cargas-search').addEventListener('input', (e) => render('cargas', e.target.value));
+            document.getElementById('outros-search').addEventListener('input', (e) => render('outros', e.target.value));
+        });
+
+        function showToast(message) {
+            document.getElementById('toast-message').textContent = message;
+            myToast.show();
+        }
+
+        function checkSession() {
+            const loggedInUser = localStorage.getItem('loggedInUser');
+            if (loggedInUser) {
+                currentUser = JSON.parse(loggedInUser);
+                startSession();
+            } else {
+                checkFirstUser();
+            }
+        }
+        
+        function startSession() {
+            document.getElementById('loginModal').style.display = 'none';
+            document.getElementById('systemContent').style.display = 'block';
+            document.getElementById('userNameDisplay').textContent = `Bem-vindo, ${currentUser.nome.split(' ')[0]}`;
+            
             render('ponto');
             render('entregas');
             render('descargas');
             render('cargas');
             render('outros');
+            renderDashboard(today);
+        }
+
+        function checkFirstUser() {
+            const usuarios = JSON.parse(localStorage.getItem('usuarios') || '[]');
+            if (usuarios.length === 0) {
+                const adminUser = {
+                    nome: "Administrador Padrão",
+                    cpf: "000.000.000-00",
+                    cel: "",
+                    email: "admin@sistema.com",
+                    usuario: "admin",
+                    senha: btoa(MASTER_PASSWORD) 
+                };
+                localStorage.setItem('usuarios', JSON.stringify([adminUser]));
+                showToast("Primeiro acesso: use 'admin' e a senha padrão para logar.");
+            }
+            showLoginModal();
+        }
+
+        function showLoginModal() {
+            document.getElementById('loginModal').style.display = 'flex';
+            document.getElementById('recoverPasswordModal').style.display = 'none';
+        }
+
+        function showRecoverPasswordModal() {
+            document.getElementById('loginModal').style.display = 'none';
+            document.getElementById('recoverPasswordModal').style.display = 'flex';
+        }
+
+        function login(event) {
+            event.preventDefault();
+            const usuario = document.getElementById('loginUsername').value;
+            const senha = document.getElementById('loginPassword').value;
+            const feedback = document.getElementById('loginFeedback');
             
-            document.getElementById('darkModeToggle').addEventListener('click', toggleDarkMode);
-            agendarTarefasDiarias();
-        });
-
-        document.querySelectorAll('.nav-link').forEach(link => {
-            link.addEventListener('shown.bs.tab', (e) => {
-                const abaId = e.target.getAttribute('href').substring(1);
-                if (abaId === 'ponto') {
-                    renderColaboradoresPonto();
-                } else if (abaId === 'dashboard') {
-                    renderDashboard(today);
-                }
-                reiniciarBotoes(abaId);
-                limparCampos(abaId);
-            });
-        });
-
-        document.getElementById('ponto-search').addEventListener('input', (e) => render('ponto', e.target.value));
-        document.getElementById('entregas-search').addEventListener('input', (e) => render('entregas', e.target.value));
-        document.getElementById('descargas-search').addEventListener('input', (e) => render('descargas', e.target.value));
-        document.getElementById('cargas-search').addEventListener('input', (e) => render('cargas', e.target.value));
-        document.getElementById('outros-search').addEventListener('input', (e) => render('outros', e.target.value));
-
-        function showToast(message) {
-            document.getElementById('toast-message').textContent = message;
-            myToast.show();
+            const usuarios = JSON.parse(localStorage.getItem('usuarios') || '[]');
+            const usuarioEncontrado = usuarios.find(u => u.usuario === usuario && atob(u.senha) === senha);
+            
+            if (usuarioEncontrado) {
+                currentUser = usuarioEncontrado;
+                localStorage.setItem('loggedInUser', JSON.stringify(currentUser));
+                addLog('Login', { usuario: currentUser.usuario, nome: currentUser.nome });
+                showToast("Login bem-sucedido!");
+                startSession();
+            } else {
+                feedback.textContent = 'Usuário ou senha incorretos.';
+                feedback.style.color = 'red';
+            }
+        }
+        
+        function logout() {
+            if (currentUser) {
+                addLog('Logout', { usuario: currentUser.usuario, nome: currentUser.nome });
+            }
+            localStorage.removeItem('loggedInUser');
+            currentUser = null;
+            document.getElementById('systemContent').style.display = 'none';
+            document.getElementById('loginUsername').value = '';
+            document.getElementById('loginPassword').value = '';
+            document.getElementById('loginFeedback').textContent = '';
+            showLoginModal();
+            showToast("Você foi desconectado.");
+        }
+        
+        function recuperarSenha(event) {
+            event.preventDefault();
+            const cpf = document.getElementById('recoverCpf').value;
+            const email = document.getElementById('recoverEmail').value;
+            const feedback = document.getElementById('recoverFeedback');
+            
+            const usuarios = JSON.parse(localStorage.getItem('usuarios') || '[]');
+            const usuarioEncontrado = usuarios.find(u => u.cpf === cpf && u.email === email);
+            
+            if (usuarioEncontrado) {
+                const novaSenha = Math.random().toString(36).substring(2, 10);
+                usuarioEncontrado.senha = btoa(novaSenha);
+                localStorage.setItem('usuarios', JSON.stringify(usuarios));
+                addLog('Recuperação de Senha', { usuario: usuarioEncontrado.usuario, nome: usuarioEncontrado.nome });
+                feedback.innerHTML = `Sua nova senha é: <br><strong>${novaSenha}</strong>. Anote e volte para a tela de login.`;
+                feedback.style.color = 'green';
+            } else {
+                feedback.textContent = 'CPF e/ou e-mail não encontrados.';
+                feedback.style.color = 'red';
+            }
         }
 
         function getDadosAba(aba) {
@@ -893,6 +1199,28 @@
                 console.error(`Erro ao carregar dados da aba '${aba}':`, e);
                 return [];
             }
+        }
+
+        function getLogs() {
+            try {
+                return JSON.parse(localStorage.getItem('logs') || '[]');
+            } catch (e) {
+                console.error('Erro ao carregar logs:', e);
+                return [];
+            }
+        }
+
+        function addLog(action, details) {
+            const logs = getLogs();
+            const now = new Date();
+            const logEntry = {
+                timestamp: now.toISOString(),
+                user: currentUser ? currentUser.usuario : 'Desconhecido',
+                action,
+                details
+            };
+            logs.push(logEntry);
+            localStorage.setItem('logs', JSON.stringify(logs));
         }
         
         function salvar(aba) {
@@ -909,10 +1237,13 @@
             let lista = getDadosAba(aba);
             
             if (itemSelecionado && itemSelecionado.aba === aba && itemSelecionado.index !== null) {
+                const oldData = lista[itemSelecionado.index];
                 lista[itemSelecionado.index] = dados;
+                addLog('Edição', { aba, oldData, newData: dados });
                 showToast("Item editado com sucesso!");
             } else {
                 lista.push(dados);
+                addLog('Inserção', { aba, newData: dados });
                 showToast("Item salvo com sucesso!");
             }
             lista = ordenarDadosPorDataEHora(lista, aba);
@@ -956,7 +1287,7 @@
                             const agora = new Date();
                             const diffMs = agora - chegada;
                             const diffHoras = diffMs / (1000 * 60 * 60);
-                            if (diffHoras > 2) { // Aviso visual após 2 horas no pátio
+                            if (diffHoras > 2) { 
                                 tr.classList.add('frota-status-warning');
                             }
                         }
@@ -1065,8 +1396,9 @@
 
         function excluirItem(aba, index) {
             const lista = getDadosAba(aba);
-            lista.splice(index, 1);
+            const deletedItem = lista.splice(index, 1);
             localStorage.setItem(aba, JSON.stringify(lista));
+            addLog('Exclusão', { aba, deletedData: deletedItem[0] });
             render(aba);
             limparCampos(aba);
             renderDashboard(today);
@@ -1084,7 +1416,7 @@
         function limparCampos(aba) {
             const inputs = document.querySelectorAll(`#form-${aba} input, #form-${aba} select`);
             inputs.forEach(inp => {
-                if (inp.type === 'date' || inp.type === 'time' || inp.type === 'text' || inp.type === 'number') {
+                if (inp.type === 'date' || inp.type === 'time' || inp.type === 'text' || inp.type === 'number' || inp.type === 'email') {
                     inp.value = '';
                 } else if (inp.tagName === 'SELECT' && inp.id.includes('colaborador')) {
                     inp.selectedIndex = 0;
@@ -1172,7 +1504,6 @@
         }
 
         function updateDashboardCards(dataEntregas, dataDescargas, dataCargas, dataHoje) {
-            // Frotas Biz/Aliança
             const frotasEntraram = dataEntregas.filter(item => item.data === dataHoje && item.chegada).length;
             const frotasSairam = dataEntregas.filter(item => item.data === dataHoje && item.saida).length;
             const frotasPatio = dataEntregas.filter(item => item.chegada && !item.saida).length;
@@ -1181,12 +1512,11 @@
             document.getElementById('dashboard-frotas-sairam').textContent = frotasSairam;
             document.getElementById('dashboard-frotas-patio').textContent = frotasPatio;
 
-            // Média de Permanência
             const permanencias = dataEntregas.filter(item => item.data === dataHoje && item.chegada && item.saida).map(item => {
                 const chegada = new Date(`${item.data}T${item.chegada}`);
                 const saida = new Date(`${item.data}T${item.saida}`);
                 const diffMs = saida - chegada;
-                return diffMs / (1000 * 60); // Retorna em minutos
+                return diffMs / (1000 * 60); 
             });
             const mediaPermanenciaMin = permanencias.length > 0 ? permanencias.reduce((sum, val) => sum + val, 0) / permanencias.length : 0;
             const mediaHoras = Math.floor(mediaPermanenciaMin / 60);
@@ -1200,11 +1530,9 @@
                 mediaPermanenciaElement.classList.remove('warning');
             }
 
-            // Descargas
             const descargasHoje = dataDescargas.filter(item => item.data === dataHoje).length;
             document.getElementById('dashboard-descargas-hoje').textContent = descargasHoje;
 
-            // Cargas
             const cargasHoje = dataCargas.filter(item => item.data === dataHoje).length;
             document.getElementById('dashboard-cargas-hoje').textContent = cargasHoje;
         }
@@ -1223,39 +1551,8 @@
         }
 
         function renderRecentActivity() {
-            const allLogs = [];
-            const abas = ['ponto', 'entregas', 'descargas', 'cargas', 'outros'];
-            
-            abas.forEach(aba => {
-                const data = getDadosAba(aba);
-                data.forEach(item => {
-                    let logText = '';
-                    let timestamp = new Date();
-                    
-                    if (aba === 'ponto') {
-                        const action = item.entrada && item.saida ? 'Entrada e Saída' : item.entrada ? 'Entrada' : 'Saída';
-                        logText = `[Ponto] ${item.colaborador}: ${action}`;
-                        timestamp = new Date(`${item.data}T${item.entrada || item.saida}`);
-                    } else if (aba === 'entregas') {
-                        const action = item.chegada && item.saida ? 'Chegada e Saída' : item.chegada ? 'Chegada' : 'Saída';
-                        logText = `[Entrega] Frota ${item.frota}: ${action}`;
-                        timestamp = new Date(`${item.data}T${item.chegada || item.saida}`);
-                    } else if (aba === 'descargas') {
-                        logText = `[Descarga] ${item.nome} (${item.placacv})`;
-                        timestamp = new Date(`${item.data}T${item.hora}`);
-                    } else if (aba === 'cargas') {
-                        logText = `[Carga] Frota ${item.placas} - Cliente: ${item.cliente}`;
-                        timestamp = new Date(`${item.data}T${item.entrada}`);
-                    } else if (aba === 'outros') {
-                        logText = `[Outros] ${item.nome} (${item.empresa})`;
-                        timestamp = new Date(`${item.data}T${item.hora}`);
-                    }
-                    
-                    allLogs.push({ text: logText, timestamp: timestamp });
-                });
-            });
-
-            allLogs.sort((a, b) => b.timestamp - a.timestamp);
+            const allLogs = getLogs();
+            allLogs.sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
             const recentLogs = allLogs.slice(0, 5);
 
             const listElement = document.getElementById('recent-logs-list');
@@ -1270,7 +1567,13 @@
 
             recentLogs.forEach(log => {
                 const li = document.createElement('li');
-                li.textContent = `${log.timestamp.toLocaleDateString('pt-BR')} ${log.timestamp.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })} > ${log.text}`;
+                const logDate = new Date(log.timestamp);
+                const logTime = `${logDate.toLocaleDateString('pt-BR')} ${logDate.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`;
+                let details = log.details.aba ? `Aba: ${log.details.aba}` : 'N/A';
+                if (log.action === 'Login' || log.action === 'Logout') {
+                    details = `Usuário: ${log.details.usuario}`;
+                }
+                li.textContent = `${logTime} - Usuário: ${log.user} - Ação: ${log.action} - Detalhes: ${details}`;
                 listElement.appendChild(li);
             });
         }
@@ -1361,7 +1664,6 @@
             }
         }
 
-        // Nova função para gerar o PDF a partir de um contêiner específico
         async function gerarPDFDoContainer(container, filename) {
             const nav = document.querySelector('.navbar');
             const navDisplay = nav.style.display;
@@ -1390,7 +1692,6 @@
             pdf.save(filename);
         }
 
-        // Função para exportação manual
         function exportarDashboardPDF() {
             const dashboardElement = document.getElementById('dashboard');
             const today = new Date();
@@ -1400,7 +1701,6 @@
             });
         }
 
-        // Função para exportação automática à meia-noite
         async function gerarRelatorioPDFDiario() {
             const dataParaRelatorio = new Date();
             dataParaRelatorio.setDate(dataParaRelatorio.getDate() - 1);
@@ -1412,14 +1712,13 @@
             const tituloRelatorio = hiddenContainer.querySelector('h3');
             tituloRelatorio.textContent = `Painel de Monitoramento - Relatório Diário (${dataFormatada.split('-').reverse().join('/')})`;
             
-            // Recalcula os dados para o dia anterior no contêiner escondido
             const dataEntregas = getDadosAba('entregas');
             const dataDescargas = getDadosAba('descargas');
             const dataCargas = getDadosAba('cargas');
             const dataPonto = getDadosAba('ponto');
             updateDashboardCards(dataEntregas, dataDescargas, dataCargas, dataFormatada);
             updateDashboardPontoCounters(dataPonto);
-            renderRecentActivity(); // A renderização dos logs é independente da data, então o comportamento é aceitável.
+            renderRecentActivity(); 
             renderDailyMovementChart(dataEntregas, dataCargas, dataDescargas, dataFormatada, hiddenContainer);
             renderTempoPermanenciaChart(dataEntregas, dataFormatada, hiddenContainer);
             
@@ -1428,8 +1727,94 @@
             hiddenContainer.innerHTML = '';
             showToast("Relatório diário em PDF emitido automaticamente!");
             
-            // Re-renderiza o dashboard principal para o dia atual após a geração do relatório
             renderDashboard(today);
+        }
+        
+        function salvarUsuario(event) {
+            event.preventDefault();
+            const form = event.target;
+            const nome = form.userName.value;
+            const cpf = form.userCpf.value;
+            const cel = form.userCel.value;
+            const email = form.userEmail.value;
+            const usuario = form.userUsername.value;
+            const senha = form.userPassword.value;
+            const confirmarSenha = form.userConfirmPassword.value;
+            const senhaAdmin = form.adminPassword.value;
+            const feedbackElement = document.getElementById('adminPasswordFeedback');
+        
+            if (senha !== confirmarSenha) {
+                showToast("As senhas não coincidem!");
+                return;
+            }
+        
+            if (senhaAdmin !== MASTER_PASSWORD) {
+                feedbackElement.textContent = 'Senha de administrador incorreta.';
+                feedbackElement.style.display = 'block';
+                showToast("Senha de administrador incorreta.");
+                return;
+            } else {
+                feedbackElement.style.display = 'none';
+            }
+        
+            const usuarios = JSON.parse(localStorage.getItem('usuarios') || '[]');
+            
+            const novoUsuario = {
+                nome,
+                cpf,
+                cel,
+                email,
+                usuario,
+                senha: btoa(senha) 
+            };
+        
+            usuarios.push(novoUsuario);
+            localStorage.setItem('usuarios', JSON.stringify(usuarios));
+            addLog('Criação de Usuário', { novoUsuario: novoUsuario.usuario });
+        
+            form.reset();
+            userModal.hide();
+            showToast("Usuário salvo com sucesso!");
+        }
+
+        function exportarLogs() {
+            document.getElementById('masterPasswordInput').value = '';
+            document.getElementById('masterPasswordFeedback').textContent = '';
+            masterPasswordModal.show();
+        }
+
+        function confirmExportLogs() {
+            const password = document.getElementById('masterPasswordInput').value;
+            const feedbackElement = document.getElementById('masterPasswordFeedback');
+
+            if (password !== MASTER_PASSWORD) {
+                feedbackElement.textContent = 'Senha incorreta.';
+                return;
+            }
+
+            const logs = getLogs();
+            if (logs.length === 0) {
+                showToast("Nenhum log para exportar.");
+                masterPasswordModal.hide();
+                return;
+            }
+
+            let logText = "Log de Atividades do Sistema\n\n";
+            logs.forEach(log => {
+                const logDate = new Date(log.timestamp);
+                const timestampStr = `${logDate.toLocaleDateString('pt-BR')} ${logDate.toLocaleTimeString('pt-BR', { hour12: false })}`;
+                logText += `Data/Hora: ${timestampStr}\n`;
+                logText += `Usuário: ${log.user}\n`;
+                logText += `Ação: ${log.action}\n`;
+                logText += `Detalhes: ${JSON.stringify(log.details, null, 2)}\n\n`;
+            });
+
+            const blob = new Blob([logText], { type: "text/plain;charset=utf-8" });
+            const dataHora = new Date();
+            const filename = `biz_logs_${dataHora.getFullYear()}-${(dataHora.getMonth() + 1).toString().padStart(2, '0')}-${dataHora.getDate().toString().padStart(2, '0')}.txt`;
+            saveAs(blob, filename);
+            showToast("Logs exportados com sucesso!");
+            masterPasswordModal.hide();
         }
     </script>
 </body>
